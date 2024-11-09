@@ -65,3 +65,4 @@ Use Cases:
 - Display table of amount of money paid, type of payment, and special notes for each player, with buttons for updating the table
 
 - Export the table into a csv file for local storage after the tournament ends and the app is closed.
+=======
