@@ -22,13 +22,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
     private static final String TOKEN = "token";
     private static final String API_URL = "https://api.start.gg/gql/alpha";
 
-    public String testKey(){
-        return System.getenv(TOKEN);
-    }
-    public void getEvent() {
+    public void getEventId(String eventLink) {
         String q = "query getEventId($slug: String) {event(slug: $slug) {id name}}";
 
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"slug\": \"tournament/ultimate-tmu-ep-4/event/ultimate-singles\"}}";
+        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"slug\": \"" + eventLink + "\"}}";
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
 
@@ -52,6 +49,30 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
 
     @Override
     public Entrant[] getEntrantsInEvent(String EventID) {
+        String q = """
+          query EventEntrants($eventId: ID!, $page: Int!, $perPage: Int!) {
+          event(id: $eventId) {
+            id
+            name
+            entrants(query: {
+              page: $page
+              perPage: $perPage
+            }) {
+              pageInfo {
+                total
+                totalPages
+              }
+              nodes {
+                id
+                participants {
+                  id
+                  gamerTag
+                }
+              }
+            }
+          }
+        }
+                        """;
         return new Entrant[0];
     }
 
