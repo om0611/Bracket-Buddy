@@ -1,5 +1,7 @@
 package use_case.select_phase;
 
+import java.util.List;
+
 /**
  * The DAO for the select phase use case.
  */
@@ -17,5 +19,5 @@ public interface SelectPhaseDataAccessInterface {
      * @param phaseID The ID of the phase
      * @return A list of player IDs in seeded order
      */
-    String[] getSeedinginPhase(String phaseID);
+    List<String> getSeedinginPhase(String phaseID);
 }

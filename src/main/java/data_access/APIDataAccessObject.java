@@ -14,6 +14,8 @@ import use_case.main.MainDataAccessInterface;
 import use_case.select_phase.SelectPhaseDataAccessInterface;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface {
 
@@ -59,7 +61,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
     }
 
     @Override
-    public String[] getSeedinginPhase(String phaseID) {
-        return new String[0];
+    public List<String> getSeedinginPhase(String phaseID) {
+        return new ArrayList<>();
     }
 }
