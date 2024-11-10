@@ -7,7 +7,7 @@ import java.util.List;
 
 public class APIDataMutationObject implements MutateSeedingDataMutationInterface {
     @Override
-    public void setSeeding(List<String> seededEntrants) {
+    public void setSeeding(List<Integer> seededEntrants) {
 
     }
 }
