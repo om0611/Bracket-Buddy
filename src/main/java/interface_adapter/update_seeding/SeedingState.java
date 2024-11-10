@@ -6,13 +6,13 @@ import java.util.List;
  * A state containing all the data used for seeding
  */
 public class SeedingState {
-    private List<String> seeding;
+    private List<Integer> seeding;
 
-    public void setSeeding(List<String> newSeeding) {
+    public void setSeeding(List<Integer> newSeeding) {
         seeding = newSeeding;
     }
 
-    public List<String> getSeeding() {
+    public List<Integer> getSeeding() {
         return seeding;
     }
 
@@ -23,7 +23,7 @@ public class SeedingState {
      * @param newSeed The entrant's updated seed
      */
     public void moveSeed(int oldSeed, int newSeed) {
-        String tempID = seeding.get(oldSeed - 1);
+        int tempID = seeding.get(oldSeed - 1);
         seeding.remove(oldSeed - 1);
         seeding.add(newSeed - 1, tempID);
     }

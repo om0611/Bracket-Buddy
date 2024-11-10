@@ -6,7 +6,7 @@ package entities;
 public class Entrant {
     private final String name;
     private final String sponsor;
-    private final String id;
+    private final int id;
 
     /**
      * Entrant constructor.
@@ -14,7 +14,7 @@ public class Entrant {
      * @param sponsor Entrant sponsor
      * @param id Entrant ID
      */
-    public Entrant(String name, String sponsor, String id) {
+    public Entrant(String name, String sponsor, int id) {
         this.name = name;
         this.sponsor = sponsor;
         this.id = id;
@@ -28,7 +28,7 @@ public class Entrant {
         return sponsor;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 }

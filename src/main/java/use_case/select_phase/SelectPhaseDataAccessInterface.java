@@ -12,12 +12,12 @@ public interface SelectPhaseDataAccessInterface {
      * @param eventID The ID of the event
      * @return A list of all the phase IDs
      */
-    String[] getPhaseIDs(String eventID);
+    int[] getPhaseIDs(int eventID);
 
     /**
      * Gets the seeding for the given phase.
      * @param phaseID The ID of the phase
      * @return A list of player IDs in seeded order
      */
-    List<String> getSeedinginPhase(String phaseID);
+    List<Integer> getSeedinginPhase(int phaseID);
 }
