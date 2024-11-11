@@ -1,5 +1,6 @@
 package view;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -9,6 +10,7 @@ public class SeedingView extends JFrame implements ActionListener {
     static JPanel bigList;
     static JPanel manualSeedingP;
     static JPanel playerAnalysis;
+    static JScrollPane scrollPane;
 
     public static void main(String[] args){
         createPhaseChoice();
@@ -34,14 +36,22 @@ public class SeedingView extends JFrame implements ActionListener {
         comboBox.setEditable(true);
         comboBox.setSelectedIndex(0);
 
-        dropBox = new JPanel(); // Assign to class-level dropBox
+        dropBox = new JPanel();
         dropBox.add(comboBox);
         dropBox.add(changeView);
         dropBox.setSize(300, 200);
     }
 
     public static void createPhaseView(){
-        bigList = new JPanel(); // Assign to class-level bigList
+        bigList = new JPanel();
+        bigList.setLayout(new BoxLayout(bigList, BoxLayout.Y_AXIS));
+
+        for(int i = 1; i <= 30; i++) {
+            bigList.add(new JLabel(i + "Player name"));
+        }
+
+        scrollPane = new JScrollPane(bigList);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     }
 
     public static void createManualSeeding() {
@@ -78,7 +88,7 @@ public class SeedingView extends JFrame implements ActionListener {
         JPanel main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
         main.add(dropBox); // Add initialized components to main panel
-        main.add(bigList);
+        main.add(scrollPane);
         main.add(manualSeedingP);
         main.add(playerAnalysis);
 
