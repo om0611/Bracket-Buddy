@@ -22,13 +22,58 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
     private static final String TOKEN = "token";
     private static final String API_URL = "https://api.start.gg/gql/alpha";
 
-    public String testKey(){
-        return System.getenv(TOKEN);
-    }
-    public void getEvent() {
+    public int getEventId(String eventLink) {
         String q = "query getEventId($slug: String) {event(slug: $slug) {id name}}";
 
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"slug\": \"tournament/ultimate-tmu-ep-4/event/ultimate-singles\"}}";
+        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"slug\": \"" + eventLink + "\"}}";
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+
+        RequestBody body = RequestBody.create(json, mediaType);
+        Request request = new Request.Builder()
+                .url(API_URL)
+                .addHeader("Authorization", "Bearer " + System.getenv(TOKEN))
+                .post(body)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            final JSONObject jsonResponse = new JSONObject(response.body().string());
+            return jsonResponse.getJSONObject("data").getJSONObject("event").getInt("id");
+        }
+        catch (IOException | JSONException event) {
+            throw new RuntimeException(event);
+        }
+
+    }
+
+    @Override
+    public Entrant[] getEntrantsInEvent(int eventID) {
+        String q = """
+          query EventEntrants($eventId: ID!, $page: Int!, $perPage: Int!) {
+          event(id: $eventId) {
+            id
+            name
+            entrants(query: {
+              page: $page
+              perPage: $perPage
+            }) {
+              pageInfo {
+                total
+                totalPages
+              }
+              nodes {
+                id
+                participants {
+                  id
+                  gamerTag
+                }
+              }
+            }
+          }
+        }
+                        """;
+        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"eventID\": \"" + eventID + "\", \"page\": 1, \"perPage\": 64}}";
+
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
 
@@ -46,22 +91,16 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         catch (IOException | JSONException event) {
             throw new RuntimeException(event);
         }
-
-
-    }
-
-    @Override
-    public Entrant[] getEntrantsInEvent(String EventID) {
         return new Entrant[0];
     }
 
     @Override
-    public String[] getPhaseIDs(String eventID) {
-        return new String[0];
+    public int[] getPhaseIDs(int eventID) {
+        return new int[0];
     }
 
     @Override
-    public List<String> getSeedinginPhase(String phaseID) {
+    public List<Integer> getSeedinginPhase(int phaseID) {
         return new ArrayList<>();
     }
 }
