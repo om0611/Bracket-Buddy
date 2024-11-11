@@ -265,14 +265,18 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         // Create query
         String q = "mutation UpdatePhaseSeeding ($phaseId: ID!, $seedMapping: [UpdatePhaseSeedInfo]!)" +
                 "{updatePhaseSeeding (phaseId: $phaseId, seedMapping: $seedMapping) {id}}";
-        String json = "{ \"query\": \"" + q + "\"," +
-                "\"variables\": { \"phaseId\": \"" + initialPhaseID + "\", \"seedMapping\": \"" + seedMapping +"\"}}";
+        JSONObject json = new JSONObject();
+        JSONObject variables = new JSONObject();
+        variables.put("phaseId", initialPhaseID);
+        variables.put("seedMapping", seedMapping);
+        json.put("query", q);
+        json.put("variables", variables);
 
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
 
         // Create request for seeds
-        RequestBody body = RequestBody.create(json, mediaType);
+        RequestBody body = RequestBody.create(json.toString(), mediaType);
         Request request = new Request.Builder()
                 .url(API_URL)
                 .addHeader("Authorization", "Bearer " + System.getenv(TOKEN))
@@ -281,7 +285,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         try {
             // Send request
             Response response = client.newCall(request).execute();
-            System.out.println(response.body().string());
             final JSONObject jsonResponse = new JSONObject(response.body().string());
         }
         catch (IOException | JSONException event) {

@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class MainApplication {
     public static void main(String[] args) {
+        // API use example CAN DELETE THIS
         String eventLink = "tournament/skipping-classes-world-championship-start-gg-api-test/event/1v1-lecture-skipping-bracket";
         APIDataAccessObject dao = new APIDataAccessObject();
         int eventID = dao.getEventId(eventLink);
