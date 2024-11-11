@@ -9,12 +9,12 @@ import java.util.List;
 /**
  * The controller for the Select Phase Use case
  */
-public class SelectPhaseController {
+public class MutateSeedingController {
 
     private final MutateSeedingInputBoundary mutateSeedingUseCaseInteractor;
     private final SeedingState seedingState;
 
-    public SelectPhaseController(MutateSeedingInputBoundary mutateSeedingUseCaseInteractor, SeedingState seedingState) {
+    public MutateSeedingController(MutateSeedingInputBoundary mutateSeedingUseCaseInteractor, SeedingState seedingState) {
         this.mutateSeedingUseCaseInteractor = mutateSeedingUseCaseInteractor;
         this.seedingState = seedingState;
     }

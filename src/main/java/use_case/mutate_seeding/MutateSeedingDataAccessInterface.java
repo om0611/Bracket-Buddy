@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * The DMO for the mutate seeding use case.
  */
-public interface MutateSeedingDataMutationInterface {
+public interface MutateSeedingDataAccessInterface {
 
     /**
      * Mutates the seeding on start gg to match the parameter seeding.
