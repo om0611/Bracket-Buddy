@@ -1,6 +1,7 @@
 package use_case.select_phase;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The DAO for the select phase use case.
@@ -10,9 +11,9 @@ public interface SelectPhaseDataAccessInterface {
     /**
      * Gets all phase IDs for a given event.
      * @param eventID The ID of the event
-     * @return A list of all the phase IDs
+     * @return A map of all the phase IDs mapped to their name
      */
-    int[] getPhaseIDs(int eventID);
+    Map<String, Integer> getPhaseIDs(int eventID);
 
     /**
      * Gets the seeding for the given phase.
