@@ -11,6 +11,7 @@ import java.util.SortedMap;
 public class SeedingState {
     private List<Integer> seeding;
     private SortedMap<String, Integer> phaseToID;
+    private String error = "";
 
     public void setSeeding(List<Integer> newSeeding) {
         seeding = newSeeding;
@@ -51,5 +52,9 @@ public class SeedingState {
         int tempID = seeding.get(oldSeed - 1);
         seeding.remove(oldSeed - 1);
         seeding.add(newSeed - 1, tempID);
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }
