@@ -7,16 +7,10 @@ import java.util.List;
  */
 public class MutateSeedingInputData {
 
-    private int phaseID;
-    private List<Integer> finalSeeds;
+    private final List<Integer> finalSeeds;
 
-    public MutateSeedingInputData(int phaseID, List<Integer> finalSeeds) {
-        this.phaseID = phaseID;
+    public MutateSeedingInputData(List<Integer> finalSeeds) {
         this.finalSeeds = finalSeeds;
-    }
-
-    public int getPhaseID() {
-        return phaseID;
     }
 
     public List<Integer> getFinalSeeds() {

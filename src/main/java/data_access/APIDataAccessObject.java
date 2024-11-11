@@ -209,7 +209,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
      * @return A list of player IDs in seeded order
      */
     @Override
-    public List<Integer> getSeedinginPhase(int phaseID) {
+    public List<Integer> getSeedingInPhase(int phaseID) {
         createOverallSeeding();
         // Create query for the number of entrants in the phase
         String q = "query PhaseSeeds($phaseId: ID!, $page: Int!, $perPage: Int!) {phase(id:$phaseId)" +

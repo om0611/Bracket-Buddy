@@ -1,5 +1,7 @@
 package interface_adapter.update_seeding;
 
+import entities.EventData;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +15,9 @@ public class SeedingState {
     private SortedMap<String, Integer> phaseToID;
     private String error = "";
 
+    public String playerIdToString(int playerID) {
+        return EventData.idToString(playerID);
+    }
     public void setSeeding(List<Integer> newSeeding) {
         seeding = newSeeding;
     }
@@ -44,9 +49,6 @@ public class SeedingState {
 
     /**
      * Mutates the seeding to move a seed from oldSeed to newSeed.
-     *
-     * @param oldSeed The entrant's original seed
-     * @param newSeed The entrant's updated seed
      */
     public void moveSeed(int oldSeed, int newSeed) {
         int tempID = seeding.get(oldSeed - 1);
@@ -56,5 +58,9 @@ public class SeedingState {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getError() {
+        return error;
     }
 }

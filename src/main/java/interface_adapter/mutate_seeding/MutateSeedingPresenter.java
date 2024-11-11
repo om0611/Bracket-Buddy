@@ -22,16 +22,16 @@ public class MutateSeedingPresenter implements MutateSeedingOutputBoundary {
     }
 
     @Override
-    public void prepareSuccessView(MutateSeedingOutputData outputData) {
-        viewManagerModel.setState(mainViewModel.getViewName());
-        viewManagerModel.firePropertyChanged();
+    public void prepareSuccessView() {
+        //viewManagerModel.setState(mainViewModel.getViewName());
+        seedingViewModel.firePropertyChanged("mutatesuccess");
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
         final SeedingState seedingState = seedingViewModel.getState();
         seedingState.setError(errorMessage);
-        seedingViewModel.firePropertyChanged();
+        seedingViewModel.firePropertyChanged("mutatefail");
     }
 
     @Override

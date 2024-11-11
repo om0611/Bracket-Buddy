@@ -14,7 +14,7 @@ public class UpdateSeedingController {
         this.seedingState = seedingState;
     }
 
-    public void execute(int oldSeed, int newSeed) {
+    public void execute(String oldSeed, String newSeed) {
 
         int maxSeed = seedingState.getSeeding().size();
         final UpdateSeedingInputData updateSeedingInputData = new UpdateSeedingInputData(oldSeed, newSeed, maxSeed);

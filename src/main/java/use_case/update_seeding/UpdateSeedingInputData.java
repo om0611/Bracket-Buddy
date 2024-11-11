@@ -7,21 +7,21 @@ import java.util.List;
  */
 public class UpdateSeedingInputData {
 
-    private int oldSeed;
-    private int newSeed;
+    private String oldSeed;
+    private String newSeed;
     private int maxSeed;
 
-    public UpdateSeedingInputData(int oldSeed, int newSeed, int maxSeed) {
+    public UpdateSeedingInputData(String oldSeed, String newSeed, int maxSeed) {
         this.oldSeed = oldSeed;
         this.newSeed = newSeed;
         this.maxSeed = maxSeed;
     }
 
-    public int getOldSeed() {
+    public String getOldSeed() {
         return oldSeed;
     }
 
-    public int getNewSeed() {
+    public String getNewSeed() {
         return newSeed;
     }
 

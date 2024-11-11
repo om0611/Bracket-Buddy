@@ -22,11 +22,10 @@ public class MutateSeedingController {
     /**
      * Execute the Select Phase use case
      */
-    public void execute(String selectedPhase) {
+    public void execute() {
 
-        int phaseID = seedingState.phaseNametoId(selectedPhase);
         List<Integer> seeding = seedingState.getSeeding();
-        final MutateSeedingInputData selectPhaseInputData = new MutateSeedingInputData(phaseID, seeding);
+        final MutateSeedingInputData selectPhaseInputData = new MutateSeedingInputData(seeding);
 
         mutateSeedingUseCaseInteractor.execute(selectPhaseInputData);
     }

@@ -1,66 +1,164 @@
 package view;
+import app.MainBuilder;
+import interface_adapter.mutate_seeding.MutateSeedingController;
+import interface_adapter.select_phase.SelectPhaseController;
+import interface_adapter.update_seeding.SeedingState;
+import interface_adapter.update_seeding.SeedingViewModel;
+import interface_adapter.update_seeding.UpdateSeedingController;
+
 import javax.swing.*;
-import java.awt.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedMap;
 
-public class SeedingView extends JFrame implements ActionListener {
-    private static JComboBox<String> comboBox;
-    static JPanel dropBox;
-    static JPanel bigList;
-    static JPanel manualSeedingP;
-    static JPanel playerAnalysis;
-    static JScrollPane scrollPane;
+public class SeedingView extends JPanel implements ActionListener, PropertyChangeListener {
 
-    public static void main(String[] args){
+    private final String viewName = "seeding";
+    private final SeedingViewModel seedingViewModel;
+    private SelectPhaseController selectPhaseController;
+    private UpdateSeedingController updateSeedingController;
+    private MutateSeedingController mutateSeedingController;
+
+    JFrame frame = new JFrame("Seeding View");
+    private JComboBox<String> comboBox;
+    private JPanel bigList;
+    private JPanel dropBox;
+    private JPanel manualSeedingP;
+    private JPanel playerAnalysis;
+    private JPanel mutateSeeding;
+    private JScrollPane scrollPane;
+    private String oldSeedValue;
+    private String newSeedValue;
+
+    public SeedingView(SeedingViewModel seedingViewModel, SortedMap<String, Integer> temporaryFix) {
+        this.seedingViewModel = seedingViewModel;
+        this.seedingViewModel.addPropertyChangeListener(this);
+        this.seedingViewModel.getState().setPhases(temporaryFix);
         createPhaseChoice();
         createPhaseView();
         createManualSeeding();
         createPlayerAnalysisOption();
+        createMutateButton();
         createBase();
     }
-
-    public static void createPhaseChoice(){
-        String[] options = {"Phase 1", "Phase 2"};
+    public void createPhaseChoice(){
+        final SeedingState currentState = seedingViewModel.getState();
+        Set<String> phases = currentState.getPhases();
+        String[] options = new String[phases.size()];
+        options = phases.toArray(options);
         comboBox = new JComboBox<>(options); // Assign to class-level comboBox
-        JButton changeView = new JButton("View");
+        JButton changePhase = new JButton("Select");
 
         comboBox.setBounds(60, 50, 150, 30);
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selectedOption = (String) comboBox.getSelectedItem();
-                System.out.println(selectedOption);
-            }
-        });
-        comboBox.setEditable(true);
+
+        changePhase.addActionListener(
+                // This creates an anonymous subclass of ActionListener and instantiates it.
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        if (evt.getSource().equals(changePhase)) {
+                            String selectedOption = (String) comboBox.getSelectedItem();
+                            selectPhaseController.execute(selectedOption);
+                        }
+                    }
+                }
+        );
+
         comboBox.setSelectedIndex(0);
 
         dropBox = new JPanel();
         dropBox.add(comboBox);
-        dropBox.add(changeView);
+        dropBox.add(changePhase);
         dropBox.setSize(300, 200);
     }
 
-    public static void createPhaseView(){
+    public void createPhaseView(){
+        final SeedingState currentState = seedingViewModel.getState();
+        List<Integer> seeding = currentState.getSeeding();
         bigList = new JPanel();
         bigList.setLayout(new BoxLayout(bigList, BoxLayout.Y_AXIS));
-
-        for(int i = 1; i <= 30; i++) {
-            bigList.add(new JLabel(i + "Player name"));
+        if(seeding != null) {
+            for (int i = 0; i < seeding.size(); i++) {
+                bigList.add(new JLabel((i + 1) + ". " + currentState.playerIdToString(seeding.get(i))));
+            }
         }
-
         scrollPane = new JScrollPane(bigList);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
     }
 
-    public static void createManualSeeding() {
+    public void createManualSeeding() {
         JLabel changeSeed = new JLabel("Change Player Seed:");
         JLabel oldSeed = new JLabel("Change Seed");
         JLabel newSeed = new JLabel("To");
         JTextField oldSeedNum = new JTextField(5);
         JTextField newSeedNum = new JTextField(5);
         JButton confirm = new JButton("Confirm");
+
+        // Confirm listener
+        confirm.addActionListener(
+                // This creates an anonymous subclass of ActionListener and instantiates it.
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        if (evt.getSource().equals(confirm)) {
+                            updateSeedingController.execute(
+                                    oldSeedValue, newSeedValue
+                            );
+                        }
+                    }
+                }
+        );
+
+        // Old Seed Listener
+        oldSeedNum.getDocument().addDocumentListener(new DocumentListener() {
+
+            private void documentListenerHelper() {
+                oldSeedValue = oldSeedNum.getText();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+        });
+
+        // New Seed Listener
+        newSeedNum.getDocument().addDocumentListener(new DocumentListener() {
+
+            private void documentListenerHelper() {
+                newSeedValue = newSeedNum.getText();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+        });
 
         manualSeedingP = new JPanel(); // Assign to class-level manualSeedingP
         manualSeedingP.add(changeSeed);
@@ -72,7 +170,7 @@ public class SeedingView extends JFrame implements ActionListener {
         manualSeedingP.setSize(500, 40);
     }
 
-    public static void createPlayerAnalysisOption(){
+    public void createPlayerAnalysisOption(){
         JLabel playerL = new JLabel("Seed of Player to Analyze: ");
         JTextField playerSeed = new JTextField(5);
         JButton confirmPlayerAnalysis = new JButton("Analyze Player");
@@ -82,26 +180,107 @@ public class SeedingView extends JFrame implements ActionListener {
         playerAnalysis.add(playerSeed);
         playerAnalysis.add(confirmPlayerAnalysis);
         playerAnalysis.setSize(500, 40);
+
+        // Confirm listener
+        confirmPlayerAnalysis.addActionListener(
+                // This creates an anonymous subclass of ActionListener and instantiates it.
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        if (evt.getSource().equals(confirmPlayerAnalysis)) {
+                            System.out.println("Not Implemented Yet");
+                        }
+                    }
+                }
+        );
     }
 
-    public static void createBase() {
+    public void createMutateButton(){
+        JButton mutateButton = new JButton("Upload to Start gg");
+
+        mutateSeeding = new JPanel();
+        mutateSeeding.add(mutateButton);
+        mutateSeeding.setSize(500, 40);
+
+        // Confirm listener
+        mutateButton.addActionListener(
+                // This creates an anonymous subclass of ActionListener and instantiates it.
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        if (evt.getSource().equals(mutateButton)) {
+                            mutateSeedingController.execute();
+                        }
+                    }
+                }
+        );
+    }
+
+    //TEMPORARY SUCCESS STATE
+    public void createSuccessFrame(){
+        JFrame successView = new JFrame();
+        JLabel success = new JLabel("The seeds were successfully mutated on Start gg!");
+        JPanel mainPanel = new JPanel();
+        mainPanel.add(success);
+        frame.setSize(500, 400);
+        frame.setContentPane(mainPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
+    public void createBase() {
+        frame.remove(scrollPane);
         JPanel main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
         main.add(dropBox); // Add initialized components to main panel
         main.add(scrollPane);
         main.add(manualSeedingP);
         main.add(playerAnalysis);
+        main.add(mutateSeeding);
 
-        JFrame frame = new JFrame("Seeding View");
         frame.setSize(500, 400);
         frame.setContentPane(main);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == comboBox) {
-            System.out.println(comboBox.getSelectedItem());
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("seedfail")) {
+            System.out.println("Failure");
         }
+        else if (evt.getPropertyName().equals("seedsuccess") || evt.getPropertyName().equals("updatesuccess")) {
+            final SeedingState state = (SeedingState) evt.getNewValue();
+            createPhaseView();
+            createBase();
+        }
+        else if (evt.getPropertyName().equals("mutatefail")) {
+            System.out.println("Failure");
+        }
+        else if (evt.getPropertyName().equals("mutatesuccess")) {
+            createSuccessFrame();
+        }
+        else if (evt.getPropertyName().equals("updatefail")) {
+            System.out.println("Invalid Seed");
+        }
+    }
+
+    public String getViewName() {
+        return viewName;
+    }
+
+    public void setUpdateSeedingController(UpdateSeedingController controller) {
+        this.updateSeedingController = controller;
+    }
+
+    public void setSelectPhaseController(SelectPhaseController controller) {
+        this.selectPhaseController = controller;
+    }
+
+    public void setMutateSeedingController(MutateSeedingController controller) {
+        this.mutateSeedingController = controller;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
     }
 }

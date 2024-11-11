@@ -23,13 +23,13 @@ public class SelectPhasePresenter implements SelectPhaseOutputBoundary {
         final SeedingState seedingState = seedingViewModel.getState();
         final List<Integer> seeding = outputData.getSeeding();
         seedingState.setSeeding(seeding);
-        seedingViewModel.firePropertyChanged();
+        seedingViewModel.firePropertyChanged("seedsuccess");
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
         final SeedingState seedingState = seedingViewModel.getState();
         seedingState.setError(errorMessage);
-        seedingViewModel.firePropertyChanged();
+        seedingViewModel.firePropertyChanged("seedfail");
     }
 }

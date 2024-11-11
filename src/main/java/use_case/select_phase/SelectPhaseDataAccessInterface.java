@@ -20,5 +20,5 @@ public interface SelectPhaseDataAccessInterface {
      * @param phaseID The ID of the phase
      * @return A list of player IDs in seeded order
      */
-    List<Integer> getSeedinginPhase(int phaseID);
+    List<Integer> getSeedingInPhase(int phaseID);
 }

@@ -1,9 +1,6 @@
 package use_case.update_seeding;
 
 import data_access.APIDataAccessObject;
-import use_case.select_phase.SelectPhaseInteractor;
-import use_case.select_phase.SelectPhaseOutputBoundary;
-import use_case.select_phase.SelectPhaseOutputData;
 
 public class UpdateSeedingInteractor implements UpdateSeedingInputBoundary {
     private final APIDataAccessObject dataAccess;
@@ -17,15 +14,24 @@ public class UpdateSeedingInteractor implements UpdateSeedingInputBoundary {
 
     @Override
     public void execute(UpdateSeedingInputData updateSeedingInputData) {
-        int oldSeed = updateSeedingInputData.getOldSeed();
-        int newSeed = updateSeedingInputData.getNewSeed();
+        String oldSeed = updateSeedingInputData.getOldSeed();
+        String newSeed = updateSeedingInputData.getNewSeed();
         int maxSeed = updateSeedingInputData.getMaxSeed();
-
-        if (oldSeed < 0 || newSeed < 0 || oldSeed > maxSeed || newSeed > maxSeed) {
-            updateSeedingPresenter.prepareFailureView("These are not valid seeds.");
+        try{
+            Integer.parseInt(oldSeed);
+            Integer.parseInt(newSeed);
+        }catch (NumberFormatException e){
+            updateSeedingPresenter.prepareFailView("These are not valid seeds.");
+            return;
         }
-
-        UpdateSeedingOutputData s = new UpdateSeedingOutputData(oldSeed, newSeed);
-        updateSeedingPresenter.prepareSuccessView(s);
+        int oldSeedValue = Integer.parseInt(oldSeed);
+        int newSeedValue = Integer.parseInt(newSeed);
+        if (oldSeedValue <= 0 || newSeedValue <= 0 || oldSeedValue > maxSeed || newSeedValue > maxSeed) {
+            updateSeedingPresenter.prepareFailView("These are not valid seeds.");
+            return;
+        }else {
+            UpdateSeedingOutputData s = new UpdateSeedingOutputData(oldSeedValue, newSeedValue);
+            updateSeedingPresenter.prepareSuccessView(s);
+        }
     }
 }

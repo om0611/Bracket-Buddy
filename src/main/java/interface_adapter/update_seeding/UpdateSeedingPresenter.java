@@ -20,13 +20,13 @@ public class UpdateSeedingPresenter implements UpdateSeedingOutputBoundary {
         final int oldSeed = outputData.getOldSeed();
         final int newSeed = outputData.getNewSeed();
         seedingState.moveSeed(oldSeed, newSeed);
-        seedingViewModel.firePropertyChanged();
+        seedingViewModel.firePropertyChanged("updatesuccess");
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
         final SeedingState seedingState = seedingViewModel.getState();
         seedingState.setError(errorMessage);
-        seedingViewModel.firePropertyChanged();
+        seedingViewModel.firePropertyChanged("updatefail");
     }
 }

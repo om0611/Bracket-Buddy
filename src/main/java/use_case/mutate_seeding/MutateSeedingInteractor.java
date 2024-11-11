@@ -15,20 +15,19 @@ public class MutateSeedingInteractor implements MutateSeedingInputBoundary {
 
     @Override
     public void execute(MutateSeedingInputData mutateSeedingInputData) {
-        int phaseID = mutateSeedingInputData.getPhaseID();
         List<Integer> finalSeeds = mutateSeedingInputData.getFinalSeeds();
 
         try {
-            dataAccess.setSeeding(finalSeeds, phaseID);
+            dataAccess.setSeeding(finalSeeds);
             mutateSeedingPresenter.prepareSuccessView();
         } catch (Exception e) {
-            selectPhasePresenter.prepareFailureView("Something went wrong with the API call, try again kiddo.");
+            mutateSeedingPresenter.prepareFailView("Something went wrong with the API call, try again.");
         }
     }
 
     @Override
     public void switchToMainView() {
-        mutateSeedingPresenter.switchToMainView();
+        mutateSeedingPresenter.switchToMainMenuView();
     }
 
 }

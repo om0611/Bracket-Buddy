@@ -7,9 +7,8 @@ public interface MutateSeedingOutputBoundary {
 
     /**
      * Prepares the success view for the Mutate Seeding Use Case.
-     * @param outputData the output data
      */
-    void prepareSuccessView(MutateSeedingOutputData outputData);
+    void prepareSuccessView();
 
     /**
      * Prepares the failure view for the Mutate Seeding Use Case.
