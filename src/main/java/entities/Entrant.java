@@ -4,31 +4,42 @@ package entities;
  * An entity representing an entrant in an event
  */
 public class Entrant {
-    private final String name;
-    private final String sponsor;
-    private final String id;
+    private final String[] names;
+    private final String[] sponsors;
+    private final int id;
+    private final int[] userIDs;
 
     /**
      * Entrant constructor.
-     * @param name Entrant name
-     * @param sponsor Entrant sponsor
+     * @param names Entrant names
+     * @param sponsors Entrant sponsors
      * @param id Entrant ID
      */
-    public Entrant(String name, String sponsor, String id) {
-        this.name = name;
-        this.sponsor = sponsor;
+    public Entrant(String[] names, String[] sponsors, int id, int[] userIDs) {
+        this.names = names;
+        this.sponsors = sponsors;
         this.id = id;
+        this.userIDs = userIDs;
     }
 
-    public String getName() {
-        return name;
+    public String[] getNames() {
+        return names;
     }
 
-    public String getSponsor() {
-        return sponsor;
+    public String[] getSponsors() {
+        return sponsors;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
+    }
+
+    public int[] getUserIDs() {
+        return userIDs;
+    }
+
+    @Override
+    public String toString() {
+        return EventData.idToString(id);
     }
 }

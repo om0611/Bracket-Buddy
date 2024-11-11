@@ -9,8 +9,8 @@ public interface MainDataAccessInterface {
 
     /**
      * Get entrants in a given event.
-     * @param EventID The ID of the event
+     * @param eventID The ID of the event
      * @return A list of entrants
      */
-    Entrant[] getEntrantsInEvent(String EventID);
+    Entrant[] getEntrantsInEvent(int eventID);
 }

@@ -7,35 +7,32 @@ import java.util.Map;
  * An entity representing an event in a tournament.
  */
 public class EventData {
-    private final String eventID;
-    private final String eventName;
-    private final Entrant[] entrants;
-    private final boolean hasCharacters;
-    private Map<String, String> idToName;
+    private static int eventID;
+    private static String eventName;
+    private static Entrant[] entrants;
+    private static boolean hasCharacters;
+    private static Map<Integer, String[]> idToNames;
+    private static Map<Integer, String[]> idToSponsors;
 
-    /**
-     * Constructs event data object.
-     * @param eventID The ID of the event
-     * @param eventName The name of the event
-     * @param entrants The entrants in an event
-     * @param hasCharacters True if an event has characters on start gg
-     */
-    public EventData(String eventID, String eventName, Entrant[] entrants, boolean hasCharacters) {
-        this.eventID = eventID;
-        this.eventName = eventName;
-        this.entrants = entrants;
-        this.hasCharacters = hasCharacters;
+    public static void createEventData(int eID, String eName, Entrant[] es, boolean hCharacters) {
+        eventID = eID;
+        eventName = eName;
+        entrants = es;
+        hasCharacters = hCharacters;
+        generateIDtoNamesAndSponsors();
     }
-
     /**
-     * Creates a map that takes in entrant IDs and returns eantrant names.
+     * Creates maps that take in entrant IDs and returns entrant names and entrant IDs to sponsors.
      */
-    public void generateIDtoName(){
-        Map<String, String> idMap = new HashMap<>();
+    public static void generateIDtoNamesAndSponsors(){
+        Map<Integer, String[]> idMap = new HashMap<>();
+        Map<Integer, String[]> sponsorMap = new HashMap<>();
         for (Entrant entrant : entrants) {
-            idMap.put(entrant.getId(), entrant.getName());
+            idMap.put(entrant.getId(), entrant.getNames());
+            sponsorMap.put(entrant.getId(), entrant.getSponsors());
         }
-        idToName = idMap;
+        idToNames = idMap;
+        idToSponsors = sponsorMap;
     }
 
     /**
@@ -43,23 +40,35 @@ public class EventData {
      * @param id Entrant id
      * @return Entrant name
      */
-    public String idToName(String id){
-        return idToName.get(id);
+    public static String idToString(int id){
+        String currPlayer = idToSponsors.get(id)[0] + " " + idToNames.get(id)[0];
+        String output = currPlayer.trim();
+        String[] names = idToNames.get(id);
+        String[] sponsors = idToSponsors.get(id);
+        for (int i = 1; i < names.length; i++) {
+            currPlayer = sponsors[i] + " " + names[i];
+            output += " / " + currPlayer.trim();
+        }
+        return output;
     }
 
-    public String getEventID() {
+    public static String[] idToNames(int id){
+        return idToNames.get(id);
+    }
+
+    public static int getEventID() {
         return eventID;
     }
 
-    public String getEventName() {
+    public static String getEventName() {
         return eventName;
     }
 
-    public Entrant[] getEntrants() {
+    public static Entrant[] getEntrants() {
         return entrants;
     }
 
-    public boolean hasCharacters() {
+    public static boolean hasCharacters() {
         return hasCharacters;
     }
 }
