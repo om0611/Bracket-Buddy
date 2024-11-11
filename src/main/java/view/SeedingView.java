@@ -25,7 +25,9 @@ public class SeedingView extends JPanel implements ActionListener, PropertyChang
     private UpdateSeedingController updateSeedingController;
     private MutateSeedingController mutateSeedingController;
 
-    JFrame frame = new JFrame("Seeding View");
+    private JFrame frame = new JFrame("Seeding View");
+    private JPanel main;
+    private final JLabel errorField = new JLabel();
     private JComboBox<String> comboBox;
     private JPanel bigList;
     private JPanel dropBox;
@@ -63,6 +65,7 @@ public class SeedingView extends JPanel implements ActionListener, PropertyChang
                     public void actionPerformed(ActionEvent evt) {
                         if (evt.getSource().equals(changePhase)) {
                             String selectedOption = (String) comboBox.getSelectedItem();
+                            mutateSeedingController.execute();
                             selectPhaseController.execute(selectedOption);
                         }
                     }
@@ -208,6 +211,7 @@ public class SeedingView extends JPanel implements ActionListener, PropertyChang
                     public void actionPerformed(ActionEvent evt) {
                         if (evt.getSource().equals(mutateButton)) {
                             mutateSeedingController.execute();
+                            createMutateFrame("The seeding has been successfully mutated on Start gg!");
                         }
                     }
                 }
@@ -215,23 +219,35 @@ public class SeedingView extends JPanel implements ActionListener, PropertyChang
     }
 
     //TEMPORARY SUCCESS STATE
-    public void createSuccessFrame(){
-        JFrame successView = new JFrame();
-        JLabel success = new JLabel("The seeds were successfully mutated on Start gg!");
+    public void createMutateFrame(String output){
+        JFrame mutateView = new JFrame();
+        JLabel message = new JLabel(output);
         JPanel mainPanel = new JPanel();
-        mainPanel.add(success);
+        mainPanel.add(message);
         frame.setSize(500, 400);
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 
+    public void updateSeeds(){
+        errorField.setText("");
+        main.removeAll();
+        main.add(dropBox);
+        main.add(scrollPane);
+        main.add(errorField);
+        main.add(manualSeedingP);
+        main.add(playerAnalysis);
+        main.add(mutateSeeding);
+        frame.setContentPane(main);
+    }
+
     public void createBase() {
-        frame.remove(scrollPane);
-        JPanel main = new JPanel();
+        main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
         main.add(dropBox); // Add initialized components to main panel
         main.add(scrollPane);
+        main.add(errorField);
         main.add(manualSeedingP);
         main.add(playerAnalysis);
         main.add(mutateSeeding);
@@ -244,22 +260,15 @@ public class SeedingView extends JPanel implements ActionListener, PropertyChang
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals("seedfail")) {
-            System.out.println("Failure");
-        }
-        else if (evt.getPropertyName().equals("seedsuccess") || evt.getPropertyName().equals("updatesuccess")) {
-            final SeedingState state = (SeedingState) evt.getNewValue();
-            createPhaseView();
-            createBase();
-        }
-        else if (evt.getPropertyName().equals("mutatefail")) {
-            System.out.println("Failure");
-        }
-        else if (evt.getPropertyName().equals("mutatesuccess")) {
-            createSuccessFrame();
-        }
-        else if (evt.getPropertyName().equals("updatefail")) {
-            System.out.println("Invalid Seed");
+        switch (evt.getPropertyName()) {
+            case "seedfail" -> errorField.setText("Error finding seeds.");
+            case "seedsuccess", "updatesuccess" -> {
+                createPhaseView();
+                updateSeeds();
+            }
+            case "mutatefail" -> errorField.setText("");
+            case "mutatesuccess" -> errorField.setText("");
+            case "updatefail" -> errorField.setText("Invalid seed. Try again.");
         }
     }
 
