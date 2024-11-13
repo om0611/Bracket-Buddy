@@ -92,7 +92,7 @@ public class MainBuilder {
         final UpdateSeedingOutputBoundary updateSeedingOutputBoundary = new UpdateSeedingPresenter(
                 seedingViewModel, viewManagerModel);
         final UpdateSeedingInputBoundary updateSeedingInteractor = new UpdateSeedingInteractor(
-                apiDataAccessObject, updateSeedingOutputBoundary);
+                updateSeedingOutputBoundary);
 
         final UpdateSeedingController controller = new UpdateSeedingController(updateSeedingInteractor,
                 seedingViewModel.getState());
