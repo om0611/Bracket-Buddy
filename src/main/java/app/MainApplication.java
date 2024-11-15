@@ -5,6 +5,7 @@ import entities.Entrant;
 import entities.EventData;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class MainApplication {
     public static void main(String[] args) {
@@ -18,14 +19,17 @@ public class MainApplication {
         // Create Main
         final MainBuilder mainBuilder = new MainBuilder();
         final JFrame application = mainBuilder
+                .addLoginView()
                 .addSeedingView()
                 .addMainView()
+                .addLoginUseCase()
                 .addSelectPhaseUseCase()
                 .addUpdateSeedingUseCase()
                 .addMutateSeedingUseCase()
                 .build();
 
         application.pack();
-        application.setVisible(false);
+        application.setMinimumSize(new Dimension(200, 200));
+        application.setVisible(true);
     }
 }
