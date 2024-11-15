@@ -1,14 +1,13 @@
 package use_case.mutate_seeding;
 
-import data_access.APIDataAccessObject;
 import java.util.List;
 
 public class MutateSeedingInteractor implements MutateSeedingInputBoundary {
 
-    private final APIDataAccessObject dataAccess;
+    private final MutateSeedingDataAccessInterface dataAccess;
     private final MutateSeedingOutputBoundary mutateSeedingPresenter;
 
-    public MutateSeedingInteractor(APIDataAccessObject dataAccess, MutateSeedingOutputBoundary mutateSeedingPresenter) {
+    public MutateSeedingInteractor(MutateSeedingDataAccessInterface dataAccess, MutateSeedingOutputBoundary mutateSeedingPresenter) {
         this.dataAccess = dataAccess;
         this.mutateSeedingPresenter = mutateSeedingPresenter;
     }
