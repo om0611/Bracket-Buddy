@@ -1,7 +1,11 @@
 package app;
 
 import data_access.APIDataAccessObject;
+import data_access.UserDataAccessObject;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.login.LoginController;
+import interface_adapter.login.LoginPresenter;
+import interface_adapter.login.LoginViewModel;
 import interface_adapter.main.MainViewModel;
 import interface_adapter.mutate_seeding.MutateSeedingController;
 import interface_adapter.mutate_seeding.MutateSeedingPresenter;
@@ -10,6 +14,9 @@ import interface_adapter.select_phase.SelectPhasePresenter;
 import interface_adapter.update_seeding.SeedingViewModel;
 import interface_adapter.update_seeding.UpdateSeedingController;
 import interface_adapter.update_seeding.UpdateSeedingPresenter;
+import use_case.login.LoginInputBoundary;
+import use_case.login.LoginInteractor;
+import use_case.login.LoginOutputBoundary;
 import use_case.mutate_seeding.MutateSeedingInputBoundary;
 import use_case.mutate_seeding.MutateSeedingInteractor;
 import use_case.mutate_seeding.MutateSeedingOutputBoundary;
@@ -19,6 +26,7 @@ import use_case.select_phase.SelectPhaseOutputBoundary;
 import use_case.update_seeding.UpdateSeedingInputBoundary;
 import use_case.update_seeding.UpdateSeedingInteractor;
 import use_case.update_seeding.UpdateSeedingOutputBoundary;
+import view.LoginView;
 import view.SeedingView;
 import view.ViewManager;
 
@@ -33,13 +41,27 @@ public class MainBuilder {
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     private final APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
+    private final UserDataAccessObject userDataAccessObject = new UserDataAccessObject();
 
+    private LoginView loginView;
     private SeedingView seedingView;
+    private LoginViewModel loginViewModel;
     private SeedingViewModel seedingViewModel;
     private MainViewModel mainViewModel;
 
     public MainBuilder() {
         cardPanel.setLayout(cardLayout);
+    }
+
+    /**
+     * Adds the Login View to the application.
+     * @return this builder
+     */
+    public MainBuilder addLoginView() {
+        loginViewModel = new LoginViewModel();
+        loginView = new LoginView(loginViewModel);
+        cardPanel.add(loginView, loginView.getViewName());
+        return this;
     }
 
     /**
@@ -65,6 +87,20 @@ public class MainBuilder {
     public MainBuilder addMainView() {
 
         mainViewModel = new MainViewModel();
+        return this;
+    }
+
+    /**
+     * Adds the login use case to the application.
+     * @return this builder
+     */
+    public MainBuilder addLoginUseCase() {
+        final LoginOutputBoundary loginPresenter = new LoginPresenter(
+                loginViewModel, viewManagerModel);
+        final LoginInputBoundary loginInteractor = new LoginInteractor(
+                userDataAccessObject, loginPresenter);
+        final LoginController controller = new LoginController(loginInteractor);
+        loginView.setLoginController(controller);
         return this;
     }
 
@@ -123,10 +159,9 @@ public class MainBuilder {
     public JFrame build() {
         final JFrame application = new JFrame("Start gg Demo");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
         application.add(cardPanel);
 
-        viewManagerModel.setState(seedingView.getViewName());
+        viewManagerModel.setState(loginView.getViewName());
         viewManagerModel.firePropertyChanged();
 
         return application;
