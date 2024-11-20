@@ -60,9 +60,9 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
      * Get all the upcoming tournaments that the current user is organizing.
      */
     @Override
-    public List getTournaments() {
+    public List <Map<Integer, String>> getTournaments() {
         String q = "query getCurrentUser($page: Int!, $perPage: Int!) { currentUser { id " +
-                "tournaments(query: { filter: {upcoming: true} page: $page, perPage: $perPage }) { nodes { id name } } } }";
+                "tournaments(query: { filter: {upcoming: true} page: $page, perPage: $perPage }) { nodes { id name admins { id }} } } }";
 
         String json = "{ \"query\": \"" + q + "\", \"variables\": { \"page\": 1, \"perPage\": 10 } }";
 
@@ -76,16 +76,38 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
                 .post(body)
                 .build();
 
+        JSONObject currUser;
         try {
             Response response = client.newCall(request).execute();
             final JSONObject jsonResponse = new JSONObject(response.body().string());
-            final JSONObject currUser = jsonResponse.getJSONObject("data")
+            currUser = jsonResponse.getJSONObject("data")
                     .getJSONObject("currentUser");
-            System.out.println(currUser.getInt("id"));
-            return currUser.getJSONObject("tournaments").getJSONArray("nodes").toList();
         } catch (IOException | JSONException event) {
             throw new RuntimeException(event);
         }
+
+        int userID = currUser.getInt("id");
+        JSONArray allTournaments = currUser.getJSONObject("tournaments").getJSONArray("nodes");
+
+        // Filter out the tournaments not organized by the user
+        List <Map<Integer, String>> userTournaments = new ArrayList();
+        for (Object tournament: allTournaments) {
+            Object admins = ((JSONObject) tournament).get("admins");
+            if (admins == JSONObject.NULL) {
+                continue;
+            }
+            for (Object admin: (JSONArray) admins) {
+                if ((int) ((JSONObject) admin).get("id") == userID) {
+                    Map<Integer, String> userTournament = new HashMap();
+                    userTournament.put(
+                            (int) ((JSONObject) tournament).get("id"), (String) ((JSONObject) tournament).get("name"));
+                    userTournaments.add(userTournament);
+                    break;
+                }
+            }
+        }
+
+        return userTournaments;
     }
 
     /**
