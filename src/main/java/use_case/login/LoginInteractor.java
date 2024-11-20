@@ -1,5 +1,7 @@
 package use_case.login;
 
+import data_access.APIDataAccessObject;
+
 import java.util.List;
 
 /**
@@ -17,14 +19,15 @@ public class LoginInteractor implements LoginInputBoundary {
 
     @Override
     public void execute() {
-        if (loginDataAccessObject.login()) {
-            List tournaments = loginDataAccessObject.getTournaments();
-            System.out.println(tournaments);        // temporary
-            // create a User entity and store tournaments under it?
-            // make tournament an entity
+        String token = "";
+        try {
+            token = loginDataAccessObject.login();
+            APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
+            apiDataAccessObject.setTOKEN(token);
+            System.out.println(apiDataAccessObject.getTournaments());   // Temporary
             loginPresenter.prepareSuccessView();
         }
-        else {
+        catch(Exception e) {
             loginPresenter.prepareFailView("Failed to login!");
         }
     }

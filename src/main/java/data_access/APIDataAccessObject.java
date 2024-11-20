@@ -1,6 +1,7 @@
 package data_access;
 
 import entities.Entrant;
+import interface_adapter.select_tournament.SelectTournamentDataAccessInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,9 +19,9 @@ import java.io.IOException;
 import java.util.*;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface {
+        MutateSeedingDataAccessInterface, SelectTournamentDataAccessInterface {
 
-    private final String TOKEN = "token";
+    private String TOKEN = "token";
     private final String API_URL = "https://api.start.gg/gql/alpha";
     private Map<Integer, Integer> idToSeedID = new HashMap<>();
     private int initialPhaseID;
@@ -53,6 +54,38 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             throw new RuntimeException(event);
         }
 
+    }
+
+    /**
+     * Get all the upcoming tournaments that the current user is organizing.
+     */
+    @Override
+    public List getTournaments() {
+        String q = "query getCurrentUser($page: Int!, $perPage: Int!) { currentUser { id " +
+                "tournaments(query: { filter: {upcoming: true} page: $page, perPage: $perPage }) { nodes { id name } } } }";
+
+        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"page\": 1, \"perPage\": 10 } }";
+
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+
+        RequestBody body = RequestBody.create(json, mediaType);
+        Request request = new Request.Builder()
+                .url(API_URL)
+                .header("Authorization", "Bearer " + TOKEN)
+                .post(body)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            final JSONObject jsonResponse = new JSONObject(response.body().string());
+            final JSONObject currUser = jsonResponse.getJSONObject("data")
+                    .getJSONObject("currentUser");
+            System.out.println(currUser.getInt("id"));
+            return currUser.getJSONObject("tournaments").getJSONArray("nodes").toList();
+        } catch (IOException | JSONException event) {
+            throw new RuntimeException(event);
+        }
     }
 
     /**
@@ -290,5 +323,13 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         catch (IOException | JSONException event) {
             throw new RuntimeException(event);
         }
+    }
+
+    /**
+     * Set the token as the user's API token
+     * @param TOKEN the user's API token
+     */
+    public void setTOKEN(String TOKEN) {
+        this.TOKEN = TOKEN;
     }
 }

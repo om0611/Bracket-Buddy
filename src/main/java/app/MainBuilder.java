@@ -1,7 +1,7 @@
 package app;
 
 import data_access.APIDataAccessObject;
-import data_access.UserDataAccessObject;
+import data_access.OAuthDataAccessObject;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -41,7 +41,7 @@ public class MainBuilder {
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     private final APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
-    private final UserDataAccessObject userDataAccessObject = new UserDataAccessObject();
+    private final OAuthDataAccessObject OAuthDataAccessObject = new OAuthDataAccessObject();
 
     private LoginView loginView;
     private SeedingView seedingView;
@@ -98,7 +98,7 @@ public class MainBuilder {
         final LoginOutputBoundary loginPresenter = new LoginPresenter(
                 loginViewModel, viewManagerModel);
         final LoginInputBoundary loginInteractor = new LoginInteractor(
-                userDataAccessObject, loginPresenter);
+                OAuthDataAccessObject, loginPresenter);
         final LoginController controller = new LoginController(loginInteractor);
         loginView.setLoginController(controller);
         return this;

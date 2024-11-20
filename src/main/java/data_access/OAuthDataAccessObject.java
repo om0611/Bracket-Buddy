@@ -4,8 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import okhttp3.*;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import use_case.login.LoginDataAccessInterface;
 
@@ -15,11 +13,10 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class UserDataAccessObject implements LoginDataAccessInterface {
+public class OAuthDataAccessObject implements LoginDataAccessInterface {
 
     private final String CLIENT_ID = "client_id";
     private final String CLIENT_SECRET = "client_secret";
@@ -33,24 +30,24 @@ public class UserDataAccessObject implements LoginDataAccessInterface {
     private static final CountDownLatch latch = new CountDownLatch(1);
 
     @Override
-    public boolean login() {
+    public String login() {
         // Get authorization code
         try {
             getAuthCode();
         } catch (URISyntaxException | IOException | InterruptedException e) {
-            return false;
+            throw new RuntimeException(e);
         }
         if (AUTH_CODE == null) {
-            return false;
+            throw new RuntimeException("Auth code is null");
         }
 
         // Get access token
         try {
             getToken();
         } catch (RuntimeException e) {
-            return false;
+            throw new RuntimeException(e);
         }
-        return true;
+        return ACCESS_TOKEN;
     }
 
     private boolean getAuthCode() throws URISyntaxException, IOException, InterruptedException {
@@ -125,36 +122,6 @@ public class UserDataAccessObject implements LoginDataAccessInterface {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List getTournaments() {
-        String q = "query getCurrentUser($page: Int!, $perPage: Int!) { currentUser { name " +
-                "tournaments(query: { page: $page, perPage: $perPage }) { nodes { id name } } } }";
-
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"page\": 1, \"perPage\": 10 } }";
-
-        OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json");
-
-        RequestBody body = RequestBody.create(json, mediaType);
-        Request request = new Request.Builder()
-                .url(API_URL)
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
-                .post(body)
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            final JSONObject jsonResponse = new JSONObject(response.body().string());
-            final JSONObject currUser = jsonResponse.getJSONObject("data")
-                    .getJSONObject("currentUser");
-            System.out.println(currUser.getString("name"));
-            return currUser.getJSONObject("tournaments").getJSONArray("nodes").toList();
-        }
-        catch (IOException | JSONException event) {
-            throw new RuntimeException(event);
         }
     }
 }
