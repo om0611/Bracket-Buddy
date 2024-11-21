@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.csc207courseprojectandroid"
+    namespace = "com.example.csc207courseproject"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.csc207courseprojectandroid"
+        applicationId = "com.example.csc207courseproject"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
