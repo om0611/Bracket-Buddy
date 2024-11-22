@@ -2,6 +2,7 @@ package com.example.csc207courseproject.data_access;
 
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.Entrant;
+import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface {
+        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface {
 
     private final String TOKEN = BuildConfig.token;
     private final String API_URL = "https://api.start.gg/gql/alpha";
@@ -272,5 +273,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         catch (JSONException event) {
             throw new RuntimeException(event);
         }
+    }
+
+    @Override
+    public void reportSet(int setID, int winnerID, List<Map<String, Integer>> gameData) {
+
     }
 }
