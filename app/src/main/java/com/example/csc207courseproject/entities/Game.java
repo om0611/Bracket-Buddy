@@ -1,17 +1,37 @@
 package com.example.csc207courseproject.entities;
 
+
 public class Game {
 
-    private int winnerID;
-    private int gameNumber;
+    private Integer winnerID;
+
     private String player1Character;
     private String player2Character;
 
 
-    public Game(int winnerID, int gameNumber, String player1Character, String player2Character) {
+    public Game() {
+        player1Character = "";
+        player2Character = "";
+    }
+
+    public void report(Integer winnerID, String p1Character, String p2Character) {
         this.winnerID = winnerID;
-        this.gameNumber = gameNumber;
-        this.player1Character = player1Character;
-        this.player2Character = player2Character;
+        this.player1Character = p1Character;
+        this.player2Character = p2Character;
+    }
+
+    public Integer getWinnerID() {
+        return winnerID;
+    }
+    public String getPlayer1Character() {
+        return player1Character;
+    }
+
+    public String getPlayer2Character() {
+        return player2Character;
+    }
+
+    public boolean isReported() {
+        return winnerID != null;
     }
 }
