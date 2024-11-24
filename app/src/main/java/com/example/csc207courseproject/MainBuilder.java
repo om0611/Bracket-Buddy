@@ -46,7 +46,7 @@ public class MainBuilder {
         APIDataAccessObject dao = new APIDataAccessObject();
         int eventID = dao.getEventId(eventLink);
         Entrant[] entrants = dao.getEntrantsInEvent(eventID);
-        EventData.createEventData(eventID, "singles", entrants, false);
+        EventData.createEventData(1, eventID, "singles", entrants, false);
         return this;
     }
     /**

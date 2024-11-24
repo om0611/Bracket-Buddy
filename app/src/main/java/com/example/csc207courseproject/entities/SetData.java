@@ -7,7 +7,7 @@ import java.util.List;
 public class SetData {
 
     private int setID;
-    private int stationNum;
+    private Station station;
     private int firstTo;
     private int p1Wins;
     private int p2Wins;
@@ -15,9 +15,9 @@ public class SetData {
     private Entrant[] players;
 
 
-    public SetData(int setID, int stationNum, Entrant[] players, int firstTo) {
+    public SetData(int setID, Station station, Entrant[] players, int firstTo) {
         this.setID = setID;
-        this.stationNum = stationNum;
+        this.station = station;
         this.players = players;
         this.games = new ArrayList<>();
         this.firstTo = firstTo;
@@ -27,7 +27,7 @@ public class SetData {
 
     public int getSetID() {return setID;}
 
-    public int getStationNum() {return stationNum;}
+    public Station getStation() {return station;}
     public Entrant[] getPlayers() {return players;}
 
     public void addGame() {

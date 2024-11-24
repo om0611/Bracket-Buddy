@@ -1,19 +1,14 @@
 package com.example.csc207courseproject.ui.call;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import com.example.csc207courseproject.interface_adapter.ViewModel;
+import com.example.csc207courseproject.interface_adapter.call_set.CallSetState;
+import com.example.csc207courseproject.interface_adapter.update_seeding.SeedingState;
 
-public class CallViewModel extends ViewModel {
+public class CallViewModel extends ViewModel<CallSetState> {
 
-    private final MutableLiveData<String> mText;
 
     public CallViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("CALL VIEW");
-    }
-
-    public LiveData<String> getText() {
-        return mText;
+        super("callSet");
+        setState(new CallSetState());
     }
 }

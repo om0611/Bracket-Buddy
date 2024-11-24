@@ -6,24 +6,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import com.example.csc207courseproject.databinding.FragmentCallBinding;
+import com.example.csc207courseproject.ui.AppFragment;
 
-public class CallFragment extends Fragment {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class CallFragment extends AppFragment implements PropertyChangeListener {
+
+    private static CallViewModel callViewModel;
 
 private FragmentCallBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
-        CallViewModel callViewModel =
-                new ViewModelProvider(this).get(CallViewModel.class);
+        // callViewModel.addPropertyChangeListener(this);
 
-    binding = FragmentCallBinding.inflate(inflater, container, false);
-    View root = binding.getRoot();
+        binding = FragmentCallBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
 
         final TextView textView = binding.textCall;
-        callViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
@@ -31,5 +33,10 @@ private FragmentCallBinding binding;
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+
     }
 }

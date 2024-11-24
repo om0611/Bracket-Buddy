@@ -1,26 +1,40 @@
 package com.example.csc207courseproject.entities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * An entity representing an event in a tournament.
  */
 public class EventData {
-    private static int eventID;
+    private static int tournamentId;
+    private static int eventId;
     private static String eventName;
     private static Entrant[] entrants;
     private static boolean hasCharacters;
     private static Map<Integer, String[]> idToNames;
     private static Map<Integer, String[]> idToSponsors;
+    private static List<String> possibleTags = new ArrayList<String>();
 
-    public static void createEventData(int eID, String eName, Entrant[] es, boolean hCharacters) {
-        eventID = eID;
+    public static void createEventData(int tourneyId, int eId, String eName, Entrant[] es, boolean hCharacters) {
+        tournamentId = tourneyId;
+        eventId = eId;
         eventName = eName;
         entrants = es;
         hasCharacters = hCharacters;
         generateIDtoNamesAndSponsors();
     }
+
+    /**
+     * Adds the parameter tag to possible tags.
+     * @param tag The new tag
+     */
+    public static void addPossibleTag(String tag) {
+        possibleTags.add(tag);
+    }
+
     /**
      * Creates maps that take in entrant IDs and returns entrant names and entrant IDs to sponsors.
      */
@@ -56,8 +70,8 @@ public class EventData {
         return idToNames.get(id);
     }
 
-    public static int getEventID() {
-        return eventID;
+    public static int getEventId() {
+        return eventId;
     }
 
     public static String getEventName() {
