@@ -16,7 +16,7 @@ public class SeedingState {
     private String error = "";
 
     public String playerIdToString(int playerID) {
-        return EventData.idToString(playerID);
+        return EventData.entrantIdToString(playerID);
     }
     public void setSeeding(List<Integer> newSeeding) {
         seeding = newSeeding;

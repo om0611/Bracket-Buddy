@@ -1,18 +1,19 @@
 package com.example.csc207courseproject.ui.seeding;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import com.example.csc207courseproject.databinding.FragmentSeedingBinding;
+import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.update_seeding.SeedingState;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingController;
+import com.example.csc207courseproject.ui.AppFragment;
 import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeEvent;
@@ -20,19 +21,18 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SeedingFragment extends Fragment implements PropertyChangeListener, AdapterView.OnItemSelectedListener {
+public class SeedingFragment extends AppFragment implements PropertyChangeListener, AdapterView.OnItemSelectedListener {
 
     private static SeedingViewModel seedingViewModel;
     private static SelectPhaseController selectPhaseController;
     private static UpdateSeedingController updateSeedingController;
     private static MutateSeedingController mutateSeedingController;
-    private FragmentSeedingBinding binding;
-    private Context mContext;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
         seedingViewModel.addPropertyChangeListener(this);
+        seedingViewModel.getState().setPhases(EventData.getPhaseIds());
 
         binding = FragmentSeedingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -135,16 +135,5 @@ public class SeedingFragment extends Fragment implements PropertyChangeListener,
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
-    }
-
-    @Override
-    public void onAttach(@NotNull Context context) {
-        super.onAttach(context);
-        mContext = context;
-    }
-
-
-    private void showToast(String message) {
-        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
 }

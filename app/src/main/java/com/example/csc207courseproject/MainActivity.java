@@ -16,11 +16,21 @@ private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         final MainBuilder mainBuilder = new MainBuilder();
+        // Build app
+        mainBuilder.createEventData()
+                .addSeedingView()
+                .addMutateSeedingUseCase()
+                .addUpdateSeedingUseCase()
+                .addSelectPhaseUseCase()
+                .addCallView();
+
+        super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -29,8 +39,6 @@ private ActivityMainBinding binding;
                 R.id.nav_call, R.id.nav_report, R.id.nav_finance, R.id.nav_analysis)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        // Set seeding view args
-        mainBuilder.createEventData().addSeedingView().addMutateSeedingUseCase().addUpdateSeedingUseCase().addSelectPhaseUseCase();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
