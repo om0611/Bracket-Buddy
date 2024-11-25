@@ -1,13 +1,15 @@
 package com.example.csc207courseproject.entities;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SetData {
 
     private int setID;
-    private int stationNum;
+    private Station station;
     private int firstTo;
     private int p1Wins;
     private int p2Wins;
@@ -15,9 +17,8 @@ public class SetData {
     private Entrant[] players;
 
 
-    public SetData(int setID, int stationNum, Entrant[] players, int firstTo) {
+    public SetData(int setID, Entrant[] players, int firstTo) {
         this.setID = setID;
-        this.stationNum = stationNum;
         this.players = players;
         this.games = new ArrayList<>();
         this.firstTo = firstTo;
@@ -27,7 +28,7 @@ public class SetData {
 
     public int getSetID() {return setID;}
 
-    public int getStationNum() {return stationNum;}
+    public Station getStation() {return station;}
     public Entrant[] getPlayers() {return players;}
 
     public void addGame() {
@@ -47,5 +48,11 @@ public class SetData {
     }
 
     public Game getGame(int gameNumber) { return games.get(gameNumber - 1);}
+
+    @NotNull
+    @Override
+    public String toString() {
+        return players[0].toString() + " vs. " + players[1].toString();
+    }
 
 }

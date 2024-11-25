@@ -1,8 +1,10 @@
 package com.example.csc207courseproject.data_access;
 
+import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.*;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
+import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsDataAccessInterface;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -17,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface {
+        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface {
 
     private final String TOKEN = BuildConfig.token;
     private final String API_URL = "https://api.start.gg/gql/alpha";
@@ -61,6 +63,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         });
         try {
             countDownLatch.await();
+            Log.d("ERROR", jsonResponse.toString());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -98,7 +101,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         // Create query
         String q = "query EventEntrants($eventId: ID!, $page: Int!, $perPage: Int!) {event(id: $eventId)" +
                 "{entrants(query: {page: $page perPage: $perPage}) { pageInfo{total totalPages}" +
-                "nodes {id participants {id prefix gamerTag user {id}}}}}}";
+              "nodes {id participants {id prefix gamerTag user {id}}}}}}";
         String json = "{ \"query\": \"" + q + "\", \"variables\": { \"eventId\": \"" + eventID + "\", \"page\": 1, \"perPage\": 64}}";
 
         sendRequest(json);
@@ -435,7 +438,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
                     "      page: $page" +
                     "      perPage: $perPage" +
                     "      sortType: CALL_ORDER" +
-                    "      filters: {state: [1]}" +
+                    "      filters: {state: [1], hideEmpty: true}" +
                     "    ) {" +
                     "      pageInfo {" +
                     "        total" +
@@ -480,6 +483,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             List<SetData> sets = new ArrayList<>();
 
             for (int i = 0; i < jsonSets.length(); i++) {
+                boolean partipantNull = false;
                 int setID = jsonSets.getJSONObject(i).getInt("id");
                 int bestOf = jsonSets.getJSONObject(i).getInt("totalGames");
 
@@ -488,13 +492,19 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
 
                 //Store the players in Entrant Objects and exporting that
                 for (int j = 0; j < slots.length(); j++) {
-                    int newId = slots.getJSONObject(i).getInt("id");
-                    players[i] = EventData.getEntrant(newId);
+                    try {
+                        int newId = slots.getJSONObject(j).getJSONObject("entrant").getInt("id");
+                        players[j] = EventData.getEntrant(newId);
+                    }
+                    catch (JSONException event) {
+                        partipantNull = true;
+                    }
                 }
+                if (!partipantNull) {
+                    SetData newSet = new SetData(setID, players, bestOf);
 
-                SetData newSet = new SetData(setID, players, bestOf);
-
-                sets.add(newSet);
+                    sets.add(newSet);
+                }
             }
             return sets;
         }
@@ -503,5 +513,4 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         }
 
     }
-
 }

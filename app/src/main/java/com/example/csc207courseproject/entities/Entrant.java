@@ -1,45 +1,38 @@
 package com.example.csc207courseproject.entities;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * An entity representing an entrant in an event
  */
 public class Entrant {
-    private final String[] names;
-    private final String[] sponsors;
-    private final int id;
-    private final int[] userIDs;
+    private final Participant[] participants;
+    private final int entrantId;
 
     /**
      * Entrant constructor.
-     * @param names Entrant names
-     * @param sponsors Entrant sponsors
-     * @param id Entrant ID
+     * @param participants Participants
+     * @param entrantId Entrant ID
      */
-    public Entrant(String[] names, String[] sponsors, int id, int[] userIDs) {
-        this.names = names;
-        this.sponsors = sponsors;
-        this.id = id;
-        this.userIDs = userIDs;
+    public Entrant(Participant[] participants, int entrantId) {
+        this.participants = participants;
+        this.entrantId = entrantId;
     }
 
-    public String[] getNames() {
-        return names;
-    }
-
-    public String[] getSponsors() {
-        return sponsors;
-    }
 
     public int getId() {
-        return id;
+        return entrantId;
     }
 
-    public int[] getUserIDs() {
-        return userIDs;
-    }
-
+    @NotNull
     @Override
     public String toString() {
-        return EventData.idToString(id);
+        String currPlayer = participants[0].toString();
+        String output = currPlayer.trim();
+        for (int i = 1; i < participants.length; i++) {
+            currPlayer = participants[i].toString();
+            output += " / " + currPlayer.trim();
+        }
+        return output;
     }
 }

@@ -4,6 +4,7 @@ import com.example.csc207courseproject.data_access.APIDataAccessObject;
 import com.example.csc207courseproject.data_access.UserDataAccessObject;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
+import com.example.csc207courseproject.entities.Participant;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
 import com.example.csc207courseproject.interface_adapter.login.LoginViewModel;
 import com.example.csc207courseproject.interface_adapter.main.MainViewModel;
@@ -11,21 +12,31 @@ import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSe
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingPresenter;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhasePresenter;
+import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
+import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsPresenter;
+import com.example.csc207courseproject.ui.call.CallViewModel;
+import com.example.csc207courseproject.ui.report.ReportFragment;
+import com.example.csc207courseproject.ui.report.ReportViewModel;
 import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingController;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingPresenter;
 import com.example.csc207courseproject.ui.seeding.SeedingFragment;
+import com.example.csc207courseproject.ui.call.CallFragment;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInteractor;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInteractor;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseOutputBoundary;
+import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsInputBoundary;
+import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsInteractor;
+import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsOutputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInteractor;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingOutputBoundary;
 import com.example.csc207courseproject.view.ViewManager;
 
+import java.util.Map;
 import java.util.SortedMap;
 
 public class MainBuilder {
@@ -38,6 +49,8 @@ public class MainBuilder {
     private LoginViewModel loginViewModel;
     private SeedingViewModel seedingViewModel;
     private MainViewModel mainViewModel;
+    private CallViewModel callViewModel;
+    private ReportViewModel reportViewModel;
 
     // MOVE THIS TO EVENT SELECT VIEW INTERACTOR
     public MainBuilder createEventData(){
@@ -45,8 +58,10 @@ public class MainBuilder {
         String eventLink = "tournament/skipping-classes-world-championship-start-gg-api-test/event/1v1-lecture-skipping-bracket";
         APIDataAccessObject dao = new APIDataAccessObject();
         int eventID = dao.getEventId(eventLink);
-        Entrant[] entrants = dao.getEntrantsInEvent(eventID);
-        EventData.createEventData(eventID, "singles", entrants, false);
+        Object[] entrants = dao.getEntrantsandParticipantsInEvent(eventID);
+        SortedMap<String, Integer> phaseIds = apiDataAccessObject.getPhaseIDs(eventID);
+        EventData.createEventData(1, eventID, "singles", (Map<Integer, Entrant>) entrants[0],
+                (Map<Integer, Participant>) entrants[1], false, phaseIds);
         return this;
     }
     /**
@@ -54,16 +69,48 @@ public class MainBuilder {
      * @return this builder
      */
     public MainBuilder addSeedingView() {
-        // TEMPORARY FIX
+        seedingViewModel = new SeedingViewModel();
+        SeedingFragment.setSeedingViewModel(seedingViewModel);
+        return this;
+    }
 
-        String eventLink = "tournament/skipping-classes-world-championship-start-gg-api-test/event/1v1-lecture-skipping-bracket";
-        int eventID = apiDataAccessObject.getEventId(eventLink);
-        SortedMap<String, Integer> phaseIds = apiDataAccessObject.getPhaseIDs(eventID);
+    /**
+     * Adds the Call Set View to the application.
+     * @return this builder
+     */
+    public MainBuilder addCallView() {
 
         // Set seeding view args
-        seedingViewModel = new SeedingViewModel();
-        seedingViewModel.getState().setPhases(phaseIds);
-        SeedingFragment.setSeedingViewModel(seedingViewModel);
+        callViewModel = new CallViewModel();
+        CallFragment.setCallViewModel(callViewModel);
+        return this;
+    }
+
+    /**
+     * Adds the Report Set View to the application.
+     * @return this builder
+     */
+    public MainBuilder addReportView() {
+
+        // Set report view args
+        reportViewModel = new ReportViewModel();
+        ReportFragment.setReportViewModel(reportViewModel);
+        return this;
+    }
+
+    /**
+     * Adds the upcoming sets Use Case to the application.
+     * @return this builder
+     */
+    public MainBuilder addUpcomingSetsUseCase() {
+        final UpcomingSetsOutputBoundary upcomingSetsOutputBoundary = new UpcomingSetsPresenter(
+                callViewModel, viewManagerModel);
+        final UpcomingSetsInputBoundary upcomingSetsInteractor = new UpcomingSetsInteractor(
+                apiDataAccessObject, upcomingSetsOutputBoundary);
+
+        final UpcomingSetsController controller = new UpcomingSetsController(upcomingSetsInteractor,
+                callViewModel.getState());
+        CallFragment.setUpcomingSetsController(controller);
         return this;
     }
 

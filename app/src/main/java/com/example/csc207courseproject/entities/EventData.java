@@ -1,38 +1,37 @@
 package com.example.csc207courseproject.entities;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * An entity representing an event in a tournament.
  */
 public class EventData {
-    private static int eventID;
+    private static int tournamentId;
+    private static int eventId;
     private static String eventName;
-    private static Entrant[] entrants;
+    private static Map<Integer, Entrant> entrants;
+    private static Map<Integer, Participant> participants;
     private static boolean hasCharacters;
-    private static Map<Integer, String[]> idToNames;
-    private static Map<Integer, String[]> idToSponsors;
+    private static SortedMap<String, Integer> phaseIds;
+    private static List<String> possibleTags = new ArrayList<>();
 
-    public static void createEventData(int eID, String eName, Entrant[] es, boolean hCharacters) {
-        eventID = eID;
+    public static void createEventData(int tourneyId, int eId, String eName, Map<Integer, Entrant> es, Map<Integer,
+                                        Participant> ps, boolean hCharacters, SortedMap<String, Integer> phases) {
+        tournamentId = tourneyId;
+        eventId = eId;
         eventName = eName;
         entrants = es;
+        participants = ps;
         hasCharacters = hCharacters;
-        generateIDtoNamesAndSponsors();
+        phaseIds = phases;
     }
+
     /**
-     * Creates maps that take in entrant IDs and returns entrant names and entrant IDs to sponsors.
+     * Adds the parameter tag to possible tags.
+     * @param tag The new tag
      */
-    public static void generateIDtoNamesAndSponsors(){
-        Map<Integer, String[]> idMap = new HashMap<>();
-        Map<Integer, String[]> sponsorMap = new HashMap<>();
-        for (Entrant entrant : entrants) {
-            idMap.put(entrant.getId(), entrant.getNames());
-            sponsorMap.put(entrant.getId(), entrant.getSponsors());
-        }
-        idToNames = idMap;
-        idToSponsors = sponsorMap;
+    public static void addPossibleTag(String tag) {
+        possibleTags.add(tag);
     }
 
     /**
@@ -40,33 +39,54 @@ public class EventData {
      * @param id Entrant id
      * @return Entrant name
      */
-    public static String idToString(int id){
-        String currPlayer = idToSponsors.get(id)[0] + " " + idToNames.get(id)[0];
-        String output = currPlayer.trim();
-        String[] names = idToNames.get(id);
-        String[] sponsors = idToSponsors.get(id);
-        for (int i = 1; i < names.length; i++) {
-            currPlayer = sponsors[i] + " " + names[i];
-            output += " / " + currPlayer.trim();
-        }
-        return output;
+    public static String entrantIdToString(int id){
+        return entrants.get(id).toString();
     }
 
-    public static String[] idToNames(int id){
-        return idToNames.get(id);
+    /**
+     * Gets the entrant from the corresponding id.
+     * @param id The entrant id
+     * @return The entrant
+     */
+    public static Entrant getEntrant(int id) {
+        return entrants.get(id);
     }
 
-    public static int getEventID() {
-        return eventID;
+    /**
+     * Gets the participant from the corresponding id.
+     * @param id The participant id
+     * @return The participant
+     */
+    public static Participant getParticipant(int id) {
+        return participants.get(id);
+    }
+
+    /**
+     * Converts a participant id to their name.
+     * @param id Participant id
+     * @return Participant name
+     */
+    public static String participantIdToString(int id){
+        return participants.get(id).toString();
+    }
+
+    public static SortedMap<String, Integer> getPhaseIds() {
+        return phaseIds;
+    }
+
+    public static int getEventId() {
+        return eventId;
     }
 
     public static String getEventName() {
         return eventName;
     }
 
-    public static Entrant[] getEntrants() {
+    public static Map<Integer, Entrant> getEntrants() {
         return entrants;
     }
+
+    public static Map<Integer, Participant> getParticipants() {return participants;}
 
     public static boolean hasCharacters() {
         return hasCharacters;
