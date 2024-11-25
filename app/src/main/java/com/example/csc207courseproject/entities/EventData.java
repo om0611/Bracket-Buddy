@@ -44,6 +44,24 @@ public class EventData {
     }
 
     /**
+     * Gets the entrant from the corresponding id.
+     * @param id The entrant id
+     * @return The entrant
+     */
+    public static Entrant getEntrant(int id) {
+        return entrants.get(id);
+    }
+
+    /**
+     * Gets the participant from the corresponding id.
+     * @param id The participant id
+     * @return The participant
+     */
+    public static Participant getParticipant(int id) {
+        return participants.get(id);
+    }
+
+    /**
      * Converts a participant id to their name.
      * @param id Participant id
      * @return Participant name

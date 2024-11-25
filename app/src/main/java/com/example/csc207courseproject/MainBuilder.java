@@ -13,6 +13,8 @@ import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSe
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhasePresenter;
 import com.example.csc207courseproject.ui.call.CallViewModel;
+import com.example.csc207courseproject.ui.report.ReportFragment;
+import com.example.csc207courseproject.ui.report.ReportViewModel;
 import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingController;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingPresenter;
@@ -43,6 +45,7 @@ public class MainBuilder {
     private SeedingViewModel seedingViewModel;
     private MainViewModel mainViewModel;
     private CallViewModel callViewModel;
+    private ReportViewModel reportViewModel;
 
     // MOVE THIS TO EVENT SELECT VIEW INTERACTOR
     public MainBuilder createEventData(){
@@ -75,6 +78,18 @@ public class MainBuilder {
         // Set seeding view args
         callViewModel = new CallViewModel();
         CallFragment.setCallViewModel(callViewModel);
+        return this;
+    }
+
+    /**
+     * Adds the Report Set View to the application.
+     * @return this builder
+     */
+    public MainBuilder addReportView() {
+
+        // Set report view args
+        reportViewModel = new ReportViewModel();
+        ReportFragment.setReportViewModel(reportViewModel);
         return this;
     }
 

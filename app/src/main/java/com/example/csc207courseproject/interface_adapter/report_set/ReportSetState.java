@@ -7,13 +7,16 @@ public class ReportSetState {
 
     private SetData currentSet;
     private boolean setOver;
+    private int selectedSetIndex;
 
-    public ReportSetState(SetData currentSet) {
-        this.currentSet = currentSet;
-        this.setOver = false;
-    }
     public SetData getSetData() {return currentSet;}
     public boolean getSetOver() {return setOver;}
+
+    public void setSelectedSetIndex(int selectedSetIndex) {
+        this.selectedSetIndex = selectedSetIndex;
+    }
+
+    public int getSelectedSetIndex() {return selectedSetIndex;}
 
     // Reports the game into the game object, updates the player count scores, and checks if the set is done
     public void reportGame(int gameNumber, int winnerID, String p1Char, String p2Char, boolean p1Won) {

@@ -19,6 +19,7 @@ public class UpcomingSetsPresenter implements UpcomingSetsOutputBoundary {
     @Override
     public void prepareSuccessView(UpcomingSetsOutputData outputData) {
         final CallSetState setState = viewModel.getState();
+        setState.setUpcomingSets(outputData.getUpcomingSets());
         viewModel.firePropertyChanged("getsetssuccess");
     }
 

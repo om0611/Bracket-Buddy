@@ -16,7 +16,7 @@ public class UpcomingSetsController {
     /**
      * Execute the report game use case
      */
-    public void execute(String selectedPhase) {
+    public void execute() {
         upcomingSetsUseCaseInteractor.execute();
 
     }

@@ -10,8 +10,20 @@ public class CallSetState {
         private List<Station> stations;
         private List<SetData> upcomingSets;
         private boolean setOver;
+        private int selectedSetIndex;
 
         public SetData getCurrentSet() {return currentSet;}
+
+        public void setUpcomingSets(List<SetData> upcomingSets) {
+                this.upcomingSets = upcomingSets;
+        }
+
+        public void setSelectedSetIndex(int selectedSetIndex) {
+                this.selectedSetIndex = selectedSetIndex;
+        }
+
+        public int getSelectedSetIndex() {return selectedSetIndex;}
+
         public List<SetData> getUpcomingSets() {
                 return upcomingSets;
         }

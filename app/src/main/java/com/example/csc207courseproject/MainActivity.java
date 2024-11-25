@@ -23,7 +23,8 @@ private ActivityMainBinding binding;
                 .addMutateSeedingUseCase()
                 .addUpdateSeedingUseCase()
                 .addSelectPhaseUseCase()
-                .addCallView();
+                .addCallView()
+                .addReportView();
 
         super.onCreate(savedInstanceState);
 

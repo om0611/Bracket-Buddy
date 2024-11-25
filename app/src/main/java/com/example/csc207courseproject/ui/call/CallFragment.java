@@ -1,21 +1,20 @@
 package com.example.csc207courseproject.ui.call;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import com.example.csc207courseproject.R;
 import com.example.csc207courseproject.databinding.FragmentCallBinding;
-import com.example.csc207courseproject.entities.SetData;
 import com.example.csc207courseproject.interface_adapter.call_set.CallSetState;
-import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingController;
-import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
-import com.example.csc207courseproject.interface_adapter.update_seeding.SeedingState;
-import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingController;
+import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.ui.AppFragment;
-import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -25,8 +24,10 @@ import java.util.List;
 public class CallFragment extends AppFragment implements PropertyChangeListener {
 
     private static CallViewModel callViewModel;
+    private static UpcomingSetsController upcomingSetsController;
+    private NavController navc;
 
-private FragmentCallBinding binding;
+    private FragmentCallBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
@@ -35,9 +36,19 @@ private FragmentCallBinding binding;
         binding = FragmentCallBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        // upcomingSetsController.execute();
+
         createDisplay();
 
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        CallSetFragment.setCallViewModel(callViewModel);
+        navc = Navigation.findNavController(view);
     }
 
     //TEST CODE DELETE LATER
@@ -45,18 +56,20 @@ private FragmentCallBinding binding;
         CallSetState currentState = callViewModel.getState();
         List<String> setDisplay = new ArrayList<>();
         ListView setsView = binding.upcomingSets;
-        List<SetData> sets = currentState.getUpcomingSets();
-        if(sets != null) {
-            for (int i = 0; i < sets.size(); i++) {
-                setDisplay.add((i + 1) + ". " + sets.get(i).toString());
+        //List<SetData> sets = currentState.getUpcomingSets();
+        //if(sets != null) {
+            for (int i = 0; i < 10; i++) {
+                // setDisplay.add((i + 1) + ". " + sets.get(i).toString());
+                setDisplay.add(String.valueOf(i) + "Gamer vs. Q");
             }
-        }
+        //}
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);
         setsView.setAdapter(itemsAdapter);
         setsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> list, View view, int position, long id) {
-                showToast(setDisplay.get(position));
+                callViewModel.getState().setSelectedSetIndex(position);
+                navc.navigate(R.id.action_nav_call_to_callSetFragment);
 
             }
 
@@ -74,9 +87,9 @@ private FragmentCallBinding binding;
 
     }
 
-//    public static void setUpdateSeedingController(UpdateSeedingController controller) {
-//        updateSeedingController = controller;
-//    }
+    public static void setUpcomingSetsController(UpcomingSetsController controller) {
+        upcomingSetsController = controller;
+    }
 //
 //    public static void setSelectPhaseController(SelectPhaseController controller) {
 //        selectPhaseController = controller;
