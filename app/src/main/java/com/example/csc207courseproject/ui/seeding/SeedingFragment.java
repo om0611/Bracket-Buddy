@@ -1,13 +1,14 @@
 package com.example.csc207courseproject.ui.seeding;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import com.example.csc207courseproject.databinding.FragmentSeedingBinding;
+import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.update_seeding.SeedingState;
@@ -31,6 +32,7 @@ public class SeedingFragment extends AppFragment implements PropertyChangeListen
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
         seedingViewModel.addPropertyChangeListener(this);
+        seedingViewModel.getState().setPhases(EventData.getPhaseIds());
 
         binding = FragmentSeedingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();

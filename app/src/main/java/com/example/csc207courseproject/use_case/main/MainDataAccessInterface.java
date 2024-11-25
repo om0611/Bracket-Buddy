@@ -10,7 +10,7 @@ public interface MainDataAccessInterface {
     /**
      * Get entrants in a given event.
      * @param eventID The ID of the event
-     * @return A list of entrants
+     * @return Maps of entrants and participants (entrants at 0 and participants at 1)
      */
-    Entrant[] getEntrantsInEvent(int eventID);
+    public Object[] getEntrantsandParticipantsInEvent(int eventID);
 }

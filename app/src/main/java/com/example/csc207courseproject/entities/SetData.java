@@ -1,6 +1,8 @@
 package com.example.csc207courseproject.entities;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,5 +49,11 @@ public class SetData {
     }
 
     public Game getGame(int gameNumber) { return games.get(gameNumber - 1);}
+
+    @NotNull
+    @Override
+    public String toString() {
+        return players[0].toString() + " vs. " + players[1].toString();
+    }
 
 }

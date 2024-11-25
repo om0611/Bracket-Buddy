@@ -1,7 +1,9 @@
 package com.example.csc207courseproject.data_access;
 
+import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.Entrant;
+import com.example.csc207courseproject.entities.Participant;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
@@ -91,14 +93,14 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
     /**
      * Gets all entrants at an event using the start gg api.
      * @param eventID The ID of the event
-     * @return A list of all entrants as entrant objects
+     * @return Maps of entrants and participants (entrants at 0 and participants at 1)
      */
     @Override
-    public Entrant[] getEntrantsInEvent(int eventID) {
+    public Object[] getEntrantsandParticipantsInEvent(int eventID) {
         // Create query
         String q = "query EventEntrants($eventId: ID!, $page: Int!, $perPage: Int!) {event(id: $eventId)" +
                 "{entrants(query: {page: $page perPage: $perPage}) { pageInfo{total totalPages}" +
-              "nodes {id participants {id prefix gamerTag}}}}}";
+              "nodes {id participants {id prefix gamerTag user {id}}}}}}";
         String json = "{ \"query\": \"" + q + "\", \"variables\": { \"eventId\": \"" + eventID + "\", \"page\": 1, \"perPage\": 64}}";
 
         sendRequest(json);
@@ -107,32 +109,44 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
                     .getJSONObject("entrants").getJSONArray("nodes");
             jsonResponse = null;
 
-            // Create entrants array and fill it in
-            Entrant[] entrants = new Entrant[jsonEntrants.length()];
+            // Create entrants and participants maps and fill it in
+            Map<Integer, Entrant> entrantsMap = new HashMap<>();
+            Map<Integer, Participant> participantsMap = new HashMap<>();
 
             for (int i = 0; i < jsonEntrants.length(); i++) {
                 JSONObject entrantObject = jsonEntrants.getJSONObject(i);
                 JSONArray jsonParticipants = entrantObject.getJSONArray("participants");
-                int id = entrantObject.getInt("id");
+                int entrantId = entrantObject.getInt("id");
+
+                Participant[] participants = new Participant[jsonParticipants.length()];
 
                 // Fill in the names and user ids for each player on a team
-                int[] userIDs = new int[jsonParticipants.length()];
-                String[] names = new String[jsonParticipants.length()];
-                String[] sponsors = new String[jsonParticipants.length()];
                 for (int j = 0; j < jsonParticipants.length(); j++) {
-                    userIDs[j] = jsonParticipants.getJSONObject(j).getInt("id");
-                    names[j] = jsonParticipants.getJSONObject(j).getString("gamerTag");
-
-                    // Ensure sponsor isn't null
-                    if (jsonParticipants.getJSONObject(j).get("prefix").equals(null)){
-                        sponsors[j] = "";
-                    } else {
-                        sponsors[j] = jsonParticipants.getJSONObject(j).getString("prefix");
+                    int participantId = jsonParticipants.getJSONObject(j).getInt("id");
+                    String participantName = jsonParticipants.getJSONObject(j).getString("gamerTag");
+                    int userId;
+                    // Ensure user isn't null
+                    try {
+                        userId = jsonParticipants.getJSONObject(j).getJSONObject("user").getInt("id");
                     }
+                    catch(JSONException e) {
+                        userId = -1;
+                    }
+                    String participantSponsor = "";
+
+                    // Ensure sponsor isn't null string
+                    if (!jsonParticipants.getJSONObject(j).getString("prefix").equals("null")){
+                        participantSponsor = jsonParticipants.getJSONObject(j).getString("prefix");
+                    }
+                    Participant participant = new Participant(participantId, userId, participantName, participantSponsor);
+                    participantsMap.put(participantId, participant);
+                    participants[j] = participant;
                 }
-                entrants[i] = new Entrant(names, sponsors, id, userIDs);
+
+                Entrant entrant = new Entrant(participants, entrantId);
+                entrantsMap.put(entrantId, entrant);
             }
-            return entrants;
+            return new Object[]{entrantsMap, participantsMap};
         }
         catch (JSONException event) {
             throw new RuntimeException(event);

@@ -12,6 +12,9 @@ public class CallSetState {
         private boolean setOver;
 
         public SetData getCurrentSet() {return currentSet;}
+        public List<SetData> getUpcomingSets() {
+                return upcomingSets;
+        }
 
 
 }
