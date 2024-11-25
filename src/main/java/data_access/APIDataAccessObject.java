@@ -1,7 +1,7 @@
 package data_access;
 
 import entities.Entrant;
-import interface_adapter.select_tournament.SelectTournamentDataAccessInterface;
+import use_case.select_tournament.SelectTournamentDataAccessInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
