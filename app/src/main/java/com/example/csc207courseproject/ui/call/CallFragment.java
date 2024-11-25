@@ -1,6 +1,7 @@
 package com.example.csc207courseproject.ui.call;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import com.example.csc207courseproject.R;
 import com.example.csc207courseproject.databinding.FragmentCallBinding;
+import com.example.csc207courseproject.entities.SetData;
 import com.example.csc207courseproject.interface_adapter.call_set.CallSetState;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.ui.AppFragment;
@@ -36,9 +38,7 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         binding = FragmentCallBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // upcomingSetsController.execute();
-
-        createDisplay();
+        upcomingSetsController.execute();
 
         return root;
     }
@@ -56,22 +56,17 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         CallSetState currentState = callViewModel.getState();
         List<String> setDisplay = new ArrayList<>();
         ListView setsView = binding.upcomingSets;
-        //List<SetData> sets = currentState.getUpcomingSets();
-        //if(sets != null) {
-            for (int i = 0; i < 10; i++) {
-                // setDisplay.add((i + 1) + ". " + sets.get(i).toString());
-                setDisplay.add(String.valueOf(i) + "Gamer vs. Q");
+        List<SetData> sets = currentState.getUpcomingSets();
+        if(sets != null) {
+            for (int i = 0; i < sets.size(); i++) {
+                setDisplay.add(sets.get(i).toString());
             }
-        //}
+        }
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);
         setsView.setAdapter(itemsAdapter);
-        setsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> list, View view, int position, long id) {
-                callViewModel.getState().setSelectedSetIndex(position);
-                navc.navigate(R.id.action_nav_call_to_callSetFragment);
-
-            }
+        setsView.setOnItemClickListener((list, view, position, id) -> {
+            callViewModel.getState().setSelectedSetIndex(position);
+            navc.navigate(R.id.action_nav_call_to_callSetFragment);
 
         });
     }
@@ -83,8 +78,11 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "getsetssuccess": createDisplay(); break;
+            case "getsetsfail": break;
+        }
     }
 
     public static void setUpcomingSetsController(UpcomingSetsController controller) {

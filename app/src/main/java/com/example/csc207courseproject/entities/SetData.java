@@ -17,9 +17,8 @@ public class SetData {
     private Entrant[] players;
 
 
-    public SetData(int setID, Station station, Entrant[] players, int firstTo) {
+    public SetData(int setID, Entrant[] players, int firstTo) {
         this.setID = setID;
-        this.station = station;
         this.players = players;
         this.games = new ArrayList<>();
         this.firstTo = firstTo;

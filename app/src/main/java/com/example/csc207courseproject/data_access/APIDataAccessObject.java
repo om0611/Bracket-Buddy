@@ -2,9 +2,9 @@ package com.example.csc207courseproject.data_access;
 
 import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
-import com.example.csc207courseproject.entities.Entrant;
-import com.example.csc207courseproject.entities.Participant;
+import com.example.csc207courseproject.entities.*;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
+import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsDataAccessInterface;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface {
+        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface {
 
     private final String TOKEN = BuildConfig.token;
     private final String API_URL = "https://api.start.gg/gql/alpha";
@@ -63,6 +63,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         });
         try {
             countDownLatch.await();
+            Log.d("ERROR", jsonResponse.toString());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -290,7 +291,226 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
     }
 
     @Override
-    public void reportSet(int setID, int winnerID, List<Map<String, Integer>> gameData) {
+    public void reportSet(int setID, int winnerId, List<Game> games, boolean hasDQ) {
+        //IMPLEMENT THIS SO THAT IT CONVERTS THE GAME DATA INTO A json ARRAY FOR THE API CALL
+
+        try {
+
+            // Initialize and add the parameters that don't need data manipulation
+
+            JSONObject json = new JSONObject();
+            JSONObject variables = new JSONObject();
+            variables.put("setId", setID);
+            variables.put("winnerId", winnerId);
+            variables.put("isDQ", hasDQ);
+
+            String q;
+
+            if (hasDQ) {
+                // Create query without gameData parameter, as there is no game data due to the DQ
+                q = "mutation reportSet($setId: ID!, $winnerId: ID!, $isDQ: Boolean) {" +
+                        "reportBracketSet(setId: $setId, winnerId: $winnerId, isDQ: $isDQ)";
+            } else {
+                // Create the JSON object for the game data
+                JSONArray gameData = new JSONArray();
+
+                for(int i = 0; i < games.size(); i++) {
+                    JSONObject game = new JSONObject();
+                    Game currGame = games.get(i);
+                    game.put("winnerId", currGame.getWinnerID());
+                    game.put("gameNum", i + 1);
+                    gameData.put(game);
+                }
+
+                //STILL NEED TO ADD CHARACTER INFO TO API CALL IF POSSIBLE
+
+                // Create query including the gameData parameter
+                q = "mutation reportSet($setId: ID!, $winnerId: ID!, $isDQ: " +
+                        "Boolean, $gameData: [BracketSetGameDataInput]) {" +
+                        "reportBracketSet(setId: $setId, winnerId: $winnerId, isDQ: $isDQ, gameData: $gameData)";
+            }
+
+
+            json.put("query", q);
+            json.put("variables", variables);
+
+            sendRequest(json.toString());
+            jsonResponse = null;
+        }
+        catch (JSONException event) {
+            throw new RuntimeException(event);
+        }
+
+    }
+
+
+    public List<SetData> getOngoingSets(int eventID) {
+        //Sorts them in reverse starting order of start time
+
+        try {
+
+            // Create query
+            String q = "query EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {\n" +
+                    "  event(id: $eventId) {" +
+                    "    sets(" +
+                    "      page: $page" +
+                    "      perPage: $perPage" +
+                    "      sortType: RECENT" +
+                    "      filters: {state: [2]}" +
+                    "    ) {" +
+                    "      pageInfo {" +
+                    "        total" +
+                    "      }" +
+                    "      nodes {" +
+                    "        id" +
+                    "        totalGames" +
+                    "        slots {" +
+                    "          id" +
+                    "          entrant {" +
+                    "            id" +
+                    "            name" +
+                    "          }" +
+                    "        }" +
+                    "      }" +
+                    "    }" +
+                    "  }" +
+                    "}";
+
+            //convert to string if this doens't work
+            JSONObject json = new JSONObject();
+            JSONObject variables = new JSONObject();
+            variables.put("eventId", eventID);
+            variables.put("page", 1);
+            variables.put("perPage", 10);
+            json.put("query", q);
+            json.put("variables", variables);
+
+            sendRequest(json.toString());
+
+        }
+        catch (JSONException event) {
+            throw new RuntimeException(event);
+        }
+
+        try {
+            final JSONArray jsonSets = jsonResponse.getJSONObject("data").getJSONObject("event")
+                    .getJSONObject("sets").getJSONArray("nodes");
+            jsonResponse = null;
+
+            // Create list of SetData and fill it in the specified order of the API call
+            List<SetData> sets = new ArrayList<>();
+
+            for (int i = 0; i < jsonSets.length(); i++) {
+                int setID = jsonSets.getJSONObject(i).getInt("id");
+                int bestOf = jsonSets.getJSONObject(i).getInt("totalGames");
+
+                JSONArray slots = jsonSets.getJSONObject(i).getJSONArray("slots");
+                Entrant[] players = new Entrant[slots.length()];
+
+                //Store the players in Entrant Objects and exporting that
+                for (int j = 0; j < slots.length(); j++) {
+                    int newId = slots.getJSONObject(i).getInt("id");
+                    players[i] = EventData.getEntrant(newId);
+                }
+
+                SetData newSet = new SetData(setID, players, bestOf);
+
+                sets.add(newSet);
+            }
+            return sets;
+        }
+        catch (JSONException event) {
+            throw new RuntimeException(event);
+        }
+
+
+    }
+
+    public List<SetData> getUpcomingSets(int eventID) {
+        // Sorts them in callable order
+
+        try {
+
+            // Create query
+            String q = "query EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {\n" +
+                    "  event(id: $eventId) {" +
+                    "    sets(" +
+                    "      page: $page" +
+                    "      perPage: $perPage" +
+                    "      sortType: CALL_ORDER" +
+                    "      filters: {state: [1], hideEmpty: true}" +
+                    "    ) {" +
+                    "      pageInfo {" +
+                    "        total" +
+                    "      }" +
+                    "      nodes {" +
+                    "        id" +
+                    "        totalGames" +
+                    "        slots {" +
+                    "          id" +
+                    "          entrant {" +
+                    "            id" +
+                    "            name" +
+                    "          }" +
+                    "        }" +
+                    "      }" +
+                    "    }" +
+                    "  }" +
+                    "}";
+
+            //convert to string if this doens't work
+            JSONObject json = new JSONObject();
+            JSONObject variables = new JSONObject();
+            variables.put("eventId", eventID);
+            variables.put("page", 1);
+            variables.put("perPage", 10);
+            json.put("query", q);
+            json.put("variables", variables);
+
+            sendRequest(json.toString());
+
+        }
+        catch (JSONException event) {
+            throw new RuntimeException(event);
+        }
+
+        try {
+            final JSONArray jsonSets = jsonResponse.getJSONObject("data").getJSONObject("event")
+                    .getJSONObject("sets").getJSONArray("nodes");
+            jsonResponse = null;
+
+            // Create list of SetData and fill it in the specified order of the API call
+            List<SetData> sets = new ArrayList<>();
+
+            for (int i = 0; i < jsonSets.length(); i++) {
+                boolean partipantNull = false;
+                int setID = jsonSets.getJSONObject(i).getInt("id");
+                int bestOf = jsonSets.getJSONObject(i).getInt("totalGames");
+
+                JSONArray slots = jsonSets.getJSONObject(i).getJSONArray("slots");
+                Entrant[] players = new Entrant[slots.length()];
+
+                //Store the players in Entrant Objects and exporting that
+                for (int j = 0; j < slots.length(); j++) {
+                    try {
+                        int newId = slots.getJSONObject(j).getJSONObject("entrant").getInt("id");
+                        players[j] = EventData.getEntrant(newId);
+                    }
+                    catch (JSONException event) {
+                        partipantNull = true;
+                    }
+                }
+                if (!partipantNull) {
+                    SetData newSet = new SetData(setID, players, bestOf);
+
+                    sets.add(newSet);
+                }
+            }
+            return sets;
+        }
+        catch (JSONException event) {
+            throw new RuntimeException(event);
+        }
 
     }
 }

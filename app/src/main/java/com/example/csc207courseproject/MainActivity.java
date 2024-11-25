@@ -24,6 +24,7 @@ private ActivityMainBinding binding;
                 .addUpdateSeedingUseCase()
                 .addSelectPhaseUseCase()
                 .addCallView()
+                .addUpcomingSetsUseCase()
                 .addReportView();
 
         super.onCreate(savedInstanceState);

@@ -12,6 +12,8 @@ import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSe
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingPresenter;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhasePresenter;
+import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
+import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsPresenter;
 import com.example.csc207courseproject.ui.call.CallViewModel;
 import com.example.csc207courseproject.ui.report.ReportFragment;
 import com.example.csc207courseproject.ui.report.ReportViewModel;
@@ -26,6 +28,9 @@ import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutp
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInteractor;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseOutputBoundary;
+import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsInputBoundary;
+import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsInteractor;
+import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsOutputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInteractor;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingOutputBoundary;
@@ -90,6 +95,22 @@ public class MainBuilder {
         // Set report view args
         reportViewModel = new ReportViewModel();
         ReportFragment.setReportViewModel(reportViewModel);
+        return this;
+    }
+
+    /**
+     * Adds the upcoming sets Use Case to the application.
+     * @return this builder
+     */
+    public MainBuilder addUpcomingSetsUseCase() {
+        final UpcomingSetsOutputBoundary upcomingSetsOutputBoundary = new UpcomingSetsPresenter(
+                callViewModel, viewManagerModel);
+        final UpcomingSetsInputBoundary upcomingSetsInteractor = new UpcomingSetsInteractor(
+                apiDataAccessObject, upcomingSetsOutputBoundary);
+
+        final UpcomingSetsController controller = new UpcomingSetsController(upcomingSetsInteractor,
+                callViewModel.getState());
+        CallFragment.setUpcomingSetsController(controller);
         return this;
     }
 

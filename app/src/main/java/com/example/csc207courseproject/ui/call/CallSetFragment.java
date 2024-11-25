@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import com.example.csc207courseproject.databinding.FragmentCallSetBinding;
+import com.example.csc207courseproject.interface_adapter.call_set.CallSetState;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.ui.AppFragment;
 
@@ -27,11 +28,11 @@ public class CallSetFragment extends AppFragment implements PropertyChangeListen
 
         binding = FragmentCallSetBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        CallSetState currentState = callViewModel.getState();
 
         TextView text = binding.textMini;
-        text.setText(callViewModel.getState().getSelectedSetIndex() + "");
+        text.setText(currentState.getUpcomingSets().get(currentState.getSelectedSetIndex()).toString());
 
-        // upcomingSetsController.execute();
 
         return root;
     }
