@@ -18,7 +18,7 @@ import java.util.concurrent.CountDownLatch;
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
         MutateSeedingDataAccessInterface {
 
-    private final String TOKEN = BuildConfig.token;
+    private final String TOKEN = BuildConfig.TOKEN;
     private final String API_URL = "https://api.start.gg/gql/alpha";
     private Map<Integer, Integer> idToSeedID = new HashMap<>();
     private int initialPhaseID;

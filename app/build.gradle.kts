@@ -1,6 +1,13 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
 }
+
+// Fetch environment variables from local properties file
+val myToken = gradleLocalProperties(rootDir, providers).getProperty("token")
+val clientID = gradleLocalProperties(rootDir, providers).getProperty("client_id")
+val clientSecret = gradleLocalProperties(rootDir, providers).getProperty("client_secret")
 
 android {
     namespace = "com.example.csc207courseproject"
@@ -14,16 +21,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "TOKEN", "\"" + myToken + "\"")
+        buildConfigField("String", "CLIENT_ID", "\"" + clientID +"\"")
+        buildConfigField("String", "CLIENT_SECRET", "\"" + clientSecret + "\"")
     }
 
     buildTypes {
         debug {
-            buildConfigField("String", "token", "\"PUT TOKEN HERE\"")
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         release {
-            buildConfigField("String", "token", "\"PUT TOKEN HERE\"")
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -39,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation("com.sun.net.httpserver:http:20070405")
+    implementation("org.nanohttpd:nanohttpd:2.3.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation(libs.appcompat)
     implementation(libs.material)

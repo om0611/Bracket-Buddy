@@ -1,10 +1,13 @@
 package com.example.csc207courseproject;//package com.example.csc207courseprojectandroid.app;
 
+import android.util.Log;
 import com.example.csc207courseproject.data_access.APIDataAccessObject;
 import com.example.csc207courseproject.data_access.UserDataAccessObject;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
+import com.example.csc207courseproject.interface_adapter.login.LoginController;
+import com.example.csc207courseproject.interface_adapter.login.LoginPresenter;
 import com.example.csc207courseproject.interface_adapter.login.LoginViewModel;
 import com.example.csc207courseproject.interface_adapter.main.MainViewModel;
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingController;
@@ -15,6 +18,9 @@ import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingController;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingPresenter;
 import com.example.csc207courseproject.ui.seeding.SeedingFragment;
+import com.example.csc207courseproject.use_case.login.LoginInputBoundary;
+import com.example.csc207courseproject.use_case.login.LoginInteractor;
+import com.example.csc207courseproject.use_case.login.LoginOutputBoundary;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInteractor;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutputBoundary;
@@ -49,6 +55,22 @@ public class MainBuilder {
         EventData.createEventData(eventID, "singles", entrants, false);
         return this;
     }
+
+    /**
+     * Adds the login use case to the application.
+     * @return this builder
+     */
+    public MainBuilder addLoginUseCase() {
+        loginViewModel = new LoginViewModel();
+        final LoginOutputBoundary loginPresenter = new LoginPresenter(
+                loginViewModel, viewManagerModel);
+        final LoginInputBoundary loginInteractor = new LoginInteractor(
+                userDataAccessObject, loginPresenter);
+        final LoginController controller = new LoginController(loginInteractor);
+        LoginActivity.setLoginController(controller);
+        return this;
+    }
+
     /**
      * Adds the Seeding View to the application.
      * @return this builder

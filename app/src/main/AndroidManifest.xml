@@ -14,17 +14,21 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.CSC207CourseProjectAndroid"
             tools:targetApi="31">
+
+        <!--Sets LoginActivity as the entry point to the app. -->
         <activity
                 android:screenOrientation="sensorPortrait"
-                android:name=".MainActivity"
+                android:name=".LoginActivity"
                 android:exported="true"
                 android:label="@string/app_name" tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--Declares MainActivity. -->
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>

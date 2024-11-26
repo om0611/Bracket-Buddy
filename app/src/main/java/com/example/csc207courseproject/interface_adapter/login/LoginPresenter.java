@@ -16,14 +16,11 @@ public class LoginPresenter implements LoginOutputBoundary {
 
     @Override
     public void prepareSuccessView() {
-        // Change this once Tournament use case is completed
-        System.out.println("Login Successful!");
+        loginViewModel.firePropertyChanged("loginsuccess");
     }
 
     @Override
-    public void prepareFailView(String errorMessage) {
-        final LoginState loginState = loginViewModel.getState();
-        loginState.setError(errorMessage);
-        loginViewModel.firePropertyChanged();
+    public void prepareFailView() {
+        loginViewModel.firePropertyChanged("loginfail");
     }
 }

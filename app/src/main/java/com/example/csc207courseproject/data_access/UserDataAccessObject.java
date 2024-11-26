@@ -1,41 +1,49 @@
 package com.example.csc207courseproject.data_access;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import com.example.csc207courseproject.BuildConfig;
+import fi.iki.elonen.NanoHTTPD;
 import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.example.csc207courseproject.use_case.login.LoginDataAccessInterface;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 public class UserDataAccessObject implements LoginDataAccessInterface {
 
-    private final String CLIENT_ID = "client_id";
-    private final String CLIENT_SECRET = "client_secret";
+    private final String CLIENT_ID = BuildConfig.CLIENT_ID;
+    private final String CLIENT_SECRET = BuildConfig.CLIENT_SECRET;
     private final String REDIRECT_URI = "http://localhost:8080/callback";
     private final String SCOPES = "user.identity%20user.email%20tournament.manager%20tournament.reporter";
     private final String TOKEN_REQUEST_URL = "https://api.start.gg/oauth/access_token";
     private final String API_URL = "https://api.start.gg/gql/alpha";
     private String AUTH_CODE;
     private String ACCESS_TOKEN;
+    private OAuthServer oAuthServer;
 
-    private static final CountDownLatch latch = new CountDownLatch(1);
+    private static CountDownLatch latch = new CountDownLatch(1);
 
     @Override
-    public boolean login() {
+    public boolean login(AppCompatActivity activity) {
         // Get authorization code
         try {
-            getAuthCode();
+            getAuthCode(activity);
         } catch (URISyntaxException | IOException | InterruptedException e) {
             return false;
         }
@@ -46,62 +54,74 @@ public class UserDataAccessObject implements LoginDataAccessInterface {
         // Get access token
         try {
             getToken();
-        } catch (RuntimeException e) {
+        } catch (InterruptedException | RuntimeException e) {
+            return false;
+        }
+        if (ACCESS_TOKEN == null) {
             return false;
         }
         return true;
     }
 
-    private boolean getAuthCode() throws URISyntaxException, IOException, InterruptedException {
-        // Start a server
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+     class OAuthServer extends NanoHTTPD {
 
-        // Set a request handler
-        server.createContext("/callback", new CallbackHandler());
+        /**
+         * Starts a localhost server at port 8080.
+         */
+        public OAuthServer() throws IOException {
+            super(8080);                   // set port to 8080
+            start();                            // start server
+        }
 
-        // Start the server
-        server.start();
-
-        String authURL = "https://start.gg/oauth/authorize?response_type=code&client_id=" + System.getenv(CLIENT_ID)
-                + "&scope=" + SCOPES
-                + "&redirect_uri=" + REDIRECT_URI;
-
-        // Wait at most two minutes for user to log in
-        boolean completed = latch.await(2, TimeUnit.MINUTES);
-        server.stop(0);
-        return completed;
-    }
-
-    class CallbackHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            // Extract authorization code
-            URI requestURI = exchange.getRequestURI();
-            String query = requestURI.getQuery();
-            AUTH_CODE = query.split("=")[1];
-
-            // Respond to the browser
-            String response = "Authorization code received! You can close this window.";
-            exchange.sendResponseHeaders(200, response.length());
-            OutputStream os = exchange.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
-
-            latch.countDown();
+        /**
+         * Handles incoming HTTP requests.
+         * @param session contains information about the current request
+         */
+        public Response serve(IHTTPSession session) {
+            Map<String, List<String>> params = session.getParameters();
+            if (params.containsKey("code")) {
+                String authCode = params.get("code").get(0);
+                AUTH_CODE = authCode;
+                latch.countDown();
+                return newFixedLengthResponse("Authorization code received! You may close this window now.");             // message to send back to the user, who made the request
+            }
+            return null;
         }
     }
 
-    private void getToken() {
+    private void getAuthCode(AppCompatActivity activity) throws URISyntaxException, IOException, InterruptedException {
+
+        oAuthServer = new OAuthServer();
+
+        String authURL = "https://start.gg/oauth/authorize" +
+                "?response_type=code" +
+                "&client_id=" + CLIENT_ID
+                + "&scope=" + SCOPES
+                + "&redirect_uri=" + REDIRECT_URI;
+
+        // Create an Intent to open the URL in the browser
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authURL));
+        activity.startActivity(browserIntent);              // Launch the browser
+
+        latch.await(5, TimeUnit.MINUTES);           // wait for the server to get the auth code (max 5 minutes)
+        Log.d("auth_code", AUTH_CODE);
+    }
+
+    private void getToken() throws InterruptedException {
+        latch = new CountDownLatch(1);
         String jsonBody = "{"
                 + "\"grant_type\": \"authorization_code\","
                 + "\"code\": \"" + AUTH_CODE + "\","
-                + "\"client_id\": \"" + System.getenv(CLIENT_ID) + "\","
-                + "\"client_secret\": \"" + System.getenv(CLIENT_SECRET) + "\","
+                + "\"client_id\": \"" + CLIENT_ID + "\","
+                + "\"client_secret\": \"" + CLIENT_SECRET + "\","
                 + "\"redirect_uri\": \"" + REDIRECT_URI + "\","
                 + "\"scope\": \"" + SCOPES + "\""
                 + "}";
 
+        Log.d("jsonBody", jsonBody);
+
         OkHttpClient client = new OkHttpClient();
+        Log.d("client", client.toString());
 
         // Create the request body
         RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
@@ -112,18 +132,64 @@ public class UserDataAccessObject implements LoginDataAccessInterface {
                 .post(body)
                 .build();
 
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                // The response body contains the access token
-                String responseBody = response.body().string();
-                JSONObject jsonResponse = new JSONObject(responseBody);
-                ACCESS_TOKEN = jsonResponse.getString("access_token");
-            } else {
-                throw new RuntimeException("Request failed. Response Code: " + response.code());
+        // Cannot run network operation on main thread.
+        // Run the network call on another thread and pass in a callback function.
+        client.newCall(request).enqueue(new Callback() {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.d("onFailure", e.getMessage());
+                latch.countDown();
+                throw new RuntimeException(e.getMessage());
             }
-        } catch (IOException | JSONException e) {
-            throw new RuntimeException(e);
-        }
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("responseBody", responseBody);
+                    JSONObject jsonResponse = null;
+                    try {
+                        jsonResponse = new JSONObject(responseBody);
+                    } catch (JSONException e) {
+                        latch.countDown();
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        ACCESS_TOKEN = jsonResponse.getString("access_token");
+                        Log.d("ACCESS_TOKEN", ACCESS_TOKEN);
+                        latch.countDown();
+                    } catch (JSONException e) {
+                        latch.countDown();
+                        throw new RuntimeException(e);
+                    }
+                }
+                else {
+                    latch.countDown();
+                    throw new RuntimeException(response.message());
+                }
+            }
+        });
+
+        latch.await();
+
+//        try {
+//            Response response = client.newCall(request).execute();
+//            if (response.isSuccessful()) {
+//                // The response body contains the access token
+//                String responseBody = response.body().string();
+//                JSONObject jsonResponse = new JSONObject(responseBody);
+//                ACCESS_TOKEN = jsonResponse.getString("access_token");
+//                Log.d("access_token", ACCESS_TOKEN);
+//            } else {
+//                Log.e("token request error", response.body().string());
+//                throw new RuntimeException("Request failed. Response Code: " + response.code());
+//            }
+//        } catch (IOException | JSONException e) {
+//            Log.e("token request error", e.getMessage());
+//            throw new RuntimeException(e);
+//        }
+//        Log.d("bp", "hi");
+    }
+
+    public void stopServer() {
+        oAuthServer.stop();
     }
 
     @Override
@@ -150,7 +216,7 @@ public class UserDataAccessObject implements LoginDataAccessInterface {
                     .getJSONObject("currentUser");
             System.out.println(currUser.getString("name"));
             return new ArrayList();
-                    // currUser.getJSONObject("tournaments").getJSONArray("nodes"));
+            // currUser.getJSONObject("tournaments").getJSONArray("nodes"));
         }
         catch (IOException | JSONException event) {
             throw new RuntimeException(event);

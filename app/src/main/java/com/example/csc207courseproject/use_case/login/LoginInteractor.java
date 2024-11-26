@@ -1,5 +1,9 @@
 package com.example.csc207courseproject.use_case.login;
 
+import android.content.Context;
+import android.util.Log;
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.List;
 
 /**
@@ -16,16 +20,18 @@ public class LoginInteractor implements LoginInputBoundary {
     }
 
     @Override
-    public void execute() {
-        if (loginDataAccessObject.login()) {
-            List tournaments = loginDataAccessObject.getTournaments();
-            System.out.println(tournaments);        // temporary
-            // create a User entity and store tournaments under it?
-            // make tournament an entity
+    public void execute(AppCompatActivity activity) {
+        if (loginDataAccessObject.login(activity)) {
+            Log.d("breakpoint", "Hi!");
+//            List tournaments = loginDataAccessObject.getTournaments();
+//            System.out.println(tournaments);        // temporary
             loginPresenter.prepareSuccessView();
         }
         else {
-            loginPresenter.prepareFailView("Failed to login!");
+            loginPresenter.prepareFailView();
+            Log.d("breakpoint", "Hello!");
         }
+        loginDataAccessObject.stopServer();
     }
+
 }
