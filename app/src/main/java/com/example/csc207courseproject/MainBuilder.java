@@ -67,6 +67,7 @@ public class MainBuilder {
                 userDataAccessObject, loginPresenter);
         final LoginController controller = new LoginController(loginInteractor);
         LoginActivity.setLoginController(controller);
+        LoginActivity.setLoginViewModel(loginViewModel);
         return this;
     }
 
