@@ -27,7 +27,6 @@ public class LoginInteractor implements LoginInputBoundary {
             token = loginDataAccessObject.login(activity);
             APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
             apiDataAccessObject.setTOKEN(token);
-//            System.out.println(apiDataAccessObject.getTournaments());
             loginPresenter.prepareSuccessView();
         }
         catch(Exception e) {

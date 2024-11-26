@@ -96,7 +96,6 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
         activity.startActivity(browserIntent);              // Launch the browser
 
         latch.await(5, TimeUnit.MINUTES);           // wait for the server to get the auth code (max 5 minutes)
-        Log.d("auth_code", AUTH_CODE);
     }
 
     private void getToken() throws InterruptedException {
@@ -110,10 +109,7 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
                 + "\"scope\": \"" + SCOPES + "\""
                 + "}";
 
-        Log.d("jsonBody", jsonBody);
-
         OkHttpClient client = new OkHttpClient();
-        Log.d("client", client.toString());
 
         // Create the request body
         RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json"));
@@ -128,14 +124,12 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
         // Run the network call on another thread and pass in a callback function.
         client.newCall(request).enqueue(new Callback() {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.d("onFailure", e.getMessage());
                 latch.countDown();
                 throw new RuntimeException(e.getMessage());
             }
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Log.d("responseBody", responseBody);
                     JSONObject jsonResponse = null;
                     try {
                         jsonResponse = new JSONObject(responseBody);
@@ -145,7 +139,6 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
                     }
                     try {
                         ACCESS_TOKEN = jsonResponse.getString("access_token");
-                        Log.d("ACCESS_TOKEN", ACCESS_TOKEN);
                         latch.countDown();
                     } catch (JSONException e) {
                         latch.countDown();
@@ -164,36 +157,5 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
 
     public void stopServer() {
         oAuthServer.stop();
-    }
-
-    @Override
-    public List getTournaments() {
-        String q = "query getCurrentUser($page: Int!, $perPage: Int!) { currentUser { name " +
-                "tournaments(query: { page: $page, perPage: $perPage }) { nodes { id name } } } }";
-
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"page\": 1, \"perPage\": 10 } }";
-
-        OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json");
-
-        RequestBody body = RequestBody.create(json, mediaType);
-        Request request = new Request.Builder()
-                .url(API_URL)
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
-                .post(body)
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            final JSONObject jsonResponse = new JSONObject(response.body().string());
-            final JSONObject currUser = jsonResponse.getJSONObject("data")
-                    .getJSONObject("currentUser");
-            System.out.println(currUser.getString("name"));
-            return new ArrayList();
-            // currUser.getJSONObject("tournaments").getJSONArray("nodes"));
-        }
-        catch (IOException | JSONException event) {
-            throw new RuntimeException(event);
-        }
     }
 }

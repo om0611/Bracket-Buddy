@@ -21,10 +21,4 @@ public interface LoginDataAccessInterface {
      */
     void stopServer();
 
-    /**
-     * Gets a list of tournaments organized by the user.
-     * @return a list of tournaments
-     */
-    List getTournaments();
-
 }
