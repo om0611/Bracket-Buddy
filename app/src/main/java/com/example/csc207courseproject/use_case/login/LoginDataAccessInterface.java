@@ -12,9 +12,9 @@ public interface LoginDataAccessInterface {
 
     /**
      * Prompts the user to log in to their start.gg account.
-     * @return true if the user successfully logged in to start.gg; false otherwise
+     * @return the user's startgg access token
      */
-    boolean login(AppCompatActivity activity);
+    String login(AppCompatActivity activity);
 
     /**
      * Stop the HTTP Server

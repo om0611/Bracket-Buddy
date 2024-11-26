@@ -3,6 +3,7 @@ package com.example.csc207courseproject.use_case.login;
 import android.content.Context;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.csc207courseproject.data_access.APIDataAccessObject;
 
 import java.util.List;
 
@@ -21,15 +22,16 @@ public class LoginInteractor implements LoginInputBoundary {
 
     @Override
     public void execute(AppCompatActivity activity) {
-        if (loginDataAccessObject.login(activity)) {
-            Log.d("breakpoint", "Hi!");
-//            List tournaments = loginDataAccessObject.getTournaments();
-//            System.out.println(tournaments);        // temporary
+        String token = "";
+        try {
+            token = loginDataAccessObject.login(activity);
+            APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
+            apiDataAccessObject.setTOKEN(token);
+//            System.out.println(apiDataAccessObject.getTournaments());
             loginPresenter.prepareSuccessView();
         }
-        else {
+        catch(Exception e) {
             loginPresenter.prepareFailView();
-            Log.d("breakpoint", "Hello!");
         }
         loginDataAccessObject.stopServer();
     }

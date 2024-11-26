@@ -1,8 +1,7 @@
 package com.example.csc207courseproject;//package com.example.csc207courseprojectandroid.app;
 
-import android.util.Log;
 import com.example.csc207courseproject.data_access.APIDataAccessObject;
-import com.example.csc207courseproject.data_access.UserDataAccessObject;
+import com.example.csc207courseproject.data_access.OAuthDataAccessObject;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
@@ -39,7 +38,7 @@ public class MainBuilder {
     private final ViewManager viewManager = new ViewManager(viewManagerModel);
 
     private final APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
-    private final UserDataAccessObject userDataAccessObject = new UserDataAccessObject();
+    private final OAuthDataAccessObject userDataAccessObject = new OAuthDataAccessObject();
 
     private LoginViewModel loginViewModel;
     private SeedingViewModel seedingViewModel;

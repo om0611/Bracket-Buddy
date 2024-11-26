@@ -1,11 +1,8 @@
 package com.example.csc207courseproject.data_access;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.csc207courseproject.BuildConfig;
 import fi.iki.elonen.NanoHTTPD;
@@ -23,9 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
-public class UserDataAccessObject implements LoginDataAccessInterface {
+public class OAuthDataAccessObject implements LoginDataAccessInterface {
 
     private final String CLIENT_ID = BuildConfig.CLIENT_ID;
     private final String CLIENT_SECRET = BuildConfig.CLIENT_SECRET;
@@ -40,27 +35,24 @@ public class UserDataAccessObject implements LoginDataAccessInterface {
     private static CountDownLatch latch = new CountDownLatch(1);
 
     @Override
-    public boolean login(AppCompatActivity activity) {
+    public String login(AppCompatActivity activity) {
         // Get authorization code
         try {
             getAuthCode(activity);
         } catch (URISyntaxException | IOException | InterruptedException e) {
-            return false;
+            throw new RuntimeException(e);
         }
         if (AUTH_CODE == null) {
-            return false;
+            throw new RuntimeException("Auth code is null");
         }
 
         // Get access token
         try {
             getToken();
         } catch (InterruptedException | RuntimeException e) {
-            return false;
+            throw new RuntimeException(e);
         }
-        if (ACCESS_TOKEN == null) {
-            return false;
-        }
-        return true;
+        return ACCESS_TOKEN;
     }
 
      class OAuthServer extends NanoHTTPD {
@@ -168,24 +160,6 @@ public class UserDataAccessObject implements LoginDataAccessInterface {
         });
 
         latch.await();
-
-//        try {
-//            Response response = client.newCall(request).execute();
-//            if (response.isSuccessful()) {
-//                // The response body contains the access token
-//                String responseBody = response.body().string();
-//                JSONObject jsonResponse = new JSONObject(responseBody);
-//                ACCESS_TOKEN = jsonResponse.getString("access_token");
-//                Log.d("access_token", ACCESS_TOKEN);
-//            } else {
-//                Log.e("token request error", response.body().string());
-//                throw new RuntimeException("Request failed. Response Code: " + response.code());
-//            }
-//        } catch (IOException | JSONException e) {
-//            Log.e("token request error", e.getMessage());
-//            throw new RuntimeException(e);
-//        }
-//        Log.d("bp", "hi");
     }
 
     public void stopServer() {
