@@ -2,14 +2,28 @@ package com.example.csc207courseproject.interface_adapter.report_set;
 
 import com.example.csc207courseproject.entities.SetData;
 
+import java.util.List;
+
 
 public class ReportSetState {
 
     private SetData currentSet;
-    private boolean setOver;
+    private boolean setOver = false;
     private int selectedSetIndex;
+    private List<SetData> ongoingSets;
 
     public SetData getSetData() {return currentSet;}
+    public void setCurrentSet(SetData currentSet) {
+        this.currentSet = currentSet;
+    }
+
+    public void setOngoingSets(List<SetData> ongoingSets) {
+        this.ongoingSets = ongoingSets;
+    }
+
+    public List<SetData> getOngoingSets() {return ongoingSets;}
+
+    public SetData getCurrentSet() {return currentSet;}
     public boolean getSetOver() {return setOver;}
 
     public void setSelectedSetIndex(int selectedSetIndex) {

@@ -10,6 +10,8 @@ import com.example.csc207courseproject.interface_adapter.login.LoginViewModel;
 import com.example.csc207courseproject.interface_adapter.main.MainViewModel;
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingController;
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingPresenter;
+import com.example.csc207courseproject.interface_adapter.ongoing_sets.OngoingSetsController;
+import com.example.csc207courseproject.interface_adapter.ongoing_sets.OngoingSetsPresenter;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhasePresenter;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
@@ -25,6 +27,9 @@ import com.example.csc207courseproject.ui.call.CallFragment;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInteractor;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutputBoundary;
+import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsInputBoundary;
+import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsInteractor;
+import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsOutputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInteractor;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseOutputBoundary;
@@ -111,6 +116,22 @@ public class MainBuilder {
         final UpcomingSetsController controller = new UpcomingSetsController(upcomingSetsInteractor,
                 callViewModel.getState());
         CallFragment.setUpcomingSetsController(controller);
+        return this;
+    }
+
+    /**
+     * Adds the ongoing sets Use Case to the application.
+     * @return this builder
+     */
+    public MainBuilder addOngoingSetsUseCase() {
+        final OngoingSetsOutputBoundary ongoingSetsOutputBoundary = new OngoingSetsPresenter(
+                reportViewModel, viewManagerModel);
+        final OngoingSetsInputBoundary ongoingSetsInteractor = new OngoingSetsInteractor(
+                apiDataAccessObject, ongoingSetsOutputBoundary);
+
+        final OngoingSetsController controller = new OngoingSetsController(ongoingSetsInteractor,
+                reportViewModel.getState());
+        ReportFragment.setOngoingSetsController(controller);
         return this;
     }
 

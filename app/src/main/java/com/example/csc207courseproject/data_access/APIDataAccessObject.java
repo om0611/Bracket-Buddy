@@ -3,6 +3,7 @@ package com.example.csc207courseproject.data_access;
 import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.*;
+import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsDataAccessInterface;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsDataAccessInterface;
 import okhttp3.*;
@@ -19,7 +20,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface {
+        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface, OngoingSetsDataAccessInterface {
 
     private final String TOKEN = BuildConfig.token;
     private final String API_URL = "https://api.start.gg/gql/alpha";
@@ -63,7 +64,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         });
         try {
             countDownLatch.await();
-            Log.d("ERROR", jsonResponse.toString());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -409,14 +409,15 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
 
                 //Store the players in Entrant Objects and exporting that
                 for (int j = 0; j < slots.length(); j++) {
-                    int newId = slots.getJSONObject(i).getInt("id");
-                    players[i] = EventData.getEntrant(newId);
+                    int newId = slots.getJSONObject(j).getJSONObject("entrant").getInt("id");
+                    players[j] = EventData.getEntrant(newId);
                 }
 
                 SetData newSet = new SetData(setID, players, bestOf);
 
                 sets.add(newSet);
             }
+            Collections.reverse(sets);
             return sets;
         }
         catch (JSONException event) {

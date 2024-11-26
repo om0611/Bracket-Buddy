@@ -1,5 +1,6 @@
 package com.example.csc207courseproject.ui.report;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,12 +9,16 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import com.example.csc207courseproject.R;
 import com.example.csc207courseproject.databinding.FragmentReportBinding;
+import com.example.csc207courseproject.entities.SetData;
+import com.example.csc207courseproject.interface_adapter.ongoing_sets.OngoingSetsController;
 import com.example.csc207courseproject.interface_adapter.report_set.ReportSetState;
+import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.ui.AppFragment;
 import com.example.csc207courseproject.ui.call.CallViewModel;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +31,8 @@ import java.util.List;
 public class ReportFragment extends AppFragment implements PropertyChangeListener {
 
     private static ReportViewModel reportViewModel;
+    private static OngoingSetsController ongoingSetsController;
+
     private FragmentReportBinding binding;
     private NavController navc;
 
@@ -37,7 +44,7 @@ public class ReportFragment extends AppFragment implements PropertyChangeListene
         binding = FragmentReportBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        createDisplay();
+        ongoingSetsController.execute();
 
         return root;
     }
@@ -55,29 +62,31 @@ public class ReportFragment extends AppFragment implements PropertyChangeListene
         ReportSetState currentState = reportViewModel.getState();
         List<String> setDisplay = new ArrayList<>();
         ListView setsView = binding.ongoingSets;
-        //List<SetData> sets = currentState.getUpcomingSets();
-        //if(sets != null) {
-        for (int i = 0; i < 10; i++) {
-            // setDisplay.add((i + 1) + ". " + sets.get(i).toString());
-            setDisplay.add(String.valueOf(i) + "Gamer vs. Q");
+        List<SetData> sets = currentState.getOngoingSets();
+        if(sets != null) {
+            for (SetData set : sets) {
+                setDisplay.add(set.toString());
+            }
         }
-        //}
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);
         setsView.setAdapter(itemsAdapter);
-        setsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> list, View view, int position, long id) {
-                reportViewModel.getState().setSelectedSetIndex(position);
-                navc.navigate(R.id.action_nav_report_to_reportSetFragment);
-
-            }
+        setsView.setOnItemClickListener((list, view, position, id) -> {
+            reportViewModel.getState().setSelectedSetIndex(position);
+            navc.navigate(R.id.action_nav_report_to_reportSetFragment);
 
         });
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "getsetssuccess": createDisplay(); break;
+            case "getsetsfail": Log.d("Fail", "fail"); break;
+        }
+    }
 
+    public static void setOngoingSetsController(OngoingSetsController controller) {
+        ongoingSetsController = controller;
     }
 
     public static void setReportViewModel(ReportViewModel viewModel) {reportViewModel = viewModel;}

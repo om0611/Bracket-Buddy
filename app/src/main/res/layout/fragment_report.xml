@@ -6,6 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.finance.FinanceFragment" >
+    <TextView
+            android:text="@string/title_report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/titleView" tools:layout_editor_absoluteY="60dp"
+            tools:layout_editor_absoluteX="174dp"/>
+    <ListView
+            android:layout_width="409dp"
+            android:layout_height="539dp" tools:layout_editor_absoluteY="80dp" tools:layout_editor_absoluteX="1dp"/>
     <view android:layout_width="0dp" android:layout_height="0dp" class="android.widget.ListView"
           android:id="@+id/ongoing_sets" app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="100dp"
           app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="30dp"
