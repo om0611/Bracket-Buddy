@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.example.csc207courseproject.databinding.FragmentReportSetBinding;
+import com.example.csc207courseproject.interface_adapter.report_set.ReportSetState;
 import com.example.csc207courseproject.ui.AppFragment;
 
 import java.beans.PropertyChangeEvent;
@@ -24,9 +25,12 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
 
         binding = FragmentReportSetBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        ReportSetState currentState = reportViewModel.getState();
 
-        TextView text = binding.textMini;
-        text.setText(reportViewModel.getState().getSelectedSetIndex() + "");
+
+        TextView text = binding.playersTitle;
+        //Does this need to be an entire api call?
+        text.setText(currentState.getOngoingSets().get(currentState.getSelectedSetIndex()).toString());
 
         // upcomingSetsController.execute();
 
