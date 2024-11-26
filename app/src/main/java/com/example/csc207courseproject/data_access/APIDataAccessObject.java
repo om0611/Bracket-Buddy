@@ -63,7 +63,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         });
         try {
             countDownLatch.await();
-            Log.d("ERROR", jsonResponse.toString());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

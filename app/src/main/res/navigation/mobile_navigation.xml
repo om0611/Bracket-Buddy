@@ -9,8 +9,10 @@
             android:id="@+id/nav_call"
             android:label="@string/title_call"
             tools:layout="@layout/fragment_call"
+            app:defaultNavHost="true"
             android:name="com.example.csc207courseproject.ui.call.CallFragment">
-        <action android:id="@+id/action_nav_call_to_callSetFragment" app:destination="@id/callSetFragment"/>
+        <action android:id="@+id/action_nav_call_to_callSetFragment" app:destination="@id/callSetFragment"
+                app:launchSingleTop="false" app:popUpTo="@id/nav_call"/>
     </fragment>
 
     <fragment
@@ -24,8 +26,7 @@
     <fragment
             android:id="@+id/nav_finance"
             android:name="com.example.csc207courseproject.ui.finance.FinanceFragment"
-            android:label="@string/title_finance"
-            tools:layout="@layout/fragment_report"/>
+            android:label="@string/title_finance"/>
     <fragment android:id="@+id/nav_analysis"
               android:name="com.example.csc207courseproject.ui.analysis.AnalysisFragment"
               android:label="@string/title_analysis"/>
@@ -33,8 +34,8 @@
               android:name="com.example.csc207courseproject.ui.seeding.SeedingFragment"
               android:label="@string/title_seeding"/>
     <fragment android:id="@+id/callSetFragment" android:name="com.example.csc207courseproject.ui.call.CallSetFragment"
-              android:label="fragment_call_set" tools:layout="@layout/fragment_call_set"/>
+              android:label="Call this set"/>
     <fragment android:id="@+id/reportSetFragment"
               android:name="com.example.csc207courseproject.ui.report.ReportSetFragment"
-              android:label="fragment_report_set" tools:layout="@layout/fragment_report_set"/>
+              android:label="Report this set"/>
 </navigation>
