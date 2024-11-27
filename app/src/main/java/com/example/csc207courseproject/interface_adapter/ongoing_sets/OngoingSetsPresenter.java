@@ -19,14 +19,13 @@ public class OngoingSetsPresenter implements OngoingSetsOutputBoundary {
 
     @Override
     public void prepareSuccessView(OngoingSetsOutputData outputData) {
-        final ReportSetState setState = viewModel.getState();
-        setState.setOngoingSets(outputData.getOngoingSets());
+        final ReportSetState currentState = viewModel.getState();
+        currentState.setOngoingSets(outputData.getOngoingSets());
         viewModel.firePropertyChanged("getsetssuccess");
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
-        final ReportSetState setState = viewModel.getState();
         viewModel.firePropertyChanged("getsetsfail");
     }
 

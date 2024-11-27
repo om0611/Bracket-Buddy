@@ -87,7 +87,8 @@ public class SeedingFragment extends AppFragment implements PropertyChangeListen
         Button mutateButton = binding.mutateButton;
         mutateButton.setOnClickListener(view -> {
             mutateSeedingController.execute();
-            showToast("The seeding has been successfully mutated on Start gg!");
+            //Should this always just say a successful message?
+            showToast("The seeding has been successfully mutated on Start.gg!");
         });
     }
 

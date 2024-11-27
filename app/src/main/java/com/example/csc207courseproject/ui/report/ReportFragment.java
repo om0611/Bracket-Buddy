@@ -54,24 +54,32 @@ public class ReportFragment extends AppFragment implements PropertyChangeListene
         super.onViewCreated(view, savedInstanceState);
 
         ReportSetFragment.setReportViewModel(reportViewModel);
+
         navc = Navigation.findNavController(view);
     }
 
-    //TEST CODE DELETE LATER
     private void createDisplay() {
         ReportSetState currentState = reportViewModel.getState();
         List<String> setDisplay = new ArrayList<>();
         ListView setsView = binding.ongoingSets;
         List<SetData> sets = currentState.getOngoingSets();
-        if(sets != null) {
+        if(!sets.isEmpty()) {
+            binding.noOngoingSets.setVisibility(View.INVISIBLE);
             for (SetData set : sets) {
-                setDisplay.add(set.toString());
+                if (!currentState.getReportedSetIDs().contains(set.getSetID())) {
+                    setDisplay.add(set.toString());
+                }
             }
+            if (setDisplay.isEmpty()) {
+                binding.noOngoingSets.setVisibility(View.VISIBLE);
+            }
+        } else {
+            binding.noOngoingSets.setVisibility(View.VISIBLE);
         }
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);
         setsView.setAdapter(itemsAdapter);
         setsView.setOnItemClickListener((list, view, position, id) -> {
-            reportViewModel.getState().setSelectedSetIndex(position);
+            reportViewModel.getState().setCurrentSet(sets.get(position));
             navc.navigate(R.id.action_nav_report_to_reportSetFragment);
 
         });

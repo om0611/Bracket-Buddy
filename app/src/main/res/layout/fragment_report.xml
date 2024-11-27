@@ -24,4 +24,11 @@
           app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="30dp"
           app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="250dp"
           app:layout_constraintHorizontal_bias="0.0" app:layout_constraintVertical_bias="0.0"/>
+    <TextView
+            android:text="@string/no_ongoing"
+            android:layout_width="323dp"
+            android:layout_height="182dp" android:id="@+id/no_ongoing_sets"
+            android:textSize="48sp"
+            app:layout_constraintTop_toTopOf="@+id/ongoing_sets" android:layout_marginTop="45dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="50dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

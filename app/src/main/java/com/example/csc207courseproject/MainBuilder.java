@@ -12,12 +12,15 @@ import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSe
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingPresenter;
 import com.example.csc207courseproject.interface_adapter.ongoing_sets.OngoingSetsController;
 import com.example.csc207courseproject.interface_adapter.ongoing_sets.OngoingSetsPresenter;
+import com.example.csc207courseproject.interface_adapter.report_set.ReportSetController;
+import com.example.csc207courseproject.interface_adapter.report_set.ReportSetPresenter;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhasePresenter;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsPresenter;
 import com.example.csc207courseproject.ui.call.CallViewModel;
 import com.example.csc207courseproject.ui.report.ReportFragment;
+import com.example.csc207courseproject.ui.report.ReportSetFragment;
 import com.example.csc207courseproject.ui.report.ReportViewModel;
 import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingController;
@@ -30,6 +33,9 @@ import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutp
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsInputBoundary;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsInteractor;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsOutputBoundary;
+import com.example.csc207courseproject.use_case.report_set.ReportSetInputBoundary;
+import com.example.csc207courseproject.use_case.report_set.ReportSetInteractor;
+import com.example.csc207courseproject.use_case.report_set.ReportSetOutputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInteractor;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseOutputBoundary;
@@ -132,6 +138,23 @@ public class MainBuilder {
         final OngoingSetsController controller = new OngoingSetsController(ongoingSetsInteractor,
                 reportViewModel.getState());
         ReportFragment.setOngoingSetsController(controller);
+        return this;
+    }
+
+    /**
+     * Adds the Report Set Use Case to the application.
+     * @return this builder
+     */
+    public MainBuilder addReportSetUseCase() {
+        //Figure out why this takes in two things, then do the api testing
+        final ReportSetOutputBoundary reportSetOutputBoundary = new ReportSetPresenter(
+                reportViewModel, viewManagerModel);
+        final ReportSetInputBoundary reportSetInteractor = new ReportSetInteractor(
+                apiDataAccessObject, reportSetOutputBoundary);
+
+        final ReportSetController controller = new ReportSetController(reportSetInteractor,
+                reportViewModel.getState());
+        ReportSetFragment.setReportSetController(controller);
         return this;
     }
 
