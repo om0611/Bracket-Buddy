@@ -15,7 +15,6 @@ import java.beans.PropertyChangeListener;
 
 public class LoginActivity extends AppCompatActivity implements PropertyChangeListener {
 
-    private ActivityLoginBinding binding;
     private static LoginController loginController;
     private static LoginViewModel loginViewModel;
 
@@ -25,7 +24,10 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
         setContentView(R.layout.activity_login);
 
         final MainBuilder mainBuilder = new MainBuilder();
-        mainBuilder.addLoginUseCase();
+        mainBuilder.addLoginView()
+                .addTournamentView()
+                .addLoginUseCase()
+                .addSelectTournamentUseCase();
         loginViewModel.addPropertyChangeListener(this);
     }
 

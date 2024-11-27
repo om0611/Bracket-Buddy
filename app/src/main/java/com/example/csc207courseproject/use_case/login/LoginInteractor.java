@@ -4,10 +4,12 @@ import android.content.Context;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.csc207courseproject.data_access.APIDataAccessObject;
+import org.json.JSONException;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Login Interactor
@@ -44,9 +46,10 @@ public class LoginInteractor implements LoginInputBoundary, PropertyChangeListen
             }
             APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
             apiDataAccessObject.setTOKEN(token);
-            loginPresenter.prepareSuccessView();
+            final LoginOutputData loginOutputData = new LoginOutputData(apiDataAccessObject.getTournaments());
+            loginPresenter.prepareSuccessView(loginOutputData);
         }
-        catch (InterruptedException e) {
+        catch (JSONException | InterruptedException e) {
             loginPresenter.prepareFailView();
         }
         loginDataAccessObject.stopServer();

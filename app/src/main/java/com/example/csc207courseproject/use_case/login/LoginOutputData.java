@@ -1,31 +1,20 @@
 package com.example.csc207courseproject.use_case.login;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Output Data for the Login Use Case.
  */
 public class LoginOutputData {
 
-    private final String userID;
-    private final String userName;
-    private final List tournaments;
+    private final Map<Integer, String> tournaments;
 
-    public LoginOutputData(String userID, String userName, List tournaments) {
-        this.userID = userID;
-        this.userName = userName;
+    public LoginOutputData(Map<Integer, String> tournaments) {
         this.tournaments = tournaments;
     }
 
-    public String getUserID() {
-        return userID;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public List getTournaments() {
+    public Map<Integer, String> getTournaments() {
         return tournaments;
     }
 }

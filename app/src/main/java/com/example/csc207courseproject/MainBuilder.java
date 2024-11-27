@@ -14,6 +14,8 @@ import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSe
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingPresenter;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhasePresenter;
+import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentPresenter;
+import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentViewModel;
 import com.example.csc207courseproject.ui.call.CallViewModel;
 import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingController;
@@ -29,6 +31,7 @@ import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutp
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInteractor;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseOutputBoundary;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentOutputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInteractor;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingOutputBoundary;
@@ -45,6 +48,7 @@ public class MainBuilder {
     private final OAuthDataAccessObject userDataAccessObject = new OAuthDataAccessObject();
 
     private LoginViewModel loginViewModel;
+    private SelectTournamentViewModel selectTournamentViewModel;
     private SeedingViewModel seedingViewModel;
     private MainViewModel mainViewModel;
     private CallViewModel callViewModel;
@@ -63,18 +67,20 @@ public class MainBuilder {
     }
 
     /**
-     * Adds the login use case to the application.
+     * Adds the Login View to the application.
      * @return this builder
      */
-    public MainBuilder addLoginUseCase() {
+    public MainBuilder addLoginView() {
         loginViewModel = new LoginViewModel();
-        final LoginOutputBoundary loginPresenter = new LoginPresenter(
-                loginViewModel, viewManagerModel);
-        final LoginInputBoundary loginInteractor = new LoginInteractor(
-                userDataAccessObject, loginPresenter);
-        final LoginController controller = new LoginController(loginInteractor);
-        LoginActivity.setLoginController(controller);
-        LoginActivity.setLoginViewModel(loginViewModel);
+        return this;
+    }
+
+    /**
+     * Adds the Select Tournament View to the application.
+     * @return this builder
+     */
+    public MainBuilder addTournamentView() {
+        selectTournamentViewModel = new SelectTournamentViewModel();
         return this;
     }
 
@@ -107,6 +113,30 @@ public class MainBuilder {
     public MainBuilder addMainView() {
 
         mainViewModel = new MainViewModel();
+        return this;
+    }
+
+    /**
+     * Adds the login use case to the application.
+     * @return this builder
+     */
+    public MainBuilder addLoginUseCase() {
+        final LoginOutputBoundary loginPresenter = new LoginPresenter(
+                loginViewModel, viewManagerModel, selectTournamentViewModel);
+        final LoginInputBoundary loginInteractor = new LoginInteractor(
+                userDataAccessObject, loginPresenter);
+        final LoginController controller = new LoginController(loginInteractor);
+        LoginActivity.setLoginController(controller);
+        LoginActivity.setLoginViewModel(loginViewModel);
+        return this;
+    }
+
+    /**
+     * Adds the select tournament use case to the application.
+     * @return this builder
+     */
+    public MainBuilder addSelectTournamentUseCase() {
+        SelectTournamentActivity.setSelectTournamentViewModel(selectTournamentViewModel);
         return this;
     }
 

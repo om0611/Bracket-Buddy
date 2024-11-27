@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.legacy.support.v4)
     implementation(libs.activity)
     testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

@@ -5,8 +5,6 @@ import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
 import com.example.csc207courseproject.entities.Participant;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
-import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
-import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -75,7 +73,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
      * Get all the upcoming tournaments that the current user is organizing.
      */
     @Override
-    public List <Map<Integer, String>> getTournaments() throws JSONException {
+    public Map<Integer, String> getTournaments() throws JSONException {
         String q = "query getCurrentUser($page: Int!, $perPage: Int!) { currentUser { id " +
                 "tournaments(query: { filter: {upcoming: true} page: $page, perPage: $perPage }) { nodes { id name admins { id }} } } }";
 
@@ -95,7 +93,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         JSONArray allTournaments = currUser.getJSONObject("tournaments").getJSONArray("nodes");
 
         // Filter out the tournaments not organized by the user
-        List <Map<Integer, String>> userTournaments = new ArrayList();
+        Map<Integer, String> userTournaments = new HashMap<>();
         for (int i = 0; i < allTournaments.length(); i++) {
             JSONObject tournament = allTournaments.getJSONObject(i);
             Object admins = tournament.get("admins");
@@ -107,10 +105,8 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             for (int j = 0; j < adminsArray.length(); j++) {
                 JSONObject admin = adminsArray.getJSONObject(j);
                 if (admin.getInt("id") == userID) {
-                    Map<Integer, String> userTournament = new HashMap();
-                    userTournament.put(
+                    userTournaments.put(
                             tournament.getInt("id"), tournament.getString("name"));
-                    userTournaments.add(userTournament);
                     break;
                 }
             }

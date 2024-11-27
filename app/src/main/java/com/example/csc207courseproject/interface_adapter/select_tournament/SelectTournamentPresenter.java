@@ -1,4 +1,6 @@
 package com.example.csc207courseproject.interface_adapter.select_tournament;
 
-public class SelectTournamentPresenter {
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentOutputBoundary;
+
+public class SelectTournamentPresenter implements SelectTournamentOutputBoundary {
 }
