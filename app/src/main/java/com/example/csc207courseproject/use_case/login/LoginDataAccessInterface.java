@@ -3,6 +3,7 @@ package com.example.csc207courseproject.use_case.login;
 import android.content.Context;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 /**
@@ -11,10 +12,19 @@ import java.util.List;
 public interface LoginDataAccessInterface {
 
     /**
-     * Prompts the user to log in to their start.gg account.
-     * @return the user's startgg access token
+     * Start the server where the auth code will be sent once the user logs in, and prompt the user to log in.
      */
-    String login(AppCompatActivity activity);
+    void getAuthCode(AppCompatActivity appCompatActivity);
+
+    /**
+     * Add a listener to listen in on when the auth code is received.
+     */
+    void addListener(PropertyChangeListener listener);
+
+    /**
+     * Get the user's access token by using the auth code.
+     */
+    String getToken() throws InterruptedException;
 
     /**
      * Stop the HTTP Server

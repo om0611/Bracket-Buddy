@@ -5,12 +5,14 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.csc207courseproject.data_access.APIDataAccessObject;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 /**
  * The Login Interactor
  */
-public class LoginInteractor implements LoginInputBoundary {
+public class LoginInteractor implements LoginInputBoundary, PropertyChangeListener {
     private final LoginDataAccessInterface loginDataAccessObject;
     private final LoginOutputBoundary loginPresenter;
 
@@ -18,13 +20,25 @@ public class LoginInteractor implements LoginInputBoundary {
                            LoginOutputBoundary loginOutputBoundary) {
         this.loginDataAccessObject = loginDataAccessInterface;
         this.loginPresenter = loginOutputBoundary;
+
+        loginDataAccessObject.addListener(this);
     }
 
     @Override
     public void execute(AppCompatActivity activity) {
-        String token = "";
         try {
-            token = loginDataAccessObject.login(activity);
+            loginDataAccessObject.getAuthCode(activity);
+        }
+        catch(RuntimeException e) {
+            loginPresenter.prepareFailView();
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        String token;
+        try {
+            token = loginDataAccessObject.getToken();
             if (token == null) {
                 loginPresenter.prepareFailView();
             }
@@ -32,10 +46,9 @@ public class LoginInteractor implements LoginInputBoundary {
             apiDataAccessObject.setTOKEN(token);
             loginPresenter.prepareSuccessView();
         }
-        catch(Exception e) {
+        catch (InterruptedException e) {
             loginPresenter.prepareFailView();
         }
         loginDataAccessObject.stopServer();
     }
-
 }

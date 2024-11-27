@@ -2,7 +2,8 @@ package com.example.csc207courseproject.data_access;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.csc207courseproject.BuildConfig;
 import fi.iki.elonen.NanoHTTPD;
@@ -12,13 +13,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import com.example.csc207courseproject.use_case.login.LoginDataAccessInterface;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class OAuthDataAccessObject implements LoginDataAccessInterface {
 
@@ -31,29 +31,27 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
     private String AUTH_CODE;
     private String ACCESS_TOKEN;
     private OAuthServer oAuthServer;
+    private Thread serverThread;
+    private CountDownLatch latch;
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-    private static CountDownLatch latch = new CountDownLatch(1);
 
-    @Override
-    public String login(AppCompatActivity activity) {
-        // Get authorization code
-        try {
-            getAuthCode(activity);
-        } catch (URISyntaxException | IOException | InterruptedException e) {
-            return null;
-        }
-        if (AUTH_CODE == null) {
-            return null;
-        }
-
-        // Get access token
-        try {
-            getToken();
-        } catch (InterruptedException | RuntimeException e) {
-            return null;
-        }
-        return ACCESS_TOKEN;
-    }
+//    @Override
+//    public String login(AppCompatActivity activity) {
+//        // Get authorization code
+//        getAuthCode(activity);
+//        if (AUTH_CODE == null) {
+//            return null;
+//        }
+//
+//        // Get access token
+//        try {
+//            getToken();
+//        } catch (InterruptedException | RuntimeException e) {
+//            return null;
+//        }
+//        return ACCESS_TOKEN;
+//    }
 
      class OAuthServer extends NanoHTTPD {
 
@@ -74,16 +72,23 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
             if (params.containsKey("code")) {
                 String authCode = params.get("code").get(0);
                 AUTH_CODE = authCode;
-                latch.countDown();
-                return newFixedLengthResponse("Authorization code received! You may close this window now.");             // message to send back to the user, who made the request
+                authCodeReceived();
+                return newFixedLengthResponse("Authorization code received! You may close this window.");             // message to send back to the user, who made the request
             }
             return null;
         }
     }
 
-    private void getAuthCode(AppCompatActivity activity) throws URISyntaxException, IOException, InterruptedException {
+    public void getAuthCode(AppCompatActivity activity) {
 
-        oAuthServer = new OAuthServer();
+        serverThread = new Thread(() -> {
+            try {
+                oAuthServer = new OAuthServer();
+            } catch (IOException e) {
+                throw new RuntimeException("The server failed to start.");
+            }
+        });
+        serverThread.start();
 
         String authURL = "https://start.gg/oauth/authorize" +
                 "?response_type=code" +
@@ -94,11 +99,9 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
         // Create an Intent to open the URL in the browser
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authURL));
         activity.startActivity(browserIntent);              // Launch the browser
-
-        latch.await(5, TimeUnit.MINUTES);           // wait for the server to get the auth code (max 5 minutes)
     }
 
-    private void getToken() throws InterruptedException {
+    public String getToken() throws InterruptedException {
         latch = new CountDownLatch(1);
         String jsonBody = "{"
                 + "\"grant_type\": \"authorization_code\","
@@ -153,9 +156,29 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
         });
 
         latch.await();
+        return ACCESS_TOKEN;
     }
 
     public void stopServer() {
-        oAuthServer.stop();
+         oAuthServer.stop();
+         serverThread.interrupt();
+    }
+
+    /**
+     * Fires a property changed event when the auth code is received by the server.
+     */
+    public void authCodeReceived() {
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() ->                     // Fire the property change event on the main thread
+                this.support.firePropertyChange("auth_code_received", null, AUTH_CODE)
+        );
+    }
+
+    /**
+     * Adds a listener to listen in on when the auth code is received.
+     * @param listener The PropertyChangeListener to be added
+     */
+    public void addListener(PropertyChangeListener listener) {
+        this.support.addPropertyChangeListener(listener);
     }
 }
