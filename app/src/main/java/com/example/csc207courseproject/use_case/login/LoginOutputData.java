@@ -8,13 +8,19 @@ import java.util.Map;
  */
 public class LoginOutputData {
 
-    private final Map<Integer, String> tournaments;
+    private final List<String> tournamentNames;
+    private final List<Integer> tournamentIds;
 
-    public LoginOutputData(Map<Integer, String> tournaments) {
-        this.tournaments = tournaments;
+    public LoginOutputData(List<List> tournaments) {
+        tournamentNames = tournaments.get(0);
+        tournamentIds = tournaments.get(1);
     }
 
-    public Map<Integer, String> getTournaments() {
-        return tournaments;
+    public List<String> getTournamentNames() {
+        return tournamentNames;
+    }
+
+    public List<Integer> getTournamentIds() {
+        return tournamentIds;
     }
 }

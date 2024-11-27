@@ -23,7 +23,8 @@ public class LoginPresenter implements LoginOutputBoundary {
     @Override
     public void prepareSuccessView(LoginOutputData loginOutputData) {
         final TournamentState tournamentState = selectTournamentViewModel.getState();
-        tournamentState.setTournaments(loginOutputData.getTournaments());
+        tournamentState.setTournamentNames(loginOutputData.getTournamentNames());
+        tournamentState.setTournamentIds(loginOutputData.getTournamentIds());
         loginViewModel.firePropertyChanged("loginsuccess");
 
     }

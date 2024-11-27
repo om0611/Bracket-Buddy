@@ -73,7 +73,8 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
      * Get all the upcoming tournaments that the current user is organizing.
      */
     @Override
-    public Map<Integer, String> getTournaments() throws JSONException {
+    public List<List> getTournaments() throws JSONException {
+
         String q = "query getCurrentUser($page: Int!, $perPage: Int!) { currentUser { id " +
                 "tournaments(query: { filter: {upcoming: true} page: $page, perPage: $perPage }) { nodes { id name admins { id }} } } }";
 
@@ -93,7 +94,8 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         JSONArray allTournaments = currUser.getJSONObject("tournaments").getJSONArray("nodes");
 
         // Filter out the tournaments not organized by the user
-        Map<Integer, String> userTournaments = new HashMap<>();
+        List<String> userTournamentNames = new ArrayList<>();
+        List<Integer> userTournamentIDs = new ArrayList<>();
         for (int i = 0; i < allTournaments.length(); i++) {
             JSONObject tournament = allTournaments.getJSONObject(i);
             Object admins = tournament.get("admins");
@@ -105,14 +107,52 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             for (int j = 0; j < adminsArray.length(); j++) {
                 JSONObject admin = adminsArray.getJSONObject(j);
                 if (admin.getInt("id") == userID) {
-                    userTournaments.put(
-                            tournament.getInt("id"), tournament.getString("name"));
+                    userTournamentNames.add(tournament.getString("name"));
+                    userTournamentIDs.add(tournament.getInt("id"));
                     break;
                 }
             }
         }
 
+        List<List> userTournaments = new ArrayList<>();
+        userTournaments.add(userTournamentNames);
+        userTournaments.add(userTournamentIDs);
         return userTournaments;
+    }
+
+    /**
+     * Get the events in the given tournament.
+     * @param tournamentID The id of the tournament.
+     * @return The events by their name and id.
+     */
+    public List<List> getEventsInTournament(Integer tournamentID) throws JSONException {
+
+        String q = "query getEvents($id: ID) { tournament(id: $id) { events { id name } } }";
+
+        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"id\": \"" + tournamentID + "\"}}";
+
+        sendRequest(json);
+        JSONArray events;
+        try {
+            events = jsonResponse.getJSONObject("data")
+                    .getJSONObject("tournament")
+                    .getJSONArray("events");
+            jsonResponse = null;
+        } catch (JSONException event) {
+            throw new RuntimeException(event);
+        }
+
+        List<String> eventNames = new ArrayList<>();
+        List<Integer> eventIDs = new ArrayList<>();
+        for (int i = 0; i < events.length(); i++) {
+            JSONObject event = events.getJSONObject(i);
+            eventNames.add(event.getString("name"));
+            eventIDs.add(event.getInt("id"));
+        }
+        List<List> eventsList = new ArrayList<>();
+        eventsList.add(eventNames);
+        eventsList.add(eventIDs);
+        return eventsList;
     }
 
     /**

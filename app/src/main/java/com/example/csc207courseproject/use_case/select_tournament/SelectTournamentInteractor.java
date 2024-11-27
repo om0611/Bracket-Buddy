@@ -1,4 +1,8 @@
 package com.example.csc207courseproject.use_case.select_tournament;
 
-public class SelectTournamentInteractor {
+public class SelectTournamentInteractor implements SelectTournamentInputBoundary {
+    @Override
+    public void execute(Integer selectedTournamentId) {
+
+    }
 }

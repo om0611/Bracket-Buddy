@@ -12,4 +12,5 @@
     <string name="title_app">TO Toolkit</string>
     <string name="login_button">LOG IN</string>
     <string name="tournament_view_title">Select Tournament</string>
+    <string name="no_tournaments_message">You do not have any upcoming tournaments.</string>
 </resources>

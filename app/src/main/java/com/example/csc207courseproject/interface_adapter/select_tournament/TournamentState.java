@@ -7,12 +7,22 @@ import java.util.Map;
  * A state containing the tournaments to be displayed to the user in the Select Tournament view.
  */
 public class TournamentState {
-    private Map<Integer, String> tournaments;
+    private List<String> tournamentNames;
+    private List<Integer> tournamentIds;
 
-    public void setTournaments(Map<Integer, String> tournaments) {
-        this.tournaments = tournaments;
+    public List<String> getTournamentNames() {
+        return tournamentNames;
     }
-    public Map<Integer, String> getTournaments() {
-        return tournaments;
+
+    public void setTournamentNames(List<String> tournamentNames) {
+        this.tournamentNames = tournamentNames;
+    }
+
+    public List<Integer> getTournamentIds() {
+        return tournamentIds;
+    }
+
+    public void setTournamentIds(List<Integer> tournamentIds) {
+        this.tournamentIds = tournamentIds;
     }
 }

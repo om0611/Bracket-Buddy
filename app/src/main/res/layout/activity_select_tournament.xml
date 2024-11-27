@@ -22,4 +22,12 @@
         app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintVertical_bias="0.0" android:layout_marginBottom="88dp"/>
+  <TextView
+          android:text="@string/no_tournaments_message"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content" android:id="@+id/no_tournament_message"
+          app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/tournamentViewTitle" android:layout_marginTop="200dp"
+          android:textSize="16sp" app:layout_constraintHorizontal_bias="0.494"
+          android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
