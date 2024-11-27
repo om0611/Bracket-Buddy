@@ -40,17 +40,17 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
         try {
             getAuthCode(activity);
         } catch (URISyntaxException | IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            return null;
         }
         if (AUTH_CODE == null) {
-            throw new RuntimeException("Auth code is null");
+            return null;
         }
 
         // Get access token
         try {
             getToken();
         } catch (InterruptedException | RuntimeException e) {
-            throw new RuntimeException(e);
+            return null;
         }
         return ACCESS_TOKEN;
     }
@@ -121,7 +121,7 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
                 .build();
 
         // Cannot run network operation on main thread.
-        // Run the network call on another thread and pass in a callback function.
+        // Run the network call on another thread and execute the callback function once the call is complete.
         client.newCall(request).enqueue(new Callback() {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 latch.countDown();
