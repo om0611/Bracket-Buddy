@@ -14,7 +14,6 @@ import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSe
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingPresenter;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhasePresenter;
-import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentPresenter;
 import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentViewModel;
 import com.example.csc207courseproject.ui.call.CallViewModel;
 import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
@@ -31,7 +30,6 @@ import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutp
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInteractor;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseOutputBoundary;
-import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentOutputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInteractor;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingOutputBoundary;
@@ -45,7 +43,7 @@ public class MainBuilder {
     private final ViewManager viewManager = new ViewManager(viewManagerModel);
 
     private final APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
-    private final OAuthDataAccessObject userDataAccessObject = new OAuthDataAccessObject();
+    private final OAuthDataAccessObject oAuthDataAccessObject = new OAuthDataAccessObject();
 
     private LoginViewModel loginViewModel;
     private SelectTournamentViewModel selectTournamentViewModel;
@@ -124,7 +122,7 @@ public class MainBuilder {
         final LoginOutputBoundary loginPresenter = new LoginPresenter(
                 loginViewModel, viewManagerModel, selectTournamentViewModel);
         final LoginInputBoundary loginInteractor = new LoginInteractor(
-                userDataAccessObject, loginPresenter);
+                oAuthDataAccessObject, loginPresenter, apiDataAccessObject);
         final LoginController controller = new LoginController(loginInteractor);
         LoginActivity.setLoginController(controller);
         LoginActivity.setLoginViewModel(loginViewModel);
