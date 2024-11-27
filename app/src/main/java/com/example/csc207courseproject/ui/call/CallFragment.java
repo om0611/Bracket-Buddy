@@ -59,8 +59,8 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         ListView setsView = binding.upcomingSets;
         List<SetData> sets = currentState.getUpcomingSets();
         if(sets != null) {
-            for (int i = 0; i < sets.size(); i++) {
-                setDisplay.add(sets.get(i).toString());
+            for (SetData set : sets) {
+                setDisplay.add(set.toString());
             }
         }
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);
