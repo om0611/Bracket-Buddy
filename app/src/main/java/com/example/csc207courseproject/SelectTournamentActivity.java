@@ -25,10 +25,6 @@ public class SelectTournamentActivity extends AppCompatActivity implements Prope
     private static SelectTournamentController selectTournamentController;
     private static SelectTournamentViewModel selectTournamentViewModel;
 
-    private List<String> tournamentNames;
-    private List<Integer> tournamentIds;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

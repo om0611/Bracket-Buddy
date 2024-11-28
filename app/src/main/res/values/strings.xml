@@ -13,4 +13,6 @@
     <string name="login_button">LOG IN</string>
     <string name="tournament_view_title">Select Tournament</string>
     <string name="no_tournaments_message">You do not have any upcoming tournaments.</string>
+    <string name="event_view_title">Select Event</string>
+    <string name="no_events_message">This tournament does not have any events.</string>
 </resources>

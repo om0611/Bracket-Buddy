@@ -161,6 +161,15 @@ public class MainBuilder {
     }
 
     /**
+     * Adds the select event use case to the application.
+     * @return this builder
+     */
+    public MainBuilder addSelectEventUseCase() {
+        SelectEventActivity.setSelectEventViewModel(selectEventViewModel);
+        return this;
+    }
+
+    /**
      * Adds the phase select Use Case to the application.
      * @return this builder
      */
