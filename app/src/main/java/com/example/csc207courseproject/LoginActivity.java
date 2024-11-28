@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
         final MainBuilder mainBuilder = new MainBuilder();
         mainBuilder.addLoginView()
                 .addTournamentView()
+                .addEventView()
                 .addLoginUseCase()
                 .addSelectTournamentUseCase();
         loginViewModel.addPropertyChangeListener(this);
@@ -50,7 +51,7 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
                 Intent switchToTournamentView = new Intent(this, SelectTournamentActivity.class);
                 startActivity(switchToTournamentView);
                 break;
-            case "loginfail": Toast.makeText(this, "Login failed. Try again.",
+            case "loginfail": Toast.makeText(this, "Login failed. Please try again!",
                     Toast.LENGTH_SHORT).show(); break;
         }
     }

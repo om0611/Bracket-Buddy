@@ -12,8 +12,11 @@ import com.example.csc207courseproject.interface_adapter.login.LoginViewModel;
 import com.example.csc207courseproject.interface_adapter.main.MainViewModel;
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingController;
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingPresenter;
+import com.example.csc207courseproject.interface_adapter.select_event.SelectEventViewModel;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhasePresenter;
+import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentController;
+import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentPresenter;
 import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentViewModel;
 import com.example.csc207courseproject.ui.call.CallViewModel;
 import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
@@ -30,6 +33,9 @@ import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutp
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInteractor;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseOutputBoundary;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentInputBoundary;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentInteractor;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentOutputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInteractor;
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingOutputBoundary;
@@ -47,6 +53,7 @@ public class MainBuilder {
 
     private LoginViewModel loginViewModel;
     private SelectTournamentViewModel selectTournamentViewModel;
+    private SelectEventViewModel selectEventViewModel;
     private SeedingViewModel seedingViewModel;
     private MainViewModel mainViewModel;
     private CallViewModel callViewModel;
@@ -79,6 +86,15 @@ public class MainBuilder {
      */
     public MainBuilder addTournamentView() {
         selectTournamentViewModel = new SelectTournamentViewModel();
+        return this;
+    }
+
+    /**
+     * Adds the Select Event View to the application.
+     * @return this builder
+     */
+    public MainBuilder addEventView() {
+        selectEventViewModel = new SelectEventViewModel();
         return this;
     }
 
@@ -134,6 +150,12 @@ public class MainBuilder {
      * @return this builder
      */
     public MainBuilder addSelectTournamentUseCase() {
+        final SelectTournamentOutputBoundary selectTournamentPresenter = new SelectTournamentPresenter(
+                selectTournamentViewModel, viewManagerModel, selectEventViewModel);
+        final SelectTournamentInputBoundary selectTournamentInteractor = new SelectTournamentInteractor(
+                apiDataAccessObject, selectTournamentPresenter, apiDataAccessObject);
+        final SelectTournamentController controller = new SelectTournamentController(selectTournamentInteractor);
+        SelectTournamentActivity.setSelectTournamentController(controller);
         SelectTournamentActivity.setSelectTournamentViewModel(selectTournamentViewModel);
         return this;
     }

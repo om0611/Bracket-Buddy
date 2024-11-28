@@ -1,12 +1,10 @@
 package com.example.csc207courseproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -70,7 +68,17 @@ public class SelectTournamentActivity extends AppCompatActivity implements Prope
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "tournamentsuccess":
+                Intent switchToEventView = new Intent(this, SelectEventActivity.class);
+                startActivity(switchToEventView);
+                break;
+            case "tournamentfail":
+                Toast.makeText(this, "Failed to select tournament. Please try again!",
+                    Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     public static void setSelectTournamentController(SelectTournamentController selectTournamentController) {

@@ -2,6 +2,7 @@ package com.example.csc207courseproject.data_access;
 
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.Entrant;
+import com.example.csc207courseproject.use_case.select_event.SelectEventDataAccessInterface;
 import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
 import com.example.csc207courseproject.entities.Participant;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
@@ -19,7 +20,8 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface, SelectTournamentDataAccessInterface, ReportSetDataAccessInterface {
+        MutateSeedingDataAccessInterface, SelectTournamentDataAccessInterface, ReportSetDataAccessInterface,
+        SelectEventDataAccessInterface {
 
     private String TOKEN = BuildConfig.TOKEN;
     private final String API_URL = "https://api.start.gg/gql/alpha";
