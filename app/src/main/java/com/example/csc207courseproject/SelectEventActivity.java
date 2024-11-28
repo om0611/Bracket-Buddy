@@ -39,7 +39,6 @@ public class SelectEventActivity extends AppCompatActivity implements PropertyCh
         Integer tournamentId = selectEventViewModel.getState().getTournamentId();
         List<String> eventNames = selectEventViewModel.getState().getEventNames();
         List<Integer> eventIds = selectEventViewModel.getState().getEventIds();
-        Log.d("tournamentId", String.valueOf(tournamentId));
 
         if (eventNames.isEmpty()) {
             eventViewList.setVisibility(View.GONE);

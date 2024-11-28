@@ -1,6 +1,5 @@
 package com.example.csc207courseproject.data_access;
 
-import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.use_case.select_event.SelectEventDataAccessInterface;
@@ -54,7 +53,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
                 try {
                     String r = response.body().string();
                     jsonResponse = new JSONObject(r);
-                    Log.d("api_call", jsonResponse.toString());
                     countDownLatch.countDown();
                 } catch(IOException | JSONException e) {
                     throw new RuntimeException(e);
@@ -181,7 +179,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
     /**
      * Get all the event data required by the EventData entity for the given event.
      * @param eventID The ID of the event.
-     * @return A list containing entrants (index 0), participants (index 1), whether there are characters (index 2),
+     * @return A list containing entrants (index 0), participants (index 1), characters (index 2),
      * and phase IDs (index 3).
      */
     public List<Object> getEventData(Integer eventID) {
@@ -194,7 +192,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
 
         List<Object> eventData = new ArrayList<>();
         eventData.addAll(getEntrantsAndParticipants());
-        eventData.add(checkCharacters());
+        eventData.add(getCharacters());
         eventData.add(getPhaseIDs());
 
 
@@ -260,20 +258,28 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
     }
 
     /**
-     * Check if the event has characters from json response.
-     * @return true if the event has characters; false otherwise
+     * Extract characters from json response.
+     * @return A sorted map of character names to character IDs.
      */
-    private boolean checkCharacters() {
+    private SortedMap<String, Integer> getCharacters() {
         try {
             final JSONObject videogame = jsonResponse.getJSONObject("data").getJSONObject("event")
                     .getJSONObject("videogame");
-            if (videogame.has("characters")) {
-                Object characters = videogame.get("characters");
-                if (characters instanceof JSONArray) {
-                    return true;
-                }
+
+            SortedMap<String, Integer> characters = new TreeMap<>();
+            if (videogame.get("characters") == JSONObject.NULL) {
+                return characters;
             }
-            return false;
+            else {
+                final JSONArray charactersArray = videogame.getJSONArray("characters");
+                for (int i = 0; i < charactersArray.length(); i++) {
+                    JSONObject characterObject = charactersArray.getJSONObject(i);
+                    String characterName = characterObject.getString("name");
+                    int characterId = characterObject.getInt("id");
+                    characters.put(characterName, characterId);
+                }
+                return characters;
+            }
         }
         catch(JSONException e) {
             throw new RuntimeException(e);
@@ -282,7 +288,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
 
     /**
      * Extract phase IDs from json response
-     * @return A sorted map of all the phase IDs mapped to their name.
+     * @return A sorted map of phase names to phase IDs.
      */
     private SortedMap<String, Integer> getPhaseIDs() {
         try{
@@ -292,7 +298,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
             // Save initial phase for seeding data
             initialPhaseID = jsonPhases.getJSONObject(0).getInt("id");
 
-            // Create id to name map and fill it in
+            // Create name to id map and fill it in
             SortedMap<String, Integer> nameToID = new TreeMap<>();
 
             for (int i = 0; i < jsonPhases.length(); i++) {

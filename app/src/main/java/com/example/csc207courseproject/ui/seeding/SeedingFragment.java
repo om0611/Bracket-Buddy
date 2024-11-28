@@ -63,7 +63,6 @@ public class SeedingFragment extends AppFragment implements PropertyChangeListen
         SeedingState currentState = seedingViewModel.getState();
         Spinner phaseView = binding.phaseSelect;
         List<String> phases = currentState.getPhases();
-        Log.d("phases", phases.toString());
         ArrayAdapter<String> phaseAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, phases);
         phaseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         phaseView.setAdapter(phaseAdapter);

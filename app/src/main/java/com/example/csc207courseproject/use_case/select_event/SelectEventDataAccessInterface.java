@@ -14,7 +14,7 @@ public interface SelectEventDataAccessInterface {
     /**
      * Get all the event data required by the EventData entity for the given event.
      * @param eventID The ID of the event.
-     * @return A list containing entrants (index 0), participants (index 1), whether there are characters (index 2),
+     * @return A list containing entrants (index 0), participants (index 1), characters (index 2),
      * and phase IDs (index 3).
      */
     List<Object> getEventData(Integer eventID);

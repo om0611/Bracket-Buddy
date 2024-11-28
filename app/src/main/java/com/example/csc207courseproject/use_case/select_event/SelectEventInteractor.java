@@ -27,9 +27,8 @@ public class SelectEventInteractor implements SelectEventInputBoundary {
             EventData.createEventData(tournamentId, selectedEventID, selectedEventName,
                                         (Map<Integer, Entrant>) eventData.get(0),
                                         (Map<Integer, Participant>) eventData.get(1),
-                                        (boolean) eventData.get(2),
+                                        (SortedMap<String, Integer>) eventData.get(2),
                                         (SortedMap<String, Integer>) eventData.get(3));
-            Log.d("event name", EventData.getEventName());
             selectEventPresenter.prepareSuccessView();
         }
         catch (RuntimeException e) {
