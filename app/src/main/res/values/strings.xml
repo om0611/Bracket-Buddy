@@ -8,10 +8,16 @@
     <string name="change_seed">Change seed</string>
     <string name="to">to</string>
     <string name="confirm_button">Confirm</string>
-    <string name="update_button">Upload to Start gg</string>
+    <string name="update_button">Upload to Start.gg</string>
     <string name="upcoming_sets">Upcoming Sets:</string>
+    <string name="ongoing_sets">Ongoing Sets:</string>
     <string name="stations_button">Configure Stations</string>
     <string name="call_button">Call Set</string>
     <string name="decline_button">Decline Set</string>
     <string name="stream_button">Call Set to Stream</string>
+    <string name="p2DQ">DQ (P2)</string>
+    <string name="p1DQ">DQ (P1)</string>
+    <string name="report_set_text">Report Set to Start.gg</string>
+    <string name="no_ongoing">There are no ongoing sets right now!</string>
+    <string name="no_upcoming">There are no upcoming sets right now!</string>
 </resources>

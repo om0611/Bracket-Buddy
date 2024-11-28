@@ -11,6 +11,7 @@ public class SetData {
     private int setID;
     private Station station;
     private int firstTo;
+    private int winnerID;
     private int p1Wins;
     private int p2Wins;
     private List<Game> games;
@@ -27,6 +28,9 @@ public class SetData {
     }
 
     public int getSetID() {return setID;}
+
+    public void setWinnerID(int winnerID) {this.winnerID = winnerID;}
+    public int getWinnerID() {return winnerID;}
 
     public Station getStation() {return station;}
     public Entrant[] getPlayers() {return players;}
@@ -48,6 +52,9 @@ public class SetData {
     }
 
     public Game getGame(int gameNumber) { return games.get(gameNumber - 1);}
+
+    public List<Game> getGames() {return games;}
+
 
     @NotNull
     @Override

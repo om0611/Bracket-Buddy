@@ -52,21 +52,29 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         navc = Navigation.findNavController(view);
     }
 
-    //TEST CODE DELETE LATER
     private void createDisplay() {
         CallSetState currentState = callViewModel.getState();
         List<String> setDisplay = new ArrayList<>();
         ListView setsView = binding.upcomingSets;
         List<SetData> sets = currentState.getUpcomingSets();
-        if(sets != null) {
+        if(!sets.isEmpty()) {
+            binding.noUpcomingSets.setVisibility(View.INVISIBLE);
             for (SetData set : sets) {
-                setDisplay.add(set.toString());
+                if (!currentState.getCalledSetIDs().contains(set.getSetID())) {
+                    setDisplay.add(set.toString());
+                }
             }
+
+            if (setDisplay.isEmpty()) {
+                binding.noUpcomingSets.setVisibility(View.VISIBLE);
+            }
+        } else {
+            binding.noUpcomingSets.setVisibility(View.VISIBLE);
         }
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);
         setsView.setAdapter(itemsAdapter);
         setsView.setOnItemClickListener((list, view, position, id) -> {
-            callViewModel.getState().setSelectedSetIndex(position);
+            callViewModel.getState().setCurrentSet(sets.get(position));
             navc.navigate(R.id.action_nav_call_to_callSetFragment);
 
         });

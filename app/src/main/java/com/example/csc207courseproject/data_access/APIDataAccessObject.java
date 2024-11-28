@@ -3,6 +3,7 @@ package com.example.csc207courseproject.data_access;
 import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.*;
+import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsDataAccessInterface;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsDataAccessInterface;
 import okhttp3.*;
@@ -19,7 +20,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface {
+        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface, OngoingSetsDataAccessInterface {
 
     private final String TOKEN = BuildConfig.token;
     private final String API_URL = "https://api.start.gg/gql/alpha";
@@ -63,6 +64,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         });
         try {
             countDownLatch.await();
+            Log.d("API Response", jsonResponse.toString());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -291,8 +293,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
 
     @Override
     public void reportSet(int setID, int winnerId, List<Game> games, boolean hasDQ) {
-        //IMPLEMENT THIS SO THAT IT CONVERTS THE GAME DATA INTO A json ARRAY FOR THE API CALL
-
         try {
 
             // Initialize and add the parameters that don't need data manipulation
@@ -301,14 +301,14 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             JSONObject variables = new JSONObject();
             variables.put("setId", setID);
             variables.put("winnerId", winnerId);
-            variables.put("isDQ", hasDQ);
 
             String q;
 
             if (hasDQ) {
                 // Create query without gameData parameter, as there is no game data due to the DQ
                 q = "mutation reportSet($setId: ID!, $winnerId: ID!, $isDQ: Boolean) {" +
-                        "reportBracketSet(setId: $setId, winnerId: $winnerId, isDQ: $isDQ)";
+                        "reportBracketSet(setId: $setId, winnerId: $winnerId, isDQ: $isDQ){state}}";
+                variables.put("isDQ", true);
             } else {
                 // Create the JSON object for the game data
                 JSONArray gameData = new JSONArray();
@@ -324,15 +324,14 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
                 //STILL NEED TO ADD CHARACTER INFO TO API CALL IF POSSIBLE
 
                 // Create query including the gameData parameter
-                q = "mutation reportSet($setId: ID!, $winnerId: ID!, $isDQ: " +
-                        "Boolean, $gameData: [BracketSetGameDataInput]) {" +
-                        "reportBracketSet(setId: $setId, winnerId: $winnerId, isDQ: $isDQ, gameData: $gameData)";
+                q = "mutation reportSet($setId: ID!, $winnerId: ID!" +
+                        ", $gameData: [BracketSetGameDataInput]) {" +
+                        "reportBracketSet(setId: $setId, winnerId: $winnerId, gameData: $gameData){state}}";
+                variables.put("gameData", gameData);
             }
-
 
             json.put("query", q);
             json.put("variables", variables);
-
             sendRequest(json.toString());
             jsonResponse = null;
         }
@@ -408,14 +407,15 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
 
                 //Store the players in Entrant Objects and exporting that
                 for (int j = 0; j < slots.length(); j++) {
-                    int newId = slots.getJSONObject(i).getInt("id");
-                    players[i] = EventData.getEntrant(newId);
+                    int newId = slots.getJSONObject(j).getJSONObject("entrant").getInt("id");
+                    players[j] = EventData.getEntrant(newId);
                 }
 
                 SetData newSet = new SetData(setID, players, bestOf);
 
                 sets.add(newSet);
             }
+            Collections.reverse(sets);
             return sets;
         }
         catch (JSONException event) {
