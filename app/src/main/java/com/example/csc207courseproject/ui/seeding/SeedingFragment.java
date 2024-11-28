@@ -43,6 +43,13 @@ public class SeedingFragment extends AppFragment implements PropertyChangeListen
         return root;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        seedingViewModel.removePropertyChangeListener(this);
+        binding = null;
+    }
+
     private void createSeedDisplay() {
         SeedingState currentState = seedingViewModel.getState();
         List<String> seeds = new ArrayList<>();
@@ -80,7 +87,6 @@ public class SeedingFragment extends AppFragment implements PropertyChangeListen
             updateSeedingController.execute(
                     oldSeedValue, newSeedValue);
         });
-
     }
 
     private void createMutateButton(){

@@ -58,6 +58,13 @@ public class ReportFragment extends AppFragment implements PropertyChangeListene
         navc = Navigation.findNavController(view);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        reportViewModel.removePropertyChangeListener(this);
+        binding = null;
+    }
+
     private void createDisplay() {
         ReportSetState currentState = reportViewModel.getState();
         List<String> setDisplay = new ArrayList<>();
@@ -75,19 +82,20 @@ public class ReportFragment extends AppFragment implements PropertyChangeListene
         } else {
             binding.noOngoingSets.setVisibility(View.VISIBLE);
         }
+
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);
         setsView.setAdapter(itemsAdapter);
         setsView.setOnItemClickListener((list, view, position, id) -> {
             reportViewModel.getState().setCurrentSet(sets.get(position));
             navc.navigate(R.id.action_nav_report_to_reportSetFragment);
-
         });
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case "getsetssuccess": createDisplay(); break;
+            case "getsetssuccess":
+                createDisplay(); break;
             case "getsetsfail": Log.d("Fail", "fail"); break;
         }
     }

@@ -32,8 +32,10 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
 
     private FragmentCallBinding binding;
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
+
         callViewModel.addPropertyChangeListener(this);
 
         binding = FragmentCallBinding.inflate(inflater, container, false);
@@ -82,6 +84,7 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        callViewModel.removePropertyChangeListener(this);
         binding = null;
     }
 
@@ -96,14 +99,6 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
     public static void setUpcomingSetsController(UpcomingSetsController controller) {
         upcomingSetsController = controller;
     }
-//
-//    public static void setSelectPhaseController(SelectPhaseController controller) {
-//        selectPhaseController = controller;
-//    }
-//
-//    public static void setMutateSeedingController(MutateSeedingController controller) {
-//        mutateSeedingController = controller;
-//    }
 
     public static void setCallViewModel(CallViewModel viewModel) {
         callViewModel = viewModel;

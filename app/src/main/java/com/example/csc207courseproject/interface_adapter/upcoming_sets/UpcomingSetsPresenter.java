@@ -1,9 +1,9 @@
 package com.example.csc207courseproject.interface_adapter.upcoming_sets;
 
+import android.util.Log;
 import com.example.csc207courseproject.entities.SetData;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
 import com.example.csc207courseproject.interface_adapter.call_set.CallSetState;
-import com.example.csc207courseproject.interface_adapter.report_set.ReportSetState;
 import com.example.csc207courseproject.ui.call.CallViewModel;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsOutputBoundary;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsOutputData;

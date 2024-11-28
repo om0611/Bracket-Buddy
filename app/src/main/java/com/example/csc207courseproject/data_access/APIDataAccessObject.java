@@ -482,7 +482,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             List<SetData> sets = new ArrayList<>();
 
             for (int i = 0; i < jsonSets.length(); i++) {
-                boolean partipantNull = false;
+                boolean participantNull = false;
                 int setID = jsonSets.getJSONObject(i).getInt("id");
                 int bestOf = jsonSets.getJSONObject(i).getInt("totalGames");
 
@@ -496,10 +496,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
                         players[j] = EventData.getEntrant(newId);
                     }
                     catch (JSONException event) {
-                        partipantNull = true;
+                        participantNull = true;
                     }
                 }
-                if (!partipantNull) {
+                if (!participantNull) {
                     SetData newSet = new SetData(setID, players, bestOf);
 
                     sets.add(newSet);
