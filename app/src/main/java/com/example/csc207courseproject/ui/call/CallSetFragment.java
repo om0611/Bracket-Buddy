@@ -46,6 +46,7 @@ public class CallSetFragment extends AppFragment implements PropertyChangeListen
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        callViewModel.removePropertyChangeListener(this);
         binding = null;
     }
 

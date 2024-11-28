@@ -58,6 +58,7 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        reportViewModel.removePropertyChangeListener(this);
         binding = null;
     }
 

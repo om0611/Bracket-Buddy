@@ -19,8 +19,10 @@
             android:id="@+id/nav_report"
             android:name="com.example.csc207courseproject.ui.report.ReportFragment"
             android:label="@string/title_report"
+            app:defaultNavHost="true"
             tools:layout="@layout/fragment_seeding">
-        <action android:id="@+id/action_nav_report_to_reportSetFragment" app:destination="@id/reportSetFragment"/>
+        <action android:id="@+id/action_nav_report_to_reportSetFragment" app:destination="@id/reportSetFragment"
+                app:launchSingleTop="false" app:popUpTo="@id/nav_report"/>
     </fragment>
 
     <fragment
