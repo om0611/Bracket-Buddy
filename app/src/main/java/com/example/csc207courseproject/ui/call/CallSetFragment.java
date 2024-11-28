@@ -35,8 +35,8 @@ public class CallSetFragment extends AppFragment implements PropertyChangeListen
         CallSetState currentState = callViewModel.getState();
 
         TextView text = binding.selectedText;
-        String outputText = currentState.getUpcomingSets().get(currentState.getSelectedSetIndex()).toString()
-                + "\n| Station " + currentState.getSelectedSetIndex()  + " |";
+        String outputText = currentState.getCurrentSet()
+                + "\n| Station ";
         text.setText(outputText);
 
         return root;

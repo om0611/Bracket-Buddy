@@ -13,7 +13,7 @@ public class CallSetState {
 
         // This Arraylist allows us to keep track of the recently called sets locally
         // so that the local menus are updated in real time rather than after the API
-        // calls update which can take up to a minute
+        // calls update, which can take up to a minute
         private List<Integer> calledSetIDs = new ArrayList<>();
 
         public SetData getCurrentSet() {return currentSet;}

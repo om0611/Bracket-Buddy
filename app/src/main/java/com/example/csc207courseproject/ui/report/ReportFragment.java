@@ -63,15 +63,14 @@ public class ReportFragment extends AppFragment implements PropertyChangeListene
         List<String> setDisplay = new ArrayList<>();
         ListView setsView = binding.ongoingSets;
         List<SetData> sets = currentState.getOngoingSets();
+
+        // If there are no current ongoing sets, then display that there are no ongoing sets
+        // Otherwise, create the set display menu
+
         if(!sets.isEmpty()) {
             binding.noOngoingSets.setVisibility(View.INVISIBLE);
             for (SetData set : sets) {
-                if (!currentState.getReportedSetIDs().contains(set.getSetID())) {
-                    setDisplay.add(set.toString());
-                }
-            }
-            if (setDisplay.isEmpty()) {
-                binding.noOngoingSets.setVisibility(View.VISIBLE);
+                setDisplay.add(set.toString());
             }
         } else {
             binding.noOngoingSets.setVisibility(View.VISIBLE);

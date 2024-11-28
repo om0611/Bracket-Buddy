@@ -57,20 +57,19 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         List<String> setDisplay = new ArrayList<>();
         ListView setsView = binding.upcomingSets;
         List<SetData> sets = currentState.getUpcomingSets();
+
+        // If there are no current upcoming sets, then display that there are no upcoming sets
+        // Otherwise, create the set display menu
+
         if(!sets.isEmpty()) {
             binding.noUpcomingSets.setVisibility(View.INVISIBLE);
             for (SetData set : sets) {
-                if (!currentState.getCalledSetIDs().contains(set.getSetID())) {
-                    setDisplay.add(set.toString());
-                }
-            }
-
-            if (setDisplay.isEmpty()) {
-                binding.noUpcomingSets.setVisibility(View.VISIBLE);
+                setDisplay.add(set.toString());
             }
         } else {
             binding.noUpcomingSets.setVisibility(View.VISIBLE);
         }
+
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);
         setsView.setAdapter(itemsAdapter);
         setsView.setOnItemClickListener((list, view, position, id) -> {

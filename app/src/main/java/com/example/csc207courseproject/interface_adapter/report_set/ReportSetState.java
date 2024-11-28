@@ -15,9 +15,8 @@ public class ReportSetState {
 
     // This Arraylist allows us to keep track of the recently reported sets locally
     // so that the local menus are updated in real time rather than after the API
-    // calls update which can take up to a minute
+    // calls update, which can take up to a minute
     private List<Integer> reportedSetIDs = new ArrayList<>();
-    public SetData getSetData() {return currentSet;}
     public void setCurrentSet(SetData currentSet) {
         this.currentSet = currentSet;
     }
