@@ -1,11 +1,12 @@
 package com.example.csc207courseproject;//package com.example.csc207courseprojectandroid.app;
 
 import com.example.csc207courseproject.data_access.APIDataAccessObject;
-import com.example.csc207courseproject.data_access.UserDataAccessObject;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Participant;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
+import com.example.csc207courseproject.interface_adapter.get_stations.GetStationsController;
+import com.example.csc207courseproject.interface_adapter.get_stations.GetStationsPresenter;
 import com.example.csc207courseproject.interface_adapter.login.LoginViewModel;
 import com.example.csc207courseproject.interface_adapter.main.MainViewModel;
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingController;
@@ -27,6 +28,9 @@ import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSe
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingPresenter;
 import com.example.csc207courseproject.ui.seeding.SeedingFragment;
 import com.example.csc207courseproject.ui.call.CallFragment;
+import com.example.csc207courseproject.use_case.get_stations.GetStationsInputBoundary;
+import com.example.csc207courseproject.use_case.get_stations.GetStationsInteractor;
+import com.example.csc207courseproject.use_case.get_stations.GetStationsOutputBoundary;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInteractor;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutputBoundary;
@@ -55,7 +59,6 @@ public class MainBuilder {
     private final ViewManager viewManager = new ViewManager(viewManagerModel);
 
     private final APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
-    private final UserDataAccessObject userDataAccessObject = new UserDataAccessObject();
 
     private LoginViewModel loginViewModel;
     private SeedingViewModel seedingViewModel;
@@ -122,6 +125,21 @@ public class MainBuilder {
         final UpcomingSetsController controller = new UpcomingSetsController(upcomingSetsInteractor,
                 callViewModel.getState());
         CallFragment.setUpcomingSetsController(controller);
+        return this;
+    }
+
+    /**
+     * Adds the get stations Use Case to the application.
+     * @return this builder
+     */
+    public MainBuilder addGetStationsUseCase() {
+        final GetStationsOutputBoundary getStationsOutputBoundary = new GetStationsPresenter(
+                callViewModel);
+        final GetStationsInputBoundary getStationsInteractor = new GetStationsInteractor(
+                apiDataAccessObject, getStationsOutputBoundary);
+
+        final GetStationsController controller = new GetStationsController(getStationsInteractor);
+        CallFragment.setGetStationsController(controller);
         return this;
     }
 

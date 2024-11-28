@@ -10,6 +10,7 @@ public class CallSetState {
         private SetData currentSet;
         private List<Station> stations;
         private List<SetData> upcomingSets;
+        private int openStreams;
 
         // This Arraylist allows us to keep track of the recently called sets locally
         // so that the local menus are updated in real time rather than after the API
@@ -35,6 +36,30 @@ public class CallSetState {
 
         public List<SetData> getUpcomingSets() {
                 return upcomingSets;
+        }
+
+        public List<Station> getStations() {
+                return stations;
+        }
+
+        public void setStations(List<Station> stations) {
+                this.stations = stations;
+        }
+
+        public void addStation(Station station) {
+                stations.add(station);
+        }
+
+        public int getOpenStreams() {
+                return openStreams;
+        }
+
+        public void addOpenStream() {
+                openStreams++;
+        }
+
+        public void removeOpenStream() {
+                openStreams--;
         }
 
 

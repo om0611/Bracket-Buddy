@@ -13,6 +13,8 @@
             android:name="com.example.csc207courseproject.ui.call.CallFragment">
         <action android:id="@+id/action_nav_call_to_callSetFragment" app:destination="@id/callSetFragment"
                 app:launchSingleTop="false" app:popUpTo="@id/nav_call"/>
+        <action android:id="@+id/action_nav_call_to_callStationFragment" app:destination="@id/callStationFragment"
+                app:popUpTo="@id/nav_call" app:launchSingleTop="false"/>
     </fragment>
 
     <fragment
@@ -35,9 +37,13 @@
     <fragment android:id="@+id/nav_seeding"
               android:name="com.example.csc207courseproject.ui.seeding.SeedingFragment"
               android:label="@string/title_seeding"/>
-    <fragment android:id="@+id/callSetFragment" android:name="com.example.csc207courseproject.ui.call.CallSetFragment"
+    <fragment android:id="@+id/callSetFragment"
+              android:name="com.example.csc207courseproject.ui.call.CallSetFragment"
               android:label="Call this set"/>
     <fragment android:id="@+id/reportSetFragment"
               android:name="com.example.csc207courseproject.ui.report.ReportSetFragment"
               android:label="Report this set"/>
+    <fragment android:id="@+id/callStationFragment"
+              android:name="com.example.csc207courseproject.ui.call.CallStationFragment"
+              android:label="Configure stations"/>
 </navigation>

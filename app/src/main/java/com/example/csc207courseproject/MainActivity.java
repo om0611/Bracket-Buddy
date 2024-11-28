@@ -25,6 +25,7 @@ private ActivityMainBinding binding;
                 .addSelectPhaseUseCase()
                 .addCallView()
                 .addUpcomingSetsUseCase()
+                .addGetStationsUseCase()
                 .addReportView()
                 .addOngoingSetsUseCase()
                 .addReportSetUseCase();

@@ -15,6 +15,7 @@ import com.example.csc207courseproject.R;
 import com.example.csc207courseproject.databinding.FragmentCallBinding;
 import com.example.csc207courseproject.entities.SetData;
 import com.example.csc207courseproject.interface_adapter.call_set.CallSetState;
+import com.example.csc207courseproject.interface_adapter.get_stations.GetStationsController;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.ui.AppFragment;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,7 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
 
     private static CallViewModel callViewModel;
     private static UpcomingSetsController upcomingSetsController;
+    private static GetStationsController getStationsController;
     private NavController navc;
 
     private FragmentCallBinding binding;
@@ -41,6 +43,8 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         binding = FragmentCallBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        createStationButton();
+
         upcomingSetsController.execute();
 
         return root;
@@ -51,6 +55,7 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         super.onViewCreated(view, savedInstanceState);
 
         CallSetFragment.setCallViewModel(callViewModel);
+        CallStationFragment.setCallViewModel(callViewModel);
         navc = Navigation.findNavController(view);
     }
 
@@ -81,6 +86,11 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         });
     }
 
+    private void createStationButton(){
+        Button configureButton = binding.configureButton;
+        configureButton.setOnClickListener(view -> getStationsController.execute());
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -93,11 +103,17 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         switch (evt.getPropertyName()) {
             case "getsetssuccess": createDisplay(); break;
             case "getsetsfail": break;
+            case "getstationssuccess": navc.navigate(R.id.action_nav_call_to_callStationFragment); break;
+            case "getstationsfail": showToast("Stations can not be found."); break;
         }
     }
 
     public static void setUpcomingSetsController(UpcomingSetsController controller) {
         upcomingSetsController = controller;
+    }
+
+    public static void setGetStationsController(GetStationsController controller) {
+        getStationsController = controller;
     }
 
     public static void setCallViewModel(CallViewModel viewModel) {

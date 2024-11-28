@@ -25,6 +25,7 @@ public class SeedingFragment extends AppFragment implements PropertyChangeListen
     private static SelectPhaseController selectPhaseController;
     private static UpdateSeedingController updateSeedingController;
     private static MutateSeedingController mutateSeedingController;
+    private FragmentSeedingBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
