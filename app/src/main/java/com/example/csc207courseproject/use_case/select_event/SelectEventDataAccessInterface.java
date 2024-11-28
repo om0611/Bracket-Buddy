@@ -10,4 +10,12 @@ public interface SelectEventDataAccessInterface {
      * @return A list containing a list of event names and a list of event IDs.
      */
     List<List> getEventsInTournament(Integer tournamentID) throws JSONException;
+
+    /**
+     * Get all the event data required by the EventData entity for the given event.
+     * @param eventID The ID of the event.
+     * @return A list containing entrants (index 0), participants (index 1), whether there are characters (index 2),
+     * and phase IDs (index 3).
+     */
+    List<Object> getEventData(Integer eventID);
 }

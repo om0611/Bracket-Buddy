@@ -9,14 +9,11 @@ import com.example.csc207courseproject.use_case.login.LoginOutputData;
 public class LoginPresenter implements LoginOutputBoundary {
 
     private final LoginViewModel loginViewModel;
-    private final ViewManagerModel viewManagerModel;
     private final SelectTournamentViewModel selectTournamentViewModel;
 
     public LoginPresenter(LoginViewModel loginViewModel,
-                          ViewManagerModel viewManagerModel,
                           SelectTournamentViewModel selectTournamentViewModel) {
         this.loginViewModel = loginViewModel;
-        this.viewManagerModel = viewManagerModel;
         this.selectTournamentViewModel = selectTournamentViewModel;
     }
 

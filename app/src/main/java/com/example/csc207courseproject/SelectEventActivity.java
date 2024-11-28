@@ -1,12 +1,11 @@
 package com.example.csc207courseproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -37,8 +36,10 @@ public class SelectEventActivity extends AppCompatActivity implements PropertyCh
         ListView eventViewList = findViewById(R.id.event_list);
         TextView noEventText = findViewById(R.id.no_events_message);
 
+        Integer tournamentId = selectEventViewModel.getState().getTournamentId();
         List<String> eventNames = selectEventViewModel.getState().getEventNames();
         List<Integer> eventIds = selectEventViewModel.getState().getEventIds();
+        Log.d("tournamentId", String.valueOf(tournamentId));
 
         if (eventNames.isEmpty()) {
             eventViewList.setVisibility(View.GONE);
@@ -54,16 +55,26 @@ public class SelectEventActivity extends AppCompatActivity implements PropertyCh
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
                     // pos is the index of the element that was clicked
+                    String selectedEventName = eventNames.get(pos);
                     Integer selectedEventId = eventIds.get(pos);
-                    selectEventController.execute(selectedEventId);
+                    selectEventController.execute(tournamentId, selectedEventName, selectedEventId);
                 }
             });
         }
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "eventsuccess":
+                Intent switchToMainView = new Intent(this, MainActivity.class);
+                startActivity(switchToMainView);
+                break;
+            case "eventfail":
+                Toast.makeText(this, "Failed to select event. Please try again!",
+                        Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     public static void setSelectEventController(SelectEventController selectEventController) {

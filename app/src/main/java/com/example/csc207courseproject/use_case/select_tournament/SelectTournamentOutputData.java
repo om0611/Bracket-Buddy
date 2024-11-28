@@ -7,10 +7,12 @@ import java.util.List;
  */
 public class SelectTournamentOutputData {
 
+    private final Integer tournamentId;
     private final List<String> eventNames;
     private final List<Integer> eventIds;
 
-    public SelectTournamentOutputData(List<List> events) {
+    public SelectTournamentOutputData(Integer tournamentId, List<List> events) {
+        this.tournamentId = tournamentId;
         eventNames = events.get(0);
         eventIds = events.get(1);
     }
@@ -21,5 +23,9 @@ public class SelectTournamentOutputData {
 
     public List<Integer> getEventIds() {
         return eventIds;
+    }
+
+    public Integer getTournamentId() {
+        return tournamentId;
     }
 }

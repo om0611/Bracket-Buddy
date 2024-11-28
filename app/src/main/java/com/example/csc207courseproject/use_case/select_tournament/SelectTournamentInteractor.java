@@ -23,7 +23,8 @@ public class SelectTournamentInteractor implements SelectTournamentInputBoundary
     public void execute(Integer selectedTournamentId) {
         try {
             List<List> events = selectEventDataAccessObject.getEventsInTournament(selectedTournamentId);
-            final SelectTournamentOutputData selectTournamentOutputData = new SelectTournamentOutputData(events);
+            final SelectTournamentOutputData selectTournamentOutputData =
+                    new SelectTournamentOutputData(selectedTournamentId, events);
             selectTournamentPresenter.prepareSuccessView(selectTournamentOutputData);
         } catch (JSONException e) {
             selectTournamentPresenter.prepareFailView();

@@ -1,5 +1,6 @@
 package com.example.csc207courseproject.data_access;
 
+import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.use_case.select_event.SelectEventDataAccessInterface;
@@ -11,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.example.csc207courseproject.use_case.main.MainDataAccessInterface;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingDataAccessInterface;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseDataAccessInterface;
 
@@ -19,9 +19,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface, SelectTournamentDataAccessInterface, ReportSetDataAccessInterface,
-        SelectEventDataAccessInterface {
+public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MutateSeedingDataAccessInterface,
+        SelectTournamentDataAccessInterface, ReportSetDataAccessInterface, SelectEventDataAccessInterface {
 
     private String TOKEN = BuildConfig.TOKEN;
     private final String API_URL = "https://api.start.gg/gql/alpha";
@@ -55,6 +54,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
                 try {
                     String r = response.body().string();
                     jsonResponse = new JSONObject(r);
+                    Log.d("api_call", jsonResponse.toString());
                     countDownLatch.countDown();
                 } catch(IOException | JSONException e) {
                     throw new RuntimeException(e);
@@ -179,23 +179,37 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
     }
 
     /**
-     * Gets all entrants at an event using the start gg api.
-     * @param eventID The ID of the event
+     * Get all the event data required by the EventData entity for the given event.
+     * @param eventID The ID of the event.
+     * @return A list containing entrants (index 0), participants (index 1), whether there are characters (index 2),
+     * and phase IDs (index 3).
+     */
+    public List<Object> getEventData(Integer eventID) {
+        // Create query
+        String q = "query getEventData($id: ID!) { event(id: $id) { entrants(query: {page: 1, perPage: 64}) " +
+                "{ nodes { id participants { id prefix gamerTag user { id } } } } phases { id name } videogame " +
+                "{ characters { id name } } } }";
+        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"id\": \"" + eventID + "\"}}";
+        sendRequest(json);
+
+        List<Object> eventData = new ArrayList<>();
+        eventData.addAll(getEntrantsAndParticipants());
+        eventData.add(checkCharacters());
+        eventData.add(getPhaseIDs());
+
+
+        jsonResponse = null;
+        return eventData;
+    }
+
+    /**
+     * Extract entrants and participants from json response.
      * @return Maps of entrants and participants (entrants at 0 and participants at 1)
      */
-    @Override
-    public Object[] getEntrantsandParticipantsInEvent(int eventID) {
-        // Create query
-        String q = "query EventEntrants($eventId: ID!, $page: Int!, $perPage: Int!) {event(id: $eventId)" +
-                "{entrants(query: {page: $page perPage: $perPage}) { pageInfo{total totalPages}" +
-              "nodes {id participants {id prefix gamerTag user {id}}}}}}";
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"eventId\": \"" + eventID + "\", \"page\": 1, \"perPage\": 64}}";
-
-        sendRequest(json);
+    private List<Object> getEntrantsAndParticipants() {
         try {
             final JSONArray jsonEntrants = jsonResponse.getJSONObject("data").getJSONObject("event")
                     .getJSONObject("entrants").getJSONArray("nodes");
-            jsonResponse = null;
 
             // Create entrants and participants maps and fill it in
             Map<Integer, Entrant> entrantsMap = new HashMap<>();
@@ -234,7 +248,11 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
                 Entrant entrant = new Entrant(participants, entrantId);
                 entrantsMap.put(entrantId, entrant);
             }
-            return new Object[]{entrantsMap, participantsMap};
+            List<Object> entrantsAndParticipants = new ArrayList<>();
+            entrantsAndParticipants.add(entrantsMap);
+            entrantsAndParticipants.add(participantsMap);
+
+            return entrantsAndParticipants;
         }
         catch (JSONException event) {
             throw new RuntimeException(event);
@@ -242,22 +260,34 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
     }
 
     /**
-     * Gets all phase IDs for a given event.
-     * @param eventID The ID of the event
-     * @return A map of all the phase IDs mapped to their name
+     * Check if the event has characters from json response.
+     * @return true if the event has characters; false otherwise
      */
-    @Override
-    public SortedMap<String, Integer> getPhaseIDs(int eventID) {
-        // Create query
-        String q = "query EventPhases($eventId: ID!) {event(id: $eventId)" +
-                "{phases {id name}}}";
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"eventId\": \"" + eventID + "\"}}";
+    private boolean checkCharacters() {
+        try {
+            final JSONObject videogame = jsonResponse.getJSONObject("data").getJSONObject("event")
+                    .getJSONObject("videogame");
+            if (videogame.has("characters")) {
+                Object characters = videogame.get("characters");
+                if (characters instanceof JSONArray) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch(JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-        sendRequest(json);
+    /**
+     * Extract phase IDs from json response
+     * @return A sorted map of all the phase IDs mapped to their name.
+     */
+    private SortedMap<String, Integer> getPhaseIDs() {
         try{
             final JSONArray jsonPhases = jsonResponse.getJSONObject("data").getJSONObject("event")
                     .getJSONArray("phases");
-            jsonResponse = null;
 
             // Save initial phase for seeding data
             initialPhaseID = jsonPhases.getJSONObject(0).getInt("id");

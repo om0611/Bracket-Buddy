@@ -73,4 +73,8 @@ public class EventData {
     public static boolean hasCharacters() {
         return hasCharacters;
     }
+
+    public static int getTournamentId() {
+        return tournamentId;
+    }
 }
