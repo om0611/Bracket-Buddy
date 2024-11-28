@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CSC207 Course Project Android</string>
+    <string name="app_name">Bracket Buddy</string>
     <string name="title_seeding">Seeding</string>
     <string name="title_call">Call</string>
     <string name="title_report">Report</string>
@@ -20,4 +20,12 @@
     <string name="report_set_text">Report Set to Start.gg</string>
     <string name="no_ongoing">There are no ongoing sets right now!</string>
     <string name="no_upcoming">There are no upcoming sets right now!</string>
+    <string name="add_tag">Add tag</string>
+    <string name="remove_tag">Remove tag</string>
+    <string name="add_station">Add station</string>
+    <string name="create_tag">Create new tag</string>
+    <string name="new_tag_hint">Enter new tag</string>
+    <string name="submit_tag">Submit</string>
+    <string name="empty_station">Station #</string>
+    <string name="empty_tags">Tags:</string>
 </resources>

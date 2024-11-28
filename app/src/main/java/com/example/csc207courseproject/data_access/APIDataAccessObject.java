@@ -3,6 +3,7 @@ package com.example.csc207courseproject.data_access;
 import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.*;
+import com.example.csc207courseproject.use_case.get_stations.GetStationsDataAccessInterface;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsDataAccessInterface;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsDataAccessInterface;
@@ -20,9 +21,10 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface, OngoingSetsDataAccessInterface {
+        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface,
+        OngoingSetsDataAccessInterface, GetStationsDataAccessInterface {
 
-    private final String TOKEN = BuildConfig.token;
+    private final String TOKEN = BuildConfig.TOKEN;
     private final String API_URL = "https://api.start.gg/gql/alpha";
     private Map<Integer, Integer> idToSeedID = new HashMap<>();
     private int initialPhaseID;
@@ -482,7 +484,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             List<SetData> sets = new ArrayList<>();
 
             for (int i = 0; i < jsonSets.length(); i++) {
-                boolean partipantNull = false;
+                boolean participantNull = false;
                 int setID = jsonSets.getJSONObject(i).getInt("id");
                 int bestOf = jsonSets.getJSONObject(i).getInt("totalGames");
 
@@ -496,10 +498,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
                         players[j] = EventData.getEntrant(newId);
                     }
                     catch (JSONException event) {
-                        partipantNull = true;
+                        participantNull = true;
                     }
                 }
-                if (!partipantNull) {
+                if (!participantNull) {
                     SetData newSet = new SetData(setID, players, bestOf);
 
                     sets.add(newSet);
@@ -511,5 +513,82 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             throw new RuntimeException(event);
         }
 
+    }
+
+    /**
+     * Returns the stations assigned to an event.
+     * @param eventId The ID of the event
+     * @return The stations in a list
+     */
+    @Override
+    public List<Station> getStations(int eventId) {
+        // Create query
+        String q = "query EventStations($eventId: ID!, $page: Int!, $perPage: Int!) {event(id: $eventId)" +
+                "{stations(query: {page: $page perPage: $perPage}) { pageInfo{total totalPages}" +
+                "nodes {id number}}}}";
+        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"eventId\": \"" + eventId + "\", \"page\": 1, \"perPage\": 10}}";
+
+        sendRequest(json);
+        try{
+            JSONArray jsonStations = jsonResponse.getJSONObject("data").getJSONObject("event")
+                    .getJSONObject("stations").getJSONArray("nodes");
+            jsonResponse = null;
+
+            // Save stations to a list
+            List<Station> stations = new ArrayList<>();
+            for (int i = 0; i < jsonStations.length(); i++) {
+                int number = jsonStations.getJSONObject(i).getInt("number");
+                int id = jsonStations.getJSONObject(i).getInt("id");
+                stations.add(new Station(id, number));
+            }
+
+            return stations;
+
+        } catch(JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Adds a station to an event.
+     * @param tournamentId The ID of the event
+     * @param stationNumber THe number of the station
+     */
+    public void addStation(int tournamentId, int stationNumber) {
+        try{
+            // Create station input
+            JSONObject fields = new JSONObject();
+            fields.put("number", stationNumber);
+
+            // Create query
+            String q = "mutation AddStation($tournamentId: ID, $fields: StationUpsertInput!) {" +
+                "upsertStation($tournamentId: ID, $fields: StationUpsertInput!){state}}";
+
+            JSONObject json = new JSONObject();
+            JSONObject variables = new JSONObject();
+            variables.put("tournamentId", tournamentId);
+            variables.put("fields", fields);
+            json.put("query", q);
+            json.put("variables", variables);
+
+            sendRequest(json.toString());
+            jsonResponse = null;
+
+        } catch(JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Marks the parameter set as in progress
+     * @param setId Set id of the set
+     */
+    public void callSet(int setId) {
+        //Create query
+        String q = "mutation CallSet($setId: ID!) {markSetInProgress(setId: $setId){state}}";
+        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"setId\": \"" + setId + "\"}}";
+
+        sendRequest(json);
+        jsonResponse = null;
     }
 }
