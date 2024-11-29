@@ -70,4 +70,12 @@ public class ViewModel<T> {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         this.support.removePropertyChangeListener(listener);
     }
+
+    /**
+     * Remove a PropertyChangeListener from this ViewModel.
+     * @param listener The PropertyChangeListener to be removed
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.support.removePropertyChangeListener(listener);
+    }
 }

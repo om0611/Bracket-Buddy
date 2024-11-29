@@ -8,7 +8,13 @@
     <string name="change_seed">Change seed</string>
     <string name="to">to</string>
     <string name="confirm_button">Confirm</string>
-    <string name="update_button">Upload to Start.gg</string>
+    <string name="update_button">Upload to Start gg</string>
+    <string name="title_app">TO Toolkit</string>
+    <string name="login_button">LOG IN</string>
+    <string name="tournament_view_title">Select Tournament</string>
+    <string name="no_tournaments_message">You do not have any upcoming tournaments.</string>
+    <string name="event_view_title">Select Event</string>
+    <string name="no_events_message">This tournament does not have any events.</string>
     <string name="upcoming_sets">Upcoming Sets:</string>
     <string name="ongoing_sets">Ongoing Sets:</string>
     <string name="stations_button">Configure Stations</string>

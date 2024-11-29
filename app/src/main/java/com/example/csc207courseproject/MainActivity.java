@@ -16,21 +16,6 @@ private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        final MainBuilder mainBuilder = new MainBuilder();
-        // Build app
-        mainBuilder.createEventData()
-                .addSeedingView()
-                .addMutateSeedingUseCase()
-                .addUpdateSeedingUseCase()
-                .addSelectPhaseUseCase()
-                .addCallView()
-                .addUpcomingSetsUseCase()
-                .addGetStationsUseCase()
-                .addReportView()
-                .addOngoingSetsUseCase()
-                .addReportSetUseCase();
-
-
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
