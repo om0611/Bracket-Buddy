@@ -79,6 +79,10 @@ public class SetData {
 
     public List<Game> getGames() {return games;}
 
+    public boolean didPlayerWin(int position, int playerNum) {
+        return games.get(position).getWinnerID() == players[playerNum - 1].getId();
+    }
+
 
     @NotNull
     @Override

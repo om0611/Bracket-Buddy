@@ -66,6 +66,7 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
         ListView gamesView = binding.gamesList;
         List<Game> games = currentState.getCurrentSet().getGames();
 
+
         ArrayAdapter<Game> gameAdapter =
                 new ArrayAdapter<Game>(mContext, android.R.layout.simple_list_item_1, games) {
                     @Override
@@ -85,8 +86,6 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
 
                     @Override
                     public View getView(int position, View convertView, ViewGroup parent) {
-                        Game game = games.get(position);
-
 
                         convertView = getLayoutInflater().inflate(R.layout.list_games, parent, false);
 
@@ -97,7 +96,10 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
 
                         // Create p1/p2 win buttons and make them exclusive
                         ToggleButton p1WinButton = convertView.findViewById(R.id.player1_win);
+                        p1WinButton.setChecked(currentState.getCurrentSet().didPlayerWin(position, 1));
                         ToggleButton p2WinButton = convertView.findViewById(R.id.player2_win);
+                        p2WinButton.setChecked(currentState.getCurrentSet().didPlayerWin(position, 2));
+
                         p1WinButton.setOnClickListener(view ->{
                                 p2WinButton.setChecked(false);
                                 currentState.getCurrentSet().reportGameWinner(position + 1, 1);
