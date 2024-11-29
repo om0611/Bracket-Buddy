@@ -26,16 +26,16 @@ public class ReportSetInteractor implements ReportSetInputBoundary {
             int winnerID = reportSetInputData.getWinnerId();
 
             if (winnerID < 0) {
-                reportSetPresenter.prepareFailView("Set Information is not Complete!");
+                reportSetPresenter.prepareFailView("incompletesetinfo");
+            } else {
+                List<Game> games = reportSetInputData.getGames();
+                boolean isDQ = reportSetInputData.hasDQ();
+                dataAccess.reportSet(setID, winnerID, games, isDQ);
+                reportSetPresenter.prepareSuccessView();
             }
 
-
-            List<Game> games = reportSetInputData.getGames();
-            boolean isDQ = reportSetInputData.hasDQ();
-            dataAccess.reportSet(setID, winnerID, games, isDQ);
-            reportSetPresenter.prepareSuccessView();
         } catch (Exception e){
-            reportSetPresenter.prepareFailView("API Call Error");
+            reportSetPresenter.prepareFailView("apicallerror");
         }
 
     }

@@ -4,6 +4,7 @@ package com.example.csc207courseproject.entities;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SetData {
@@ -12,19 +13,18 @@ public class SetData {
     private Station station;
     private int firstTo;
     private int winnerID;
-    private int p1Wins;
-    private int p2Wins;
+
     private List<Game> games;
     private Entrant[] players;
 
 
-    public SetData(int setID, Entrant[] players, int firstTo) {
+    public SetData(int setID, Entrant[] players, int bestOf) {
         this.setID = setID;
         this.players = players;
         this.games = new ArrayList<>();
-        this.firstTo = firstTo;
-        this.p1Wins = 0;
-        this.p2Wins = 0;
+        games.add(new Game());
+        this.firstTo = (bestOf + 1) / 2;
+
     }
 
     public int getSetID() {return setID;}
@@ -35,20 +35,44 @@ public class SetData {
     public Station getStation() {return station;}
     public Entrant[] getPlayers() {return players;}
 
-    public void addGame() {
-        this.games.add(new Game());
+    public void reportGameWinner(int gameNum, int playerNum) {
+        int gameWinnerID = players[playerNum - 1].getId();
+        this.games.get(gameNum - 1).reportWinner(gameWinnerID);
+        if (!isSetOver()) {
+            games.add(new Game());
+        } else {
+            setWinnerID(gameWinnerID);
+            // Remove unnecessary games
+            int i = games.size() - 1;
+            List<Game> uselessGames = new ArrayList<>();
+            while (games.get(i).getWinnerID() != gameWinnerID){
+                uselessGames.add(games.get(i));
+                i -= 1;
+            }
+            games.removeAll(uselessGames);
+
+        }
     }
 
-    public void addP1Win() {
-        this.p1Wins += 1;
-    }
+    public void reportCharacter(int gameNum, int playerNum, String character) {
 
-    public void addP2Win() {
-        this.p2Wins += 1;
+        this.games.get(gameNum - 1).setCharacter(playerNum - 1, EventData.getCharacterIds().get(character));
+
     }
 
     public boolean isSetOver() {
-        return p1Wins >= firstTo || p2Wins >= firstTo;
+        return countWins(players[0].getId()) >= firstTo ||
+                countWins(players[1].getId()) >= firstTo;
+    }
+
+    private int countWins(int winnerID){
+        int count = 0;
+        for (Game g : games) {
+            if (g.getWinnerID() == winnerID) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public Game getGame(int gameNumber) { return games.get(gameNumber - 1);}

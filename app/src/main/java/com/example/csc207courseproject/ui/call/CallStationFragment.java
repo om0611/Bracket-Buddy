@@ -7,13 +7,10 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import com.example.csc207courseproject.R;
-import com.example.csc207courseproject.databinding.FragmentCallSetBinding;
 import com.example.csc207courseproject.databinding.FragmentCallStationsBinding;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Station;
 import com.example.csc207courseproject.interface_adapter.call_set.CallSetState;
-import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
-import com.example.csc207courseproject.interface_adapter.update_seeding.SeedingState;
 import com.example.csc207courseproject.ui.AppFragment;
 
 import java.beans.PropertyChangeEvent;
@@ -72,17 +69,17 @@ public class CallStationFragment extends AppFragment implements PropertyChangeLi
                     convertView = getLayoutInflater().inflate(R.layout.list_stations, parent, false);
 
                     // Create title
-                    TextView title = convertView.findViewById(R.id.station_title);
+                    TextView title = convertView.findViewById(R.id.report_winner_title);
                     String stationText = "Station " + station.getStationNum();
                     title.setText(stationText);
 
                     // Create tags list
-                    TextView tags = convertView.findViewById(R.id.station_tags);
+                    TextView tags = convertView.findViewById(R.id.character_entry);
                     String tagsText = "Tags: " + station.tagsToString();
                     tags.setText(tagsText);
 
                     // Create tag select
-                    Spinner tagSelect = convertView.findViewById(R.id.tag_select);
+                    Spinner tagSelect = convertView.findViewById(R.id.p1_char_select);
                     List<String> possibleTags = EventData.getPossibleTags();
                     ArrayAdapter<String> tagsAdapter = new ArrayAdapter<>(mContext,
                             android.R.layout.simple_spinner_dropdown_item, possibleTags);

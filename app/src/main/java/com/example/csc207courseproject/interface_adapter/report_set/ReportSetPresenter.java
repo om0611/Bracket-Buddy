@@ -26,6 +26,6 @@ public class ReportSetPresenter implements ReportSetOutputBoundary {
 
     @Override
     public void prepareFailView(String errorMessage) {
-        reportViewModel.firePropertyChanged("reportsetfail");
+        reportViewModel.firePropertyChanged(errorMessage);
     }
 }

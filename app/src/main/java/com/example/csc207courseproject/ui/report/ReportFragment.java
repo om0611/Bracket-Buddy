@@ -43,7 +43,7 @@ public class ReportFragment extends AppFragment implements PropertyChangeListene
 
         binding = FragmentReportBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
+        
         ongoingSetsController.execute();
 
         return root;

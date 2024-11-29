@@ -11,7 +11,7 @@ public class EventData {
     private static String eventName;
     private static Map<Integer, Entrant> entrants;
     private static Map<Integer, Participant> participants;
-    private static SortedMap<String, Integer> characters;
+    private static SortedMap<String, Integer> characterIds;
     private static SortedMap<String, Integer> phaseIds;
     private static final List<String> possibleTags = new ArrayList<>();
 
@@ -23,7 +23,7 @@ public class EventData {
         eventName = eName;
         entrants = es;
         participants = ps;
-        characters = chars;
+        characterIds = chars;
         phaseIds = phases;
         possibleTags.add("Stream setup");
         possibleTags.add("No DLC");
@@ -96,11 +96,19 @@ public class EventData {
         return tournamentId;
     }
 
-    public static SortedMap<String, Integer> getCharacters() {
-        return characters;
-    }
-
     public static List<String> getPossibleTags() {
         return possibleTags;
+    }
+
+    public static SortedMap<String, Integer> getCharacterIds() {
+        return characterIds;
+    }
+
+    public static void setCharacterIds(SortedMap<String, Integer> characterIds) {
+        EventData.characterIds = characterIds;
+    }
+
+    public static SortedMap<String, Integer> getCharacters() {
+        return characterIds;
     }
 }

@@ -70,11 +70,13 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
 
         if(!sets.isEmpty()) {
             binding.noUpcomingSets.setVisibility(View.INVISIBLE);
+            binding.previewMessage.setVisibility(View.INVISIBLE);
             for (SetData set : sets) {
                 setDisplay.add(set.toString());
             }
         } else {
             binding.noUpcomingSets.setVisibility(View.VISIBLE);
+            binding.previewMessage.setVisibility(View.VISIBLE);
         }
 
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);

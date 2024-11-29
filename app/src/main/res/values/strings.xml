@@ -34,4 +34,13 @@
     <string name="submit_tag">Submit</string>
     <string name="empty_station">Station #</string>
     <string name="empty_tags">Tags:</string>
+    <string name="character_entry">Enter Characters:</string>
+    <string name="p1_win">Player 1 Win</string>
+    <string name="p2_win">Player 2 Win</string>
+    <string name="report_title">Report winner:</string>
+    <string name="preview_issue_message">If you are just starting a tournament \nfor the first time, the Start.gg
+        servers\nwill take a little while to update the\nsets from preview status. Please try again\nin a bit.
+    </string>
+    <string name="player_1">Player 1</string>
+    <string name="player_2">Player 2</string>
 </resources>
