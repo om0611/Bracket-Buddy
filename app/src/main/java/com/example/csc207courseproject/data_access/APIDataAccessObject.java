@@ -1,10 +1,12 @@
 package com.example.csc207courseproject.data_access;
 
-import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.Entrant;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
 import com.example.csc207courseproject.entities.Participant;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
+import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -19,9 +21,9 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
-        MutateSeedingDataAccessInterface, ReportSetDataAccessInterface {
+        MutateSeedingDataAccessInterface, SelectTournamentDataAccessInterface, ReportSetDataAccessInterface {
 
-    private final String TOKEN = BuildConfig.token;
+    private String TOKEN = BuildConfig.TOKEN;
     private final String API_URL = "https://api.start.gg/gql/alpha";
     private Map<Integer, Integer> idToSeedID = new HashMap<>();
     private int initialPhaseID;
@@ -67,6 +69,54 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             throw new RuntimeException(e);
         }
 
+    }
+
+    /**
+     * Get all the upcoming tournaments that the current user is organizing.
+     */
+    @Override
+    public List <Map<Integer, String>> getTournaments() throws JSONException {
+        String q = "query getCurrentUser($page: Int!, $perPage: Int!) { currentUser { id " +
+                "tournaments(query: { filter: {upcoming: true} page: $page, perPage: $perPage }) { nodes { id name admins { id }} } } }";
+
+        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"page\": 1, \"perPage\": 10 } }";
+
+        sendRequest(json);
+        JSONObject currUser;
+        try {
+            currUser = jsonResponse.getJSONObject("data")
+                    .getJSONObject("currentUser");
+            jsonResponse = null;
+        } catch (JSONException event) {
+            throw new RuntimeException(event);
+        }
+
+        int userID = currUser.getInt("id");
+        JSONArray allTournaments = currUser.getJSONObject("tournaments").getJSONArray("nodes");
+
+        // Filter out the tournaments not organized by the user
+        List <Map<Integer, String>> userTournaments = new ArrayList();
+        for (int i = 0; i < allTournaments.length(); i++) {
+            JSONObject tournament = allTournaments.getJSONObject(i);
+            Object admins = tournament.get("admins");
+
+            if (admins == JSONObject.NULL) {
+                continue;
+            }
+            JSONArray adminsArray = (JSONArray) admins;
+            for (int j = 0; j < adminsArray.length(); j++) {
+                JSONObject admin = adminsArray.getJSONObject(j);
+                if (admin.getInt("id") == userID) {
+                    Map<Integer, String> userTournament = new HashMap();
+                    userTournament.put(
+                            tournament.getInt("id"), tournament.getString("name"));
+                    userTournaments.add(userTournament);
+                    break;
+                }
+            }
+        }
+
+        return userTournaments;
     }
 
     /**
@@ -287,6 +337,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
         catch (JSONException event) {
             throw new RuntimeException(event);
         }
+    }
+
+    public void setTOKEN(String token) {
+        this.TOKEN = token;
     }
 
     @Override

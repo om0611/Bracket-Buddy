@@ -9,4 +9,7 @@
     <string name="to">to</string>
     <string name="confirm_button">Confirm</string>
     <string name="update_button">Upload to Start gg</string>
+    <string name="title_app">TO Toolkit</string>
+    <string name="login_button">LOG IN</string>
+    <string name="tournament_view_title">Tournament Select</string>
 </resources>

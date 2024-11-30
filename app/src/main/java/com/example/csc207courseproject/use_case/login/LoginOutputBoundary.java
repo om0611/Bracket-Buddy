@@ -12,7 +12,6 @@ public interface LoginOutputBoundary {
 
     /**
      * Prepares the failure view for the Login Use Case.
-     * @param errorMessage the explanation of the failure
      */
-    void prepareFailView(String errorMessage);
+    void prepareFailView();
 }

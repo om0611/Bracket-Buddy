@@ -1,11 +1,13 @@
 package com.example.csc207courseproject;//package com.example.csc207courseprojectandroid.app;
 
 import com.example.csc207courseproject.data_access.APIDataAccessObject;
-import com.example.csc207courseproject.data_access.UserDataAccessObject;
+import com.example.csc207courseproject.data_access.OAuthDataAccessObject;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Participant;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
+import com.example.csc207courseproject.interface_adapter.login.LoginController;
+import com.example.csc207courseproject.interface_adapter.login.LoginPresenter;
 import com.example.csc207courseproject.interface_adapter.login.LoginViewModel;
 import com.example.csc207courseproject.interface_adapter.main.MainViewModel;
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingController;
@@ -17,6 +19,9 @@ import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingController;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingPresenter;
 import com.example.csc207courseproject.ui.seeding.SeedingFragment;
+import com.example.csc207courseproject.use_case.login.LoginInputBoundary;
+import com.example.csc207courseproject.use_case.login.LoginInteractor;
+import com.example.csc207courseproject.use_case.login.LoginOutputBoundary;
 import com.example.csc207courseproject.ui.call.CallFragment;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInteractor;
@@ -37,7 +42,7 @@ public class MainBuilder {
     private final ViewManager viewManager = new ViewManager(viewManagerModel);
 
     private final APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
-    private final UserDataAccessObject userDataAccessObject = new UserDataAccessObject();
+    private final OAuthDataAccessObject userDataAccessObject = new OAuthDataAccessObject();
 
     private LoginViewModel loginViewModel;
     private SeedingViewModel seedingViewModel;
@@ -56,6 +61,23 @@ public class MainBuilder {
                 (Map<Integer, Participant>) entrants[1], false, phaseIds);
         return this;
     }
+
+    /**
+     * Adds the login use case to the application.
+     * @return this builder
+     */
+    public MainBuilder addLoginUseCase() {
+        loginViewModel = new LoginViewModel();
+        final LoginOutputBoundary loginPresenter = new LoginPresenter(
+                loginViewModel, viewManagerModel);
+        final LoginInputBoundary loginInteractor = new LoginInteractor(
+                userDataAccessObject, loginPresenter);
+        final LoginController controller = new LoginController(loginInteractor);
+        LoginActivity.setLoginController(controller);
+        LoginActivity.setLoginViewModel(loginViewModel);
+        return this;
+    }
+
     /**
      * Adds the Seeding View to the application.
      * @return this builder
