@@ -86,7 +86,17 @@ public class ReportFragment extends AppFragment implements PropertyChangeListene
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, setDisplay);
         setsView.setAdapter(itemsAdapter);
         setsView.setOnItemClickListener((list, view, position, id) -> {
+            //Set the state to a new report set view with the selected information
             reportViewModel.getState().setCurrentSet(sets.get(position));
+            reportViewModel.getState().setP1Wins(0);
+            reportViewModel.getState().setP2Wins(0);
+
+            List<Boolean> newP1 = new ArrayList<>();
+            newP1.add(false);
+            List<Boolean> newP2 = new ArrayList<>();
+            newP2.add(false);
+            reportViewModel.getState().setP1ButtonPresses(newP1);
+            reportViewModel.getState().setP2ButtonPresses(newP2);
             navc.navigate(R.id.action_nav_report_to_reportSetFragment);
         });
     }

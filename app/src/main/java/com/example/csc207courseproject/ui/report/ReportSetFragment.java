@@ -14,8 +14,10 @@ import com.example.csc207courseproject.R;
 import com.example.csc207courseproject.databinding.FragmentReportSetBinding;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Game;
+import com.example.csc207courseproject.interface_adapter.report_game.ReportGameController;
 import com.example.csc207courseproject.interface_adapter.report_set.ReportSetController;
 import com.example.csc207courseproject.interface_adapter.report_set.ReportSetState;
+import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.ui.AppFragment;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +32,8 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
     private static ReportViewModel reportViewModel;
 
     private static ReportSetController reportSetController;
+
+    private static ReportGameController reportGameController;
 
     private NavController navController;
 
@@ -97,9 +101,9 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
 
                         // Create p1/p2 win buttons and make them exclusive
                         ToggleButton p1WinButton = convertView.findViewById(R.id.player1_win);
-                        p1WinButton.setChecked(currentState.getCurrentSet().didPlayerWin(position, 1));
+                        p1WinButton.setChecked(currentState.getP1ButtonPresses().get(position));
                         ToggleButton p2WinButton = convertView.findViewById(R.id.player2_win);
-                        p2WinButton.setChecked(currentState.getCurrentSet().didPlayerWin(position, 2));
+                        p2WinButton.setChecked(currentState.getP2ButtonPresses().get(position));
 
                         p1WinButton.setOnClickListener(view -> {
                             p2WinButton.setChecked(false);
@@ -107,7 +111,7 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
 
                             p1WinButton.setClickable(false);
 
-                            currentState.getCurrentSet().reportGameWinner(position + 1, 1);
+                            reportGameController.execute(position + 1, 1, "", "");
                             updateScore();
                         });
                         p2WinButton.setOnClickListener(view ->{
@@ -116,7 +120,7 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
 
                             p2WinButton.setClickable(false);
 
-                            currentState.getCurrentSet().reportGameWinner(position + 1, 2);
+                            reportGameController.execute(position + 1, 2, "", "");
                             updateScore();
                         });
 
@@ -150,12 +154,10 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
         ReportSetState currentState = reportViewModel.getState();
 
         TextView p1Score = binding.player1Score;
-        int p1ID = currentState.getCurrentSet().getPlayers()[0].getId();
-        p1Score.setText(String.valueOf(currentState.getCurrentSet().countWins(p1ID)));
+        p1Score.setText(String.valueOf(currentState.getP1Wins()));
 
         TextView p2Score = binding.player2Score;
-        int p2ID = currentState.getCurrentSet().getPlayers()[1].getId();
-        p2Score.setText(String.valueOf(currentState.getCurrentSet().countWins(p2ID)));
+        p2Score.setText(String.valueOf(currentState.getP2Wins()));
 
     }
 
@@ -173,6 +175,7 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
                 showToast("The set has been reported to Start.gg!");
                 navController.navigateUp();
                 break;
+            case "reportgamesuccess": break;
             case "apicallerror": showToast("We can't reach Start.gg right now."); break;
             case "incompletesetinfo": showToast("The set information is not complete!"); break;
         }
@@ -180,6 +183,10 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
 
     public static void setReportSetController(ReportSetController controller) {
         reportSetController = controller;
+    }
+
+    public static void setReportGameController(ReportGameController controller) {
+        reportGameController = controller;
     }
 
     public static void setReportViewModel(ReportViewModel viewModel) {

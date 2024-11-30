@@ -22,6 +22,8 @@ import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSe
 import com.example.csc207courseproject.interface_adapter.mutate_seeding.MutateSeedingPresenter;
 import com.example.csc207courseproject.interface_adapter.ongoing_sets.OngoingSetsController;
 import com.example.csc207courseproject.interface_adapter.ongoing_sets.OngoingSetsPresenter;
+import com.example.csc207courseproject.interface_adapter.report_game.ReportGameController;
+import com.example.csc207courseproject.interface_adapter.report_game.ReportGamePresenter;
 import com.example.csc207courseproject.interface_adapter.report_set.ReportSetController;
 import com.example.csc207courseproject.interface_adapter.report_set.ReportSetPresenter;
 import com.example.csc207courseproject.interface_adapter.select_event.SelectEventController;
@@ -63,6 +65,9 @@ import com.example.csc207courseproject.use_case.get_stations.GetStationsOutputBo
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInteractor;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutputBoundary;
+import com.example.csc207courseproject.use_case.report_game.ReportGameInputBoundary;
+import com.example.csc207courseproject.use_case.report_game.ReportGameInteractor;
+import com.example.csc207courseproject.use_case.report_game.ReportGameOutputBoundary;
 import com.example.csc207courseproject.use_case.select_event.SelectEventInputBoundary;
 import com.example.csc207courseproject.use_case.select_event.SelectEventInteractor;
 import com.example.csc207courseproject.use_case.select_event.SelectEventOutputBoundary;
@@ -253,6 +258,22 @@ public class MainBuilder {
         final OngoingSetsController controller = new OngoingSetsController(ongoingSetsInteractor,
                 reportViewModel.getState());
         ReportFragment.setOngoingSetsController(controller);
+        return this;
+    }
+
+    /**
+     * Adds the Report Game Use Case to the application.
+     * @return this builder
+     */
+    public MainBuilder addReportGameUseCase() {
+        final ReportGameOutputBoundary reportGameOutputBoundary = new ReportGamePresenter(
+                reportViewModel, viewManagerModel);
+        final ReportGameInputBoundary reportGameInteractor = new ReportGameInteractor(
+                reportGameOutputBoundary);
+
+        final ReportGameController controller = new ReportGameController(reportGameInteractor,
+                reportViewModel.getState());
+        ReportSetFragment.setReportGameController(controller);
         return this;
     }
 

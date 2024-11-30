@@ -15,7 +15,7 @@ public class Game {
         winnerID = 0;
     }
 
-    public void reportWinner(Integer winnerID) {
+    public void setWinnerID(Integer winnerID) {
         this.winnerID = winnerID;
     }
 
@@ -29,9 +29,5 @@ public class Game {
 
     public Integer getWinnerID() {
         return winnerID;
-    }
-
-    public boolean isReported() {
-        return winnerID != 0;
     }
 }
