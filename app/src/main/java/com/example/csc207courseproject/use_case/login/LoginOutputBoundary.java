@@ -8,7 +8,7 @@ public interface LoginOutputBoundary {
     /**
      * Prepares the success view for the Login Use Case.
      */
-    void prepareSuccessView();
+    void prepareSuccessView(LoginOutputData loginOutputData);
 
     /**
      * Prepares the failure view for the Login Use Case.

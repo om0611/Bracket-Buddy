@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.call.CallSetFragment">
+
+    <TextView
+            android:id="@+id/selected_text"
+            android:layout_width="326dp"
+            android:layout_height="86dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.492"
+            app:layout_constraintVertical_bias="0.133"
+            android:textStyle="bold"/>
+    <Button
+            android:text="@string/call_button"
+            android:layout_width="140dp"
+            android:layout_height="117dp" android:id="@+id/call_button"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="42dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="312dp"
+            android:layout_marginTop="123dp" app:layout_constraintTop_toBottomOf="@+id/selected_text"
+            app:layout_constraintEnd_toStartOf="@+id/decline_button" android:layout_marginEnd="26dp"
+            android:textSize="22sp"/>
+    <Button
+            android:text="@string/decline_button"
+            android:layout_width="140dp"
+            android:layout_height="117dp" android:id="@+id/decline_button"
+            android:layout_marginTop="123dp"
+            app:layout_constraintTop_toBottomOf="@+id/selected_text" android:layout_marginStart="46dp"
+            app:layout_constraintStart_toEndOf="@+id/call_button" app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="312dp" android:layout_marginEnd="43dp"
+            app:layout_constraintEnd_toEndOf="parent" android:textSize="22sp"/>
+    <Button
+            android:text="@string/stream_button"
+            android:layout_width="249dp"
+            android:layout_height="72dp" android:id="@+id/stream_button"
+            android:layout_marginTop="109dp"
+            app:layout_constraintTop_toBottomOf="@+id/call_button" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="102dp" app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="137dp" android:layout_marginEnd="103dp"
+            app:layout_constraintEnd_toEndOf="parent" android:textSize="20sp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

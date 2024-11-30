@@ -4,10 +4,13 @@ import android.content.Context;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.csc207courseproject.data_access.APIDataAccessObject;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
+import org.json.JSONException;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Login Interactor
@@ -15,11 +18,14 @@ import java.util.List;
 public class LoginInteractor implements LoginInputBoundary, PropertyChangeListener {
     private final LoginDataAccessInterface loginDataAccessObject;
     private final LoginOutputBoundary loginPresenter;
+    private final SelectTournamentDataAccessInterface selectTournamentDataAccessObject;
 
     public LoginInteractor(LoginDataAccessInterface loginDataAccessInterface,
-                           LoginOutputBoundary loginOutputBoundary) {
+                           LoginOutputBoundary loginOutputBoundary,
+                           SelectTournamentDataAccessInterface selectTournamentDataAccessInterface) {
         this.loginDataAccessObject = loginDataAccessInterface;
         this.loginPresenter = loginOutputBoundary;
+        this.selectTournamentDataAccessObject = selectTournamentDataAccessInterface;
 
         loginDataAccessObject.addListener(this);
     }
@@ -42,11 +48,11 @@ public class LoginInteractor implements LoginInputBoundary, PropertyChangeListen
             if (token == null) {
                 loginPresenter.prepareFailView();
             }
-            APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
-            apiDataAccessObject.setTOKEN(token);
-            loginPresenter.prepareSuccessView();
+            selectTournamentDataAccessObject.setTOKEN(token);
+            final LoginOutputData loginOutputData = new LoginOutputData(selectTournamentDataAccessObject.getTournaments());
+            loginPresenter.prepareSuccessView(loginOutputData);
         }
-        catch (InterruptedException e) {
+        catch (JSONException | InterruptedException e) {
             loginPresenter.prepareFailView();
         }
         loginDataAccessObject.stopServer();

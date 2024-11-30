@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class Entrant {
     private final Participant[] participants;
     private final int entrantId;
+    private int currentStationId = -1;
 
     /**
      * Entrant constructor.
@@ -34,5 +35,13 @@ public class Entrant {
             output += " / " + currPlayer.trim();
         }
         return output;
+    }
+
+    public int getCurrentStationId() {
+        return currentStationId;
+    }
+
+    public void setCurrentStationId(int currentStationId) {
+        this.currentStationId = currentStationId;
     }
 }

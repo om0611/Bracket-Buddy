@@ -15,7 +15,6 @@ import java.beans.PropertyChangeListener;
 
 public class LoginActivity extends AppCompatActivity implements PropertyChangeListener {
 
-    private ActivityLoginBinding binding;
     private static LoginController loginController;
     private static LoginViewModel loginViewModel;
 
@@ -25,7 +24,23 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
         setContentView(R.layout.activity_login);
 
         final MainBuilder mainBuilder = new MainBuilder();
-        mainBuilder.addLoginUseCase();
+        mainBuilder.addLoginView()
+                .addTournamentView()
+                .addEventView()
+                .addSeedingView()
+                .addCallView()
+                .addReportView()
+                .addLoginUseCase()
+                .addSelectTournamentUseCase()
+                .addSelectEventUseCase()
+                .addMutateSeedingUseCase()
+                .addUpdateSeedingUseCase()
+                .addSelectPhaseUseCase()
+                .addUpcomingSetsUseCase()
+                .addGetStationsUseCase()
+                .addReportSetUseCase()
+                .addOngoingSetsUseCase();
+
         loginViewModel.addPropertyChangeListener(this);
     }
 
@@ -48,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
                 Intent switchToTournamentView = new Intent(this, SelectTournamentActivity.class);
                 startActivity(switchToTournamentView);
                 break;
-            case "loginfail": Toast.makeText(this, "Login failed. Try again.",
+            case "loginfail": Toast.makeText(this, "Login failed. Please try again!",
                     Toast.LENGTH_SHORT).show(); break;
         }
     }
