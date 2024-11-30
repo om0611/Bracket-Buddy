@@ -4,6 +4,7 @@ import com.example.csc207courseproject.data_access.APIDataAccessObject;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Participant;
+import com.example.csc207courseproject.data_access.OAuthDataAccessObject;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
 import com.example.csc207courseproject.interface_adapter.add_station.AddStationController;
 import com.example.csc207courseproject.interface_adapter.add_station.AddStationPresenter;
@@ -11,6 +12,8 @@ import com.example.csc207courseproject.interface_adapter.call_set.CallSetControl
 import com.example.csc207courseproject.interface_adapter.call_set.CallSetPresenter;
 import com.example.csc207courseproject.interface_adapter.find_station.FindStationController;
 import com.example.csc207courseproject.interface_adapter.find_station.FindStationPresenter;
+import com.example.csc207courseproject.interface_adapter.login.LoginController;
+import com.example.csc207courseproject.interface_adapter.login.LoginPresenter;
 import com.example.csc207courseproject.interface_adapter.get_stations.GetStationsController;
 import com.example.csc207courseproject.interface_adapter.get_stations.GetStationsPresenter;
 import com.example.csc207courseproject.interface_adapter.login.LoginViewModel;
@@ -21,8 +24,14 @@ import com.example.csc207courseproject.interface_adapter.ongoing_sets.OngoingSet
 import com.example.csc207courseproject.interface_adapter.ongoing_sets.OngoingSetsPresenter;
 import com.example.csc207courseproject.interface_adapter.report_set.ReportSetController;
 import com.example.csc207courseproject.interface_adapter.report_set.ReportSetPresenter;
+import com.example.csc207courseproject.interface_adapter.select_event.SelectEventController;
+import com.example.csc207courseproject.interface_adapter.select_event.SelectEventPresenter;
+import com.example.csc207courseproject.interface_adapter.select_event.SelectEventViewModel;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhaseController;
 import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhasePresenter;
+import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentController;
+import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentPresenter;
+import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentViewModel;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsPresenter;
 import com.example.csc207courseproject.ui.call.CallSetFragment;
@@ -35,6 +44,9 @@ import com.example.csc207courseproject.ui.seeding.SeedingViewModel;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingController;
 import com.example.csc207courseproject.interface_adapter.update_seeding.UpdateSeedingPresenter;
 import com.example.csc207courseproject.ui.seeding.SeedingFragment;
+import com.example.csc207courseproject.use_case.login.LoginInputBoundary;
+import com.example.csc207courseproject.use_case.login.LoginInteractor;
+import com.example.csc207courseproject.use_case.login.LoginOutputBoundary;
 import com.example.csc207courseproject.ui.call.CallFragment;
 import com.example.csc207courseproject.use_case.add_station.AddStationInputBoundary;
 import com.example.csc207courseproject.use_case.add_station.AddStationInteractor;
@@ -51,6 +63,9 @@ import com.example.csc207courseproject.use_case.get_stations.GetStationsOutputBo
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInputBoundary;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingInteractor;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingOutputBoundary;
+import com.example.csc207courseproject.use_case.select_event.SelectEventInputBoundary;
+import com.example.csc207courseproject.use_case.select_event.SelectEventInteractor;
+import com.example.csc207courseproject.use_case.select_event.SelectEventOutputBoundary;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsInputBoundary;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsInteractor;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsOutputBoundary;
@@ -60,6 +75,9 @@ import com.example.csc207courseproject.use_case.report_set.ReportSetOutputBounda
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInputBoundary;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseInteractor;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseOutputBoundary;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentInputBoundary;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentInteractor;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentOutputBoundary;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsInputBoundary;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsInteractor;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsOutputBoundary;
@@ -68,33 +86,48 @@ import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingInte
 import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingOutputBoundary;
 import com.example.csc207courseproject.view.ViewManager;
 
-import java.util.Map;
-import java.util.SortedMap;
-
 public class MainBuilder {
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(viewManagerModel);
 
     private final APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
+    private final OAuthDataAccessObject oAuthDataAccessObject = new OAuthDataAccessObject();
 
     private LoginViewModel loginViewModel;
+    private SelectTournamentViewModel selectTournamentViewModel;
+    private SelectEventViewModel selectEventViewModel;
     private SeedingViewModel seedingViewModel;
     private MainViewModel mainViewModel;
     private CallViewModel callViewModel;
     private ReportViewModel reportViewModel;
 
-    // MOVE THIS TO EVENT SELECT VIEW INTERACTOR
-    public MainBuilder createEventData(){
-        // Create Event Data
-        String eventLink = "tournament/skipping-classes-world-championship-start-gg-api-test/event/1v1-lecture-skipping-bracket";
-        APIDataAccessObject dao = new APIDataAccessObject();
-        int eventID = dao.getEventId(eventLink);
-        Object[] entrants = dao.getEntrantsandParticipantsInEvent(eventID);
-        SortedMap<String, Integer> phaseIds = apiDataAccessObject.getPhaseIDs(eventID);
-        EventData.createEventData(730092, eventID, "singles", (Map<Integer, Entrant>) entrants[0],
-                (Map<Integer, Participant>) entrants[1], false, phaseIds);
+    /**
+     * Adds the Login View to the application.
+     * @return this builder
+     */
+    public MainBuilder addLoginView() {
+        loginViewModel = new LoginViewModel();
         return this;
     }
+
+    /**
+     * Adds the Select Tournament View to the application.
+     * @return this builder
+     */
+    public MainBuilder addTournamentView() {
+        selectTournamentViewModel = new SelectTournamentViewModel();
+        return this;
+    }
+
+    /**
+     * Adds the Select Event View to the application.
+     * @return this builder
+     */
+    public MainBuilder addEventView() {
+        selectEventViewModel = new SelectEventViewModel();
+        return this;
+    }
+
     /**
      * Adds the Seeding View to the application.
      * @return this builder
@@ -247,6 +280,50 @@ public class MainBuilder {
     public MainBuilder addMainView() {
 
         mainViewModel = new MainViewModel();
+        return this;
+    }
+
+    /**
+     * Adds the login use case to the application.
+     * @return this builder
+     */
+    public MainBuilder addLoginUseCase() {
+        final LoginOutputBoundary loginPresenter = new LoginPresenter(
+                loginViewModel, selectTournamentViewModel);
+        final LoginInputBoundary loginInteractor = new LoginInteractor(
+                oAuthDataAccessObject, loginPresenter, apiDataAccessObject);
+        final LoginController controller = new LoginController(loginInteractor);
+        LoginActivity.setLoginController(controller);
+        LoginActivity.setLoginViewModel(loginViewModel);
+        return this;
+    }
+
+    /**
+     * Adds the select tournament use case to the application.
+     * @return this builder
+     */
+    public MainBuilder addSelectTournamentUseCase() {
+        final SelectTournamentOutputBoundary selectTournamentPresenter = new SelectTournamentPresenter(
+                selectTournamentViewModel, selectEventViewModel);
+        final SelectTournamentInputBoundary selectTournamentInteractor = new SelectTournamentInteractor(
+                apiDataAccessObject, selectTournamentPresenter, apiDataAccessObject);
+        final SelectTournamentController controller = new SelectTournamentController(selectTournamentInteractor);
+        SelectTournamentActivity.setSelectTournamentController(controller);
+        SelectTournamentActivity.setSelectTournamentViewModel(selectTournamentViewModel);
+        return this;
+    }
+
+    /**
+     * Adds the select event use case to the application.
+     * @return this builder
+     */
+    public MainBuilder addSelectEventUseCase() {
+        final SelectEventOutputBoundary selectEventPresenter = new SelectEventPresenter(selectEventViewModel);
+        final SelectEventInputBoundary selectEventInteractor = new SelectEventInteractor(
+                apiDataAccessObject, selectEventPresenter);
+        final SelectEventController controller = new SelectEventController(selectEventInteractor);
+        SelectEventActivity.setSelectEventController(controller);
+        SelectEventActivity.setSelectEventViewModel(selectEventViewModel);
         return this;
     }
 

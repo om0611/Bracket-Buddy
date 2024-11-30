@@ -24,6 +24,7 @@ public class ReportSetController {
 
     /**
      * Execute the report set use case
+     *
      * @param p1DQ Whether the first player DQ'd
      * @param p2DQ Wherther the second player DQ's
      */
@@ -36,7 +37,6 @@ public class ReportSetController {
         boolean hasDQ = p1DQ || p2DQ;
 
         if (hasDQ) {
-            currState.setSetOver(true);
             if (p2DQ) {
                 winnerID = currState.getCurrentSet().getPlayers()[0].getId();
             } else {
@@ -44,7 +44,7 @@ public class ReportSetController {
             }
         } else {
             //If the set is not over yet, then there is no current winner
-            if (currState.getSetOver()) {
+            if (currState.getCurrentSet().isSetOver()) {
                 winnerID = currState.getCurrentSet().getWinnerID();
             } else {
                 winnerID = -1;
@@ -57,32 +57,4 @@ public class ReportSetController {
 
         reportSetUseCaseInteractor.execute(reportSetInputData);
     }
-
-    public void executeTest() {
-        //Reports a selected set by entering the values manually rather than keeping them in the state
-        int setID = 82752145;
-        int p1ID = 18392227;
-        int p2ID = 18392226;
-        List<Game> games = new ArrayList<Game>();
-        Game game1 = new Game();
-        game1.report(p2ID, "", "");
-        games.add(game1);
-
-        Game game2 = new Game();
-        game2.report(p2ID, "", "");
-        games.add(game2);
-
-        Game game3 = new Game();
-        game3.report(p1ID, "", "");
-        games.add(game3);
-
-        Game game4 = new Game();
-        game4.report(p2ID, "", "");
-        games.add(game4);
-
-        final ReportSetInputData reportSetTestInputData = new ReportSetInputData(setID, p2ID, games, true);
-
-        reportSetUseCaseInteractor.execute(reportSetTestInputData);
-    }
-
 }

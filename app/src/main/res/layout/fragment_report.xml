@@ -30,5 +30,6 @@
             android:layout_height="182dp" android:id="@+id/no_ongoing_sets"
             android:textSize="48sp"
             app:layout_constraintTop_toTopOf="@+id/ongoing_sets" android:layout_marginTop="45dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="50dp"/>
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="50dp"
+            android:visibility="visible"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
