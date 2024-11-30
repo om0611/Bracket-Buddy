@@ -25,7 +25,7 @@
     <string name="p1DQ">DQ (P1)</string>
     <string name="report_set_text">Report Set to Start.gg</string>
     <string name="no_ongoing">There are no ongoing sets right now!</string>
-    <string name="no_upcoming">There are no upcoming sets right now! Sets might take some time to appear.</string>
+    <string name="no_upcoming">There are no upcoming sets right now!</string>
     <string name="add_tag">Add tag</string>
     <string name="remove_tag">Remove tag</string>
     <string name="add_station">Add station</string>
