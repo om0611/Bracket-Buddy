@@ -5,6 +5,6 @@ public interface GetStationsInputBoundary {
     /**
      * Executes the get stations case.
      */
-    void execute();
+    void execute(GetStationsInputData inputData);
 
 }

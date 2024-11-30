@@ -6,6 +6,12 @@ import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Participant;
 import com.example.csc207courseproject.data_access.OAuthDataAccessObject;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
+import com.example.csc207courseproject.interface_adapter.add_station.AddStationController;
+import com.example.csc207courseproject.interface_adapter.add_station.AddStationPresenter;
+import com.example.csc207courseproject.interface_adapter.call_set.CallSetController;
+import com.example.csc207courseproject.interface_adapter.call_set.CallSetPresenter;
+import com.example.csc207courseproject.interface_adapter.find_station.FindStationController;
+import com.example.csc207courseproject.interface_adapter.find_station.FindStationPresenter;
 import com.example.csc207courseproject.interface_adapter.login.LoginController;
 import com.example.csc207courseproject.interface_adapter.login.LoginPresenter;
 import com.example.csc207courseproject.interface_adapter.get_stations.GetStationsController;
@@ -30,6 +36,8 @@ import com.example.csc207courseproject.interface_adapter.select_tournament.Selec
 import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentViewModel;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsPresenter;
+import com.example.csc207courseproject.ui.call.CallSetFragment;
+import com.example.csc207courseproject.ui.call.CallStationFragment;
 import com.example.csc207courseproject.ui.call.CallViewModel;
 import com.example.csc207courseproject.ui.report.ReportFragment;
 import com.example.csc207courseproject.ui.report.ReportSetFragment;
@@ -42,6 +50,15 @@ import com.example.csc207courseproject.use_case.login.LoginInputBoundary;
 import com.example.csc207courseproject.use_case.login.LoginInteractor;
 import com.example.csc207courseproject.use_case.login.LoginOutputBoundary;
 import com.example.csc207courseproject.ui.call.CallFragment;
+import com.example.csc207courseproject.use_case.add_station.AddStationInputBoundary;
+import com.example.csc207courseproject.use_case.add_station.AddStationInteractor;
+import com.example.csc207courseproject.use_case.add_station.AddStationOutputBoundary;
+import com.example.csc207courseproject.use_case.call_set.CallSetInputBoundary;
+import com.example.csc207courseproject.use_case.call_set.CallSetInteractor;
+import com.example.csc207courseproject.use_case.call_set.CallSetOutputBoundary;
+import com.example.csc207courseproject.use_case.find_station.FindStationInputBoundary;
+import com.example.csc207courseproject.use_case.find_station.FindStationInteractor;
+import com.example.csc207courseproject.use_case.find_station.FindStationOutputBoundary;
 import com.example.csc207courseproject.use_case.get_stations.GetStationsInputBoundary;
 import com.example.csc207courseproject.use_case.get_stations.GetStationsInteractor;
 import com.example.csc207courseproject.use_case.get_stations.GetStationsOutputBoundary;
@@ -160,8 +177,7 @@ public class MainBuilder {
         final UpcomingSetsInputBoundary upcomingSetsInteractor = new UpcomingSetsInteractor(
                 apiDataAccessObject, upcomingSetsOutputBoundary);
 
-        final UpcomingSetsController controller = new UpcomingSetsController(upcomingSetsInteractor,
-                callViewModel.getState());
+        final UpcomingSetsController controller = new UpcomingSetsController(upcomingSetsInteractor);
         CallFragment.setUpcomingSetsController(controller);
         return this;
     }
@@ -171,13 +187,61 @@ public class MainBuilder {
      * @return this builder
      */
     public MainBuilder addGetStationsUseCase() {
-        final GetStationsOutputBoundary getStationsOutputBoundary = new GetStationsPresenter(
+        final GetStationsOutputBoundary outputBoundary = new GetStationsPresenter(
                 callViewModel);
-        final GetStationsInputBoundary getStationsInteractor = new GetStationsInteractor(
-                apiDataAccessObject, getStationsOutputBoundary);
+        final GetStationsInputBoundary interactor = new GetStationsInteractor(
+                apiDataAccessObject, outputBoundary);
 
-        final GetStationsController controller = new GetStationsController(getStationsInteractor);
+        final GetStationsController controller = new GetStationsController(interactor,
+                callViewModel.getState());
         CallFragment.setGetStationsController(controller);
+        return this;
+    }
+
+    /**
+     * Adds the add station Use Case to the application.
+     * @return this builder
+     */
+    public MainBuilder addAddStationUseCase() {
+        final AddStationOutputBoundary outputBoundary = new AddStationPresenter(
+                callViewModel);
+        final AddStationInputBoundary interactor = new AddStationInteractor(
+                apiDataAccessObject, outputBoundary);
+
+        final AddStationController controller = new AddStationController(interactor,
+                callViewModel.getState());
+        CallStationFragment.setAddStationController(controller);
+        return this;
+    }
+
+    /**
+     * Adds the call set Use Case to the application.
+     * @return this builder
+     */
+    public MainBuilder addCallSetUseCase() {
+        final CallSetOutputBoundary outputBoundary = new CallSetPresenter(
+                callViewModel);
+        final CallSetInputBoundary interactor = new CallSetInteractor(
+                apiDataAccessObject, outputBoundary);
+
+        final CallSetController controller = new CallSetController(interactor,
+                callViewModel.getState());
+        CallSetFragment.setCallSetController(controller);
+        return this;
+    }
+
+    /**
+     * Adds the find station Use Case to the application.
+     * @return this builder
+     */
+    public MainBuilder addFindStationUseCase() {
+        final FindStationOutputBoundary outputBoundary = new FindStationPresenter(
+                callViewModel);
+        final FindStationInputBoundary interactor = new FindStationInteractor(outputBoundary);
+
+        final FindStationController controller = new FindStationController(interactor,
+                callViewModel.getState());
+        CallFragment.setFindStationController(controller);
         return this;
     }
 

@@ -5,27 +5,45 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/nav_call">
 
-    <fragment
-            android:id="@+id/nav_call"
-            android:label="@string/title_call"
-            tools:layout="@layout/fragment_call"
-            app:defaultNavHost="true"
-            android:name="com.example.csc207courseproject.ui.call.CallFragment">
-        <action android:id="@+id/action_nav_call_to_callSetFragment" app:destination="@id/callSetFragment"
-                app:launchSingleTop="false" app:popUpTo="@id/nav_call"/>
-        <action android:id="@+id/action_nav_call_to_callStationFragment" app:destination="@id/callStationFragment"
-                app:popUpTo="@id/nav_call" app:launchSingleTop="false"/>
-    </fragment>
+    <navigation
+        android:id="@+id/nav_call"
+        app:startDestination="@+id/nav_call_mini">
+        <fragment
+                android:id="@+id/nav_call_mini"
+                android:label="@string/title_call"
+                tools:layout="@layout/fragment_call"
+                android:name="com.example.csc207courseproject.ui.call.CallFragment">
+            <action android:id="@+id/action_nav_call_to_callSetFragment"
+                    app:destination="@id/callSetFragment"/>
+            <action android:id="@+id/action_nav_call_to_callStationFragment"
+                    app:destination="@id/callStationFragment"/>
+        </fragment>
 
-    <fragment
+        <fragment android:id="@+id/callSetFragment"
+                  android:name="com.example.csc207courseproject.ui.call.CallSetFragment"
+                  android:label="@string/title_call_set"/>
+        <fragment android:id="@+id/callStationFragment"
+                  android:name="com.example.csc207courseproject.ui.call.CallStationFragment"
+                  android:label="@string/title_station"/>
+    </navigation>
+
+    <navigation
             android:id="@+id/nav_report"
-            android:name="com.example.csc207courseproject.ui.report.ReportFragment"
-            android:label="@string/title_report"
-            app:defaultNavHost="true"
-            tools:layout="@layout/fragment_seeding">
-        <action android:id="@+id/action_nav_report_to_reportSetFragment" app:destination="@id/reportSetFragment"
-                app:launchSingleTop="false" app:popUpTo="@id/nav_report"/>
-    </fragment>
+            app:startDestination="@+id/nav_report_mini">
+        <fragment
+                android:id="@+id/nav_report_mini"
+                android:name="com.example.csc207courseproject.ui.report.ReportFragment"
+                android:label="@string/title_report"
+                tools:layout="@layout/fragment_seeding">
+            <action android:id="@+id/action_nav_report_to_reportSetFragment"
+                    app:destination="@id/reportSetFragment"/>
+        </fragment>
+
+        <fragment android:id="@+id/reportSetFragment"
+                  android:name="com.example.csc207courseproject.ui.report.ReportSetFragment"
+                  android:label="@string/title_report_set"/>
+    </navigation>
+
 
     <fragment
             android:id="@+id/nav_finance"
@@ -37,13 +55,4 @@
     <fragment android:id="@+id/nav_seeding"
               android:name="com.example.csc207courseproject.ui.seeding.SeedingFragment"
               android:label="@string/title_seeding"/>
-    <fragment android:id="@+id/callSetFragment"
-              android:name="com.example.csc207courseproject.ui.call.CallSetFragment"
-              android:label="Call this set"/>
-    <fragment android:id="@+id/reportSetFragment"
-              android:name="com.example.csc207courseproject.ui.report.ReportSetFragment"
-              android:label="Report this set"/>
-    <fragment android:id="@+id/callStationFragment"
-              android:name="com.example.csc207courseproject.ui.call.CallStationFragment"
-              android:label="Configure stations"/>
 </navigation>

@@ -20,7 +20,7 @@
     <string name="stations_button">Configure Stations</string>
     <string name="call_button">Call Set</string>
     <string name="decline_button">Decline Set</string>
-    <string name="stream_button">Call Set to Stream</string>
+    <string name="stream_button">Change to Stream Setup</string>
     <string name="p2DQ">DQ (P2)</string>
     <string name="p1DQ">DQ (P1)</string>
     <string name="report_set_text">Report Set to Start.gg</string>
@@ -34,6 +34,13 @@
     <string name="submit_tag">Submit</string>
     <string name="empty_station">Station #</string>
     <string name="empty_tags">Tags:</string>
+    <string name="no_stations">There are no stations. Try adding a new station. </string>
+    <string name="decline_text">Decline reason:</string>
+    <string name="applies_p1">Applies to player 1</string>
+    <string name="applies_p2">Applies to player 2</string>
+    <string name="title_report_set">Report a Set</string>
+    <string name="title_call_set">Call a Set</string>
+    <string name="title_station">Configure Stations</string>
     <string name="character_entry">Enter Characters:</string>
     <string name="p1_win">Player 1 Win</string>
     <string name="p2_win">Player 2 Win</string>

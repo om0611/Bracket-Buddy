@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
@@ -15,6 +14,7 @@ import com.example.csc207courseproject.R;
 import com.example.csc207courseproject.databinding.FragmentCallBinding;
 import com.example.csc207courseproject.entities.SetData;
 import com.example.csc207courseproject.interface_adapter.call_set.CallSetState;
+import com.example.csc207courseproject.interface_adapter.find_station.FindStationController;
 import com.example.csc207courseproject.interface_adapter.get_stations.GetStationsController;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.ui.AppFragment;
@@ -30,9 +30,11 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
     private static CallViewModel callViewModel;
     private static UpcomingSetsController upcomingSetsController;
     private static GetStationsController getStationsController;
+    private static FindStationController findStationController;
     private NavController navc;
 
     private FragmentCallBinding binding;
+    private boolean navReady = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -46,6 +48,7 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         createStationButton();
 
         upcomingSetsController.execute();
+        getStationsController.execute();
 
         return root;
     }
@@ -83,14 +86,17 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         setsView.setAdapter(itemsAdapter);
         setsView.setOnItemClickListener((list, view, position, id) -> {
             callViewModel.getState().setCurrentSet(sets.get(position));
-            navc.navigate(R.id.action_nav_call_to_callSetFragment);
-
+            findStationController.execute();
+            if (navReady) {
+                navc.navigate(R.id.action_nav_call_to_callSetFragment);
+                navReady = false;
+            }
         });
     }
 
     private void createStationButton(){
         Button configureButton = binding.configureButton;
-        configureButton.setOnClickListener(view -> getStationsController.execute());
+        configureButton.setOnClickListener(view -> navc.navigate(R.id.action_nav_call_to_callStationFragment));
     }
 
     @Override
@@ -105,8 +111,10 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         switch (evt.getPropertyName()) {
             case "getsetssuccess": createDisplay(); break;
             case "getsetsfail": break;
-            case "getstationssuccess": navc.navigate(R.id.action_nav_call_to_callStationFragment); break;
+            case "getstationssuccess": break;
             case "getstationsfail": showToast("Stations can not be found."); break;
+            case "findsuccess": navReady = true; break;
+            case "findfail": showToast("No stations are available. Make sure stations are created."); break;
         }
     }
 
@@ -116,6 +124,10 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
 
     public static void setGetStationsController(GetStationsController controller) {
         getStationsController = controller;
+    }
+
+    public static void setFindStationController(FindStationController controller) {
+        findStationController = controller;
     }
 
     public static void setCallViewModel(CallViewModel viewModel) {
