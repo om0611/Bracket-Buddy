@@ -10,6 +10,7 @@ public class EventData {
     private static int eventId;
     private static String eventName;
     private static Map<Integer, Entrant> entrants;
+    private static Map<Integer, Station> stations;
     private static Map<Integer, Participant> participants;
     private static boolean hasCharacters;
     private static SortedMap<String, Integer> phaseIds;
@@ -24,6 +25,7 @@ public class EventData {
         participants = ps;
         hasCharacters = hCharacters;
         phaseIds = phases;
+        stations = new HashMap<>();
         possibleTags.add("Stream setup");
         possibleTags.add("No DLC");
         possibleTags.add("No GCC adapter");
@@ -97,5 +99,13 @@ public class EventData {
 
     public static List<String> getPossibleTags() {
         return possibleTags;
+    }
+
+    public static int getTournamentId() {
+        return tournamentId;
+    }
+
+    public static Map<Integer, Station> getStations() {
+        return stations;
     }
 }

@@ -1,5 +1,8 @@
 package com.example.csc207courseproject.entities;
 
+import androidx.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +10,8 @@ public class Station {
     private final List<String> tags = new ArrayList<>();
     private final int id;
     private final int stationNum;
-    private boolean isStream;
+    private boolean isStream = false;
+    private boolean isOccupied = false;
 
     public Station(int stationId, int station) {
         id = stationId;
@@ -30,7 +34,8 @@ public class Station {
 
         if (tag.equals("Stream setup")) {
             isStream = true;
-        } else if (!tags.contains(tag)) {
+        }
+        if (!tags.contains(tag)) {
             tags.add(tag);
         }
     }
@@ -43,9 +48,8 @@ public class Station {
 
         if (tag.equals("Stream setup")) {
             isStream = false;
-        } else {
-            tags.remove(tag);
         }
+        tags.remove(tag);
     }
 
     /**
@@ -61,6 +65,10 @@ public class Station {
         return isStream;
     }
 
+    public boolean isOccupied() {return isOccupied;}
+
+    public void setOccupied(boolean isOccupied) {this.isOccupied = isOccupied;}
+
     public String tagsToString(){
         if (tags.isEmpty()) {
             return "";
@@ -70,5 +78,15 @@ public class Station {
             output += ", " + tags.get(i);
         }
         return output;
+    }
+
+    @NonNull
+    @NotNull
+    @Override
+    public String toString() {
+        if (isStream) {
+            return "| Station " + stationNum + " (Stream Setup) |";
+        }
+        return "| Station " + stationNum + " |";
     }
 }

@@ -26,6 +26,9 @@ private ActivityMainBinding binding;
                 .addCallView()
                 .addUpcomingSetsUseCase()
                 .addGetStationsUseCase()
+                .addAddStationUseCase()
+                .addCallSetUseCase()
+                .addFindStationUseCase()
                 .addReportView()
                 .addOngoingSetsUseCase()
                 .addReportSetUseCase();

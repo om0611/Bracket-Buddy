@@ -2,9 +2,12 @@ package com.example.csc207courseproject.use_case.upcoming_sets;
 
 
 import android.util.Log;
+import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
+import com.example.csc207courseproject.entities.SetData;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class UpcomingSetsInteractor implements UpcomingSetsInputBoundary {
 
@@ -22,6 +25,17 @@ public class UpcomingSetsInteractor implements UpcomingSetsInputBoundary {
         // Check if API call is successful
         int eventId = EventData.getEventId();
         try {
+            List<SetData> upcomingSets = dataAccess.getUpcomingSets(eventId);
+
+            //Reopen free stations
+            for (SetData upcomingSet : upcomingSets) {
+                for(Entrant entrant : upcomingSet.getPlayers()) {
+                    if (entrant.getCurrentStation() != null) {
+                        entrant.getCurrentStation().setOccupied(false);
+                    }
+                }
+            }
+
             UpcomingSetsOutputData s = new UpcomingSetsOutputData(dataAccess.getUpcomingSets(eventId));
 
             upcomingSetsPresenter.prepareSuccessView(s);

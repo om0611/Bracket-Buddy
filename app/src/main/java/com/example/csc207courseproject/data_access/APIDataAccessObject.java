@@ -3,6 +3,8 @@ package com.example.csc207courseproject.data_access;
 import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
 import com.example.csc207courseproject.entities.*;
+import com.example.csc207courseproject.use_case.add_station.AddStationDataAccessInterface;
+import com.example.csc207courseproject.use_case.call_set.CallSetDataAccessInterface;
 import com.example.csc207courseproject.use_case.get_stations.GetStationsDataAccessInterface;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsDataAccessInterface;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
@@ -22,7 +24,8 @@ import java.util.concurrent.CountDownLatch;
 
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MainDataAccessInterface,
         MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface,
-        OngoingSetsDataAccessInterface, GetStationsDataAccessInterface {
+        OngoingSetsDataAccessInterface, GetStationsDataAccessInterface, AddStationDataAccessInterface,
+        CallSetDataAccessInterface {
 
     private final String TOKEN = BuildConfig.TOKEN;
     private final String API_URL = "https://api.start.gg/gql/alpha";
@@ -537,9 +540,16 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             // Save stations to a list
             List<Station> stations = new ArrayList<>();
             for (int i = 0; i < jsonStations.length(); i++) {
-                int number = jsonStations.getJSONObject(i).getInt("number");
                 int id = jsonStations.getJSONObject(i).getInt("id");
-                stations.add(new Station(id, number));
+                if(EventData.getStations().containsKey(id)) {
+                    stations.add(EventData.getStations().get(id));
+                }else{
+                    int number = jsonStations.getJSONObject(i).getInt("number");
+                    Station newStation = new Station(id, number);
+                    EventData.getStations().put(id, newStation);
+                    stations.add(newStation);
+                }
+
             }
 
             return stations;
@@ -552,9 +562,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
     /**
      * Adds a station to an event.
      * @param tournamentId The ID of the event
-     * @param stationNumber THe number of the station
+     * @param stationNumber The number of the station
+     * @return The id of the added station
      */
-    public void addStation(int tournamentId, int stationNumber) {
+    public int addStation(int tournamentId, int stationNumber) {
         try{
             // Create station input
             JSONObject fields = new JSONObject();
@@ -562,7 +573,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
 
             // Create query
             String q = "mutation AddStation($tournamentId: ID, $fields: StationUpsertInput!) {" +
-                "upsertStation($tournamentId: ID, $fields: StationUpsertInput!){state}}";
+                "upsertStation(tournamentId: $tournamentId, fields: $fields){id}}";
 
             JSONObject json = new JSONObject();
             JSONObject variables = new JSONObject();
@@ -572,7 +583,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Main
             json.put("variables", variables);
 
             sendRequest(json.toString());
+            int id = jsonResponse.getJSONObject("data").getJSONObject("upsertStation").getInt("id");
             jsonResponse = null;
+
+            return id;
 
         } catch(JSONException e) {
             throw new RuntimeException(e);
