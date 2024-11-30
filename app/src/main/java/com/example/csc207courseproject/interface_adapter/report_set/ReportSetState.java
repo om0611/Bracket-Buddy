@@ -1,6 +1,7 @@
 package com.example.csc207courseproject.interface_adapter.report_set;
 
 import com.example.csc207courseproject.entities.SetData;
+import com.example.csc207courseproject.use_case.report_game.ReportGameOutputData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,61 @@ public class ReportSetState {
 
     private SetData currentSet;
     private List<SetData> ongoingSets;
+
+    // Attributes accessible for display in the ReportSetFragment
+    private int p1Wins = 0;
+    private int p2Wins = 0;
+    private List<Boolean> p1ButtonPresses = new ArrayList<>();
+    private List<Boolean> p2ButtonPresses = new ArrayList<>();
+    private boolean setOver = false;
+
+    public ReportSetState() {
+        p1ButtonPresses.add(false);
+        p2ButtonPresses.add(false);
+    }
+
+    public boolean isSetOver() {
+        return setOver;
+    }
+
+    public void setSetOver(boolean setOver) {
+        this.setOver = setOver;
+    }
+
+    public List<Boolean> getP1ButtonPresses () {
+        return p1ButtonPresses;
+    }
+    public List<Boolean> getP2ButtonPresses () {
+        return p2ButtonPresses;
+    }
+
+    public void setP1ButtonPresses(List<Boolean> p1ButtonPresses) {
+        this.p1ButtonPresses = p1ButtonPresses;
+    }
+
+    public void setP2ButtonPresses(List<Boolean> p2ButtonPresses) {
+        this.p2ButtonPresses = p2ButtonPresses;
+    }
+
+    public int getP1Wins() {
+        return p1Wins;
+    }
+
+    public int getP2Wins() {
+        return p2Wins;
+    }
+
+    public void setP1Wins(int p1Wins) {
+        this.p1Wins = p1Wins;
+    }
+
+    public void setP2Wins(int p2Wins) {
+        this.p2Wins = p2Wins;
+    }
+
+    public void setReportedSetIDs(List<Integer> reportedSetIDs) {
+        this.reportedSetIDs = reportedSetIDs;
+    }
 
     // This Arraylist allows us to keep track of the recently reported sets locally
     // so that the local menus are updated in real time rather than after the API
@@ -28,6 +84,7 @@ public class ReportSetState {
     public List<SetData> getOngoingSets() {return ongoingSets;}
 
     public SetData getCurrentSet() {return currentSet;}
+
 
 
 }

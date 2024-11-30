@@ -38,6 +38,7 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
                 .addSelectPhaseUseCase()
                 .addUpcomingSetsUseCase()
                 .addGetStationsUseCase()
+                .addReportGameUseCase()
                 .addReportSetUseCase()
                 .addOngoingSetsUseCase();
 

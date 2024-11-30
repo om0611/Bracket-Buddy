@@ -44,7 +44,7 @@ public class ReportSetController {
             }
         } else {
             //If the set is not over yet, then there is no current winner
-            if (currState.getCurrentSet().isSetOver()) {
+            if (currState.isSetOver()) {
                 winnerID = currState.getCurrentSet().getWinnerID();
             } else {
                 winnerID = -1;
