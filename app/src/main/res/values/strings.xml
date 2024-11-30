@@ -43,4 +43,8 @@
     </string>
     <string name="player_1">Player 1</string>
     <string name="player_2">Player 2</string>
+    <string name="report_explanation">Please note that DQs take priority over game data entry.\nDouble DQs result in a
+        victory for the first player, but a retroactive DQ if they DQ next round, as is on Start.gg
+    </string>
+    <string name="dash">-</string>
 </resources>

@@ -38,8 +38,13 @@ public class SetData {
     public void reportGameWinner(int gameNum, int playerNum) {
         int gameWinnerID = players[playerNum - 1].getId();
         this.games.get(gameNum - 1).reportWinner(gameWinnerID);
-        if (!isSetOver()) {
-            games.add(new Game());
+        boolean over = isSetOver();
+        //Add or remove games from the menu
+        if (!over) {
+            //Only add another game to the menu if all the current ones are reported
+            if (games.get(games.size() - 1).isReported()) {
+                games.add(new Game());
+            }
         } else {
             setWinnerID(gameWinnerID);
             // Remove unnecessary games
@@ -49,8 +54,42 @@ public class SetData {
                 uselessGames.add(games.get(i));
                 i -= 1;
             }
+
             games.removeAll(uselessGames);
 
+            // If a player now has an extra win, remove the extra win at the end from the games list
+            if (countWins(winnerID) > firstTo) {
+                games.remove(games.size() - 1);
+            }
+
+            //Add or remove games from the menu - buggy other implementation
+            //        if (!over) {
+            //            //Only add another game to the menu if all the current ones are reported
+            //            if (games.get(games.size() - 1).isReported()) {
+            //                games.add(new Game());
+            //            }
+            //        } else {
+            //            setWinnerID(gameWinnerID);
+            //            // Remove unnecessary games, first games where the winning player won
+            //            int i = 0;
+            //            int count = 0;
+            //            List<Game> validGames = new ArrayList<>();
+            //
+            //            while (i < games.size()) {
+            //                validGames.add(games.get(i));
+            //
+            //                if (games.get(i).getWinnerID() == gameWinnerID) {
+            //                    count++;
+            //                }
+            //
+            //                if (count == firstTo) {
+            //                    i = games.size();
+            //                } else {
+            //                    i += 1;
+            //                }
+            //            }
+            //            this.games = validGames;
+            //        }
         }
     }
 
@@ -65,7 +104,7 @@ public class SetData {
                 countWins(players[1].getId()) >= firstTo;
     }
 
-    private int countWins(int winnerID){
+    public int countWins(int winnerID){
         int count = 0;
         for (Game g : games) {
             if (g.getWinnerID() == winnerID) {

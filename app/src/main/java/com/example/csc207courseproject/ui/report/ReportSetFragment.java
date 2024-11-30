@@ -1,6 +1,7 @@
 package com.example.csc207courseproject.ui.report;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,7 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
         TextView text = binding.playersTitle;
         text.setText(currentState.getCurrentSet().toString());
 
+        updateScore();
         createMutateButton();
         createGamesDisplay();
 
@@ -65,8 +67,7 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
         ReportSetState currentState = reportViewModel.getState();
         ListView gamesView = binding.gamesList;
         List<Game> games = currentState.getCurrentSet().getGames();
-
-
+        
         ArrayAdapter<Game> gameAdapter =
                 new ArrayAdapter<Game>(mContext, android.R.layout.simple_list_item_1, games) {
                     @Override
@@ -100,13 +101,23 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
                         ToggleButton p2WinButton = convertView.findViewById(R.id.player2_win);
                         p2WinButton.setChecked(currentState.getCurrentSet().didPlayerWin(position, 2));
 
-                        p1WinButton.setOnClickListener(view ->{
-                                p2WinButton.setChecked(false);
-                                currentState.getCurrentSet().reportGameWinner(position + 1, 1);
+                        p1WinButton.setOnClickListener(view -> {
+                            p2WinButton.setChecked(false);
+                            p2WinButton.setClickable(true);
+
+                            p1WinButton.setClickable(false);
+
+                            currentState.getCurrentSet().reportGameWinner(position + 1, 1);
+                            updateScore();
                         });
                         p2WinButton.setOnClickListener(view ->{
                             p1WinButton.setChecked(false);
+                            p1WinButton.setClickable(true);
+
+                            p2WinButton.setClickable(false);
+
                             currentState.getCurrentSet().reportGameWinner(position + 1, 2);
+                            updateScore();
                         });
 
                         // Create p1 character list
@@ -132,6 +143,20 @@ public class ReportSetFragment extends AppFragment implements PropertyChangeList
                 };
 
         gamesView.setAdapter(gameAdapter);
+    }
+
+    private void updateScore(){
+
+        ReportSetState currentState = reportViewModel.getState();
+
+        TextView p1Score = binding.player1Score;
+        int p1ID = currentState.getCurrentSet().getPlayers()[0].getId();
+        p1Score.setText(String.valueOf(currentState.getCurrentSet().countWins(p1ID)));
+
+        TextView p2Score = binding.player2Score;
+        int p2ID = currentState.getCurrentSet().getPlayers()[1].getId();
+        p2Score.setText(String.valueOf(currentState.getCurrentSet().countWins(p2ID)));
+
     }
 
     @Override

@@ -32,6 +32,6 @@ public class Game {
     }
 
     public boolean isReported() {
-        return winnerID != null;
+        return winnerID != 0;
     }
 }
