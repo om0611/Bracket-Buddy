@@ -62,34 +62,6 @@ public class SetData {
                 games.remove(games.size() - 1);
             }
 
-            //Add or remove games from the menu - buggy other implementation
-            //        if (!over) {
-            //            //Only add another game to the menu if all the current ones are reported
-            //            if (games.get(games.size() - 1).isReported()) {
-            //                games.add(new Game());
-            //            }
-            //        } else {
-            //            setWinnerID(gameWinnerID);
-            //            // Remove unnecessary games, first games where the winning player won
-            //            int i = 0;
-            //            int count = 0;
-            //            List<Game> validGames = new ArrayList<>();
-            //
-            //            while (i < games.size()) {
-            //                validGames.add(games.get(i));
-            //
-            //                if (games.get(i).getWinnerID() == gameWinnerID) {
-            //                    count++;
-            //                }
-            //
-            //                if (count == firstTo) {
-            //                    i = games.size();
-            //                } else {
-            //                    i += 1;
-            //                }
-            //            }
-            //            this.games = validGames;
-            //        }
         }
     }
 
