@@ -4,7 +4,6 @@ import com.example.csc207courseproject.entities.SetData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 
 public class ReportSetState {
@@ -25,14 +24,6 @@ public class ReportSetState {
     }
 
     public List<Integer> getReportedSetIDs() {return reportedSetIDs;}
-
-    public void addReportedSetID(int newID) {
-        // Only store 10 at any given time
-        if (reportedSetIDs.size() == 10) {
-            reportedSetIDs.remove(0);
-        }
-        reportedSetIDs.add(newID);
-    }
 
     public List<SetData> getOngoingSets() {return ongoingSets;}
 
