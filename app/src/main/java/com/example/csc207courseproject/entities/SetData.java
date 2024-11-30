@@ -33,6 +33,9 @@ public class SetData {
     public int getWinnerID() {return winnerID;}
 
     public Station getStation() {return station;}
+
+    public void setStation(Station station) {this.station = station;}
+
     public Entrant[] getPlayers() {return players;}
 
     public void reportGameWinner(int gameNum, int playerNum) {
@@ -89,6 +92,22 @@ public class SetData {
     public Game getGame(int gameNumber) { return games.get(gameNumber - 1);}
 
     public List<Game> getGames() {return games;}
+
+    /**
+     * Checks if a set conflicts with the parameter station.
+     * @param station The station being checked.
+     * @return True if the set conflicts
+     */
+    public boolean conflictsWithStation(Station station){
+        for (Entrant entrant : players){
+            for(String playerTag : entrant.getTags()){
+                if (station.hasTag(playerTag)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public boolean didPlayerWin(int position, int playerNum) {
         return games.get(position).getWinnerID() == players[playerNum - 1].getId();
