@@ -54,4 +54,5 @@
         victory for the first player, but a retroactive DQ if they DQ next round, as is on Start.gg
     </string>
     <string name="dash">-</string>
+    <string name="dq_priority">(DQs take priority over reported games.)</string>
 </resources>
