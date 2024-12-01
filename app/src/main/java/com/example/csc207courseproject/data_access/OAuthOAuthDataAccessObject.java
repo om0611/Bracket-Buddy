@@ -14,14 +14,14 @@ import org.json.JSONObject;
 import android.os.Handler;
 import android.os.Looper;
 import com.example.csc207courseproject.BuildConfig;
-import com.example.csc207courseproject.use_case.login.LoginDataAccessInterface;
+import com.example.csc207courseproject.use_case.login.LoginOAuthDataAccessInterface;
 import fi.iki.elonen.NanoHTTPD;
 import okhttp3.*;
 
 /**
  * A class responsible for logging the user into their start.gg account and getting the user's access token.
  */
-public class OAuthDataAccessObject implements LoginDataAccessInterface {
+public class OAuthOAuthDataAccessObject implements LoginOAuthDataAccessInterface {
 
     private static final String CLIENT_ID = BuildConfig.CLIENT_ID;
     private static final String CLIENT_SECRET = BuildConfig.CLIENT_SECRET;

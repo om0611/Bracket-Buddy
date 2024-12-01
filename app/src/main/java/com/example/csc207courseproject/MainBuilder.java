@@ -1,7 +1,7 @@
 package com.example.csc207courseproject;//package com.example.csc207courseprojectandroid.app;
 
 import com.example.csc207courseproject.data_access.APIDataAccessObject;
-import com.example.csc207courseproject.data_access.OAuthDataAccessObject;
+import com.example.csc207courseproject.data_access.OAuthOAuthDataAccessObject;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
 import com.example.csc207courseproject.interface_adapter.login.LoginController;
 import com.example.csc207courseproject.interface_adapter.login.LoginPresenter;
@@ -45,10 +45,9 @@ import com.example.csc207courseproject.view.ViewManager;
 
 public class MainBuilder {
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
-    private final ViewManager viewManager = new ViewManager(viewManagerModel);
 
     private final APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
-    private final OAuthDataAccessObject oAuthDataAccessObject = new OAuthDataAccessObject();
+    private final OAuthOAuthDataAccessObject oAuthDataAccessObject = new OAuthOAuthDataAccessObject();
 
     private LoginViewModel loginViewModel;
     private SelectTournamentViewModel selectTournamentViewModel;
