@@ -44,8 +44,7 @@ public class UpcomingSetsPresenter implements UpcomingSetsOutputBoundary {
 
     @Override
     public void prepareFailView(String errorMessage) {
-        final CallSetState setState = viewModel.getState();
-        viewModel.firePropertyChanged("getsetsfail");
+        viewModel.firePropertyChanged(errorMessage);
     }
 
 }
