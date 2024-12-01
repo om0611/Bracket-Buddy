@@ -1,5 +1,7 @@
 package com.example.csc207courseproject.use_case.mutate_seeding;
 
+import com.example.csc207courseproject.entities.Entrant;
+
 import com.example.csc207courseproject.data_access.api.APIDataAccessException;
 
 import java.util.List;
@@ -16,19 +18,13 @@ public class MutateSeedingInteractor implements MutateSeedingInputBoundary {
 
     @Override
     public void execute(MutateSeedingInputData mutateSeedingInputData) {
-        List<Integer> finalSeeds = mutateSeedingInputData.getFinalSeeds();
+        List<Entrant> finalSeeds = mutateSeedingInputData.getFinalSeeds();
 
         try {
             dataAccess.setSeeding(finalSeeds);
             mutateSeedingPresenter.prepareSuccessView();
         } catch (APIDataAccessException e) {
-            mutateSeedingPresenter.prepareFailView("Something went wrong with the API call, try again.");
+            mutateSeedingPresenter.prepareFailView();
         }
     }
-
-    @Override
-    public void switchToMainView() {
-        mutateSeedingPresenter.switchToMainMenuView();
-    }
-
 }

@@ -1,9 +1,8 @@
 package com.example.csc207courseproject.use_case.report_game;
 
 import com.example.csc207courseproject.entities.Entrant;
-import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Game;
-import com.example.csc207courseproject.entities.SetData;
+import com.example.csc207courseproject.entities.ReportSetData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class ReportGameInteractor implements ReportGameInputBoundary {
     public void execute(ReportGameInputData reportGameInputData) {
 
         int gameWinnerID = reportGameInputData.getWinnerID();
-        SetData currSet = reportGameInputData.getCurrSet();
+        ReportSetData currSet = reportGameInputData.getCurrSet();
         int gameNumber = reportGameInputData.getGameNumber();
         List<Game> games = currSet.getGames();
 
@@ -56,7 +55,7 @@ public class ReportGameInteractor implements ReportGameInputBoundary {
 
     }
 
-    private boolean isSetOver(SetData set) {
+    private boolean isSetOver(ReportSetData set) {
         Entrant[] players = set.getPlayers();
         return countWins(players[0].getId(), set.getGames()) >= set.getFirstTo() ||
                 countWins(players[1].getId(), set.getGames()) >= set.getFirstTo();

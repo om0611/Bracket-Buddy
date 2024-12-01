@@ -22,7 +22,7 @@ public class AddStationInteractor implements AddStationInputBoundary {
     @Override
     public void execute(AddStationInputData inputData) {
         // Check if API call is successful
-        int tournamentId = EventData.getTournamentId();
+        int tournamentId = EventData.getEventData().getTournamentId();
         try {
 
             int stationId = dataAccess.addStation(tournamentId, inputData.getStationNumber());
@@ -32,7 +32,7 @@ public class AddStationInteractor implements AddStationInputBoundary {
 
             presenter.prepareSuccessView(s);
         } catch (APIDataAccessException e) {
-            presenter.prepareFailView("Something went wrong with the API call, try again.");
+            presenter.prepareFailView();
         }
     }
 

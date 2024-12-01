@@ -1,6 +1,5 @@
 package com.example.csc207courseproject.interface_adapter.login;
 
-import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
 import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentViewModel;
 import com.example.csc207courseproject.interface_adapter.select_tournament.TournamentState;
 import com.example.csc207courseproject.use_case.login.LoginOutputBoundary;

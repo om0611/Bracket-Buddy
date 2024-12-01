@@ -6,10 +6,8 @@ import com.example.csc207courseproject.use_case.add_station.AddStationDataAccess
 import com.example.csc207courseproject.use_case.call_set.CallSetDataAccessInterface;
 import com.example.csc207courseproject.use_case.get_stations.GetStationsDataAccessInterface;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsDataAccessInterface;
-import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.use_case.select_event.SelectEventDataAccessInterface;
 import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
-import com.example.csc207courseproject.entities.Participant;
 import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsDataAccessInterface;
 import okhttp3.*;
@@ -33,7 +31,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
     private final String API_URL = "https://api.start.gg/gql/alpha";
     private Map<Integer, Integer> idToSeedID = new HashMap<>();
     private int initialPhaseID;
-    private List<Integer> overallSeeding;
+    private List<Entrant> overallSeeding;
     private JSONObject jsonResponse;
     private CountDownLatch countDownLatch;
 
@@ -166,28 +164,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
     }
 
     /**
-     * Gets the event id of a given event.
-     *
-     * @param eventLink The link of the event
-     * @return The id of the event
-     */
-    public int getEventId(String eventLink) {
-
-        String q = "query getEventId($slug: String) {event(slug: $slug) {id name}}";
-
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"slug\": \"" + eventLink + "\"}}";
-
-        sendRequest(json);
-        try {
-            int eventId = jsonResponse.getJSONObject("data").getJSONObject("event").getInt("id");
-            jsonResponse = null;
-            return eventId;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Get all the event data required by the EventData entity for the given event.
      *
      * @param eventID The ID of the event.
@@ -202,8 +178,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
         String json = "{ \"query\": \"" + q + "\", \"variables\": { \"id\": \"" + eventID + "\"}}";
         sendRequest(json);
 
-        List<Object> eventData = new ArrayList<>();
-        eventData.addAll(getEntrantsAndParticipants());
+        List<Object> eventData = new ArrayList<>(getEntrantsAndParticipants());
         eventData.add(getCharacters());
         eventData.add(getPhaseIDs());
 
@@ -338,12 +313,12 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
             jsonResponse = null;
 
             // Create list of seeds and fill it in seeded order
-            List<Integer> seeding = new ArrayList<>();
+            List<Entrant> seeding = new ArrayList<>();
 
             for (int i = 0; i < jsonSeeds.length(); i++) {
                 int id = jsonSeeds.getJSONObject(i).getJSONObject("entrant").getInt("id");
                 idToSeedID.put(id, jsonSeeds.getJSONObject(i).getInt("id"));
-                seeding.add(id);
+                seeding.add(EventData.getEventData().getEntrant(id));
             }
             overallSeeding = seeding;
         } catch (JSONException event) {
@@ -355,10 +330,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
      * Gets the seeding for the given phase.
      *
      * @param phaseID The ID of the phase
-     * @return A list of player IDs in seeded order
+     * @return A list of entrants in seeded order
      */
     @Override
-    public List<Integer> getSeedingInPhase(int phaseID) {
+    public List<Entrant> getSeedingInPhase(int phaseID) {
         if (overallSeeding == null) {
             createOverallSeeding();
         }
@@ -388,7 +363,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
      * @param seededEntrants A list in seeded order of player IDs for each entrant
      */
     @Override
-    public void setSeeding(List<Integer> seededEntrants) {
+    public void setSeeding(List<Entrant> seededEntrants) {
         // Fill in unmodified seeds with new values
         for (int i = 0; i < seededEntrants.size(); i++) {
             overallSeeding.set(i, seededEntrants.get(i));
@@ -399,7 +374,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
             JSONArray seedMapping = new JSONArray();
             for (int i = 0; i < overallSeeding.size(); i++) {
                 JSONObject seedMap = new JSONObject();
-                seedMap.put("seedId", idToSeedID.get(overallSeeding.get(i)));
+                seedMap.put("seedId", idToSeedID.get(overallSeeding.get(i).getId()));
                 seedMap.put("seedNum", i + 1);
                 seedMapping.put(seedMap);
             }
@@ -463,7 +438,8 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
 
                         if (p1CharSelected) {
                             JSONObject p1SelectionInput = new JSONObject();
-                            int p1CharacterID = EventData.getCharacterIds().get(currGame.getPlayer1Character());
+                            int p1CharacterID = EventData.getEventData().getCharacterIds()
+                                    .get(currGame.getPlayer1Character());
                             p1SelectionInput.put("entrantId", p1EntrantID);
                             p1SelectionInput.put("characterId", p1CharacterID);
                             characterSelections.put(p1SelectionInput);
@@ -471,7 +447,8 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
 
                         if (p2CharSelected) {
                             JSONObject p2SelectionInput = new JSONObject();
-                            int p2CharacterID = EventData.getCharacterIds().get(currGame.getPlayer2Character());
+                            int p2CharacterID = EventData.getEventData().getCharacterIds()
+                                    .get(currGame.getPlayer2Character());
                             p2SelectionInput.put("entrantId ", p2EntrantID);
                             p2SelectionInput.put("characterId", p2CharacterID);
                             characterSelections.put(p2SelectionInput);
@@ -500,7 +477,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
     }
 
 
-    public List<SetData> getOngoingSets(int eventID) {
+    public List<ReportSetData> getOngoingSets(int eventID) {
         //Sorts them in reverse starting order of start time
 
         try {
@@ -521,7 +498,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
                     "        id" +
                     "        totalGames" +
                     "        slots {" +
-                    "          id" +
                     "          entrant {" +
                     "            id" +
                     "            name" +
@@ -553,7 +529,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
             jsonResponse = null;
 
             // Create list of SetData and fill it in the specified order of the API call
-            List<SetData> sets = new ArrayList<>();
+            List<ReportSetData> sets = new ArrayList<>();
 
             for (int i = 0; i < jsonSets.length(); i++) {
                 int setID = jsonSets.getJSONObject(i).getInt("id");
@@ -565,10 +541,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
                 //Store the players in Entrant Objects and exporting that
                 for (int j = 0; j < slots.length(); j++) {
                     int newId = slots.getJSONObject(j).getJSONObject("entrant").getInt("id");
-                    players[j] = EventData.getEntrant(newId);
+                    players[j] = EventData.getEventData().getEntrant(newId);
                 }
 
-                SetData newSet = new SetData(setID, players, bestOf);
+                ReportSetData newSet = new ReportSetData(setID, players, bestOf);
 
                 sets.add(newSet);
             }
@@ -581,7 +557,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
 
     }
 
-    public List<SetData> getUpcomingSets(int eventID) {
+    public List<CallSetData> getUpcomingSets(int eventID) {
         // Sorts them in callable order
 
         try {
@@ -600,9 +576,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
                     "      }" +
                     "      nodes {" +
                     "        id" +
-                    "        totalGames" +
                     "        slots {" +
-                    "          id" +
                     "          entrant {" +
                     "            id" +
                     "            name" +
@@ -634,7 +608,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
             jsonResponse = null;
 
             // Create list of SetData and fill it in the specified order of the API call
-            List<SetData> sets = new ArrayList<>();
+            List<CallSetData> sets = new ArrayList<>();
 
 
             // Check if the existing sets are in preview status, where the set ids will be strings with "preview"
@@ -654,7 +628,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
             for (int i = 0; i < jsonSets.length(); i++) {
                 boolean participantNull = false;
                 int setID = jsonSets.getJSONObject(i).getInt("id");
-                int bestOf = jsonSets.getJSONObject(i).getInt("totalGames");
 
                 JSONArray slots = jsonSets.getJSONObject(i).getJSONArray("slots");
                 Entrant[] players = new Entrant[slots.length()];
@@ -663,13 +636,13 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
                 for (int j = 0; j < slots.length(); j++) {
                     try {
                         int newId = slots.getJSONObject(j).getJSONObject("entrant").getInt("id");
-                        players[j] = EventData.getEntrant(newId);
+                        players[j] = EventData.getEventData().getEntrant(newId);
                     } catch (JSONException event) {
                         participantNull = true;
                     }
                 }
                 if (!participantNull) {
-                    SetData newSet = new SetData(setID, players, bestOf);
+                    CallSetData newSet = new CallSetData(setID, players);
 
                     sets.add(newSet);
                 }
@@ -704,12 +677,12 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
             List<Station> stations = new ArrayList<>();
             for (int i = 0; i < jsonStations.length(); i++) {
                 int id = jsonStations.getJSONObject(i).getInt("id");
-                if(EventData.getStations().containsKey(id)) {
-                    stations.add(EventData.getStations().get(id));
+                if(EventData.getEventData().getStations().containsKey(id)) {
+                    stations.add(EventData.getEventData().getStations().get(id));
                 }else{
                     int number = jsonStations.getJSONObject(i).getInt("number");
                     Station newStation = new Station(id, number);
-                    EventData.getStations().put(id, newStation);
+                    EventData.getEventData().getStations().put(id, newStation);
                     stations.add(newStation);
                 }
 
