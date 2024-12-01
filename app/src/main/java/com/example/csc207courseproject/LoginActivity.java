@@ -35,12 +35,23 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
                 .addEventView()
                 .addSeedingView()
                 .addCallView()
+                .addReportView()
                 .addLoginUseCase()
                 .addSelectTournamentUseCase()
+                .addGetPhasesUseCase()
                 .addSelectEventUseCase()
                 .addMutateSeedingUseCase()
                 .addUpdateSeedingUseCase()
-                .addSelectPhaseUseCase();
+                .addSelectPhaseUseCase()
+                .addUpcomingSetsUseCase()
+                .addGetStationsUseCase()
+                .addFindStationUseCase()
+                .addAddStationUseCase()
+                .addDeclineSetUseCase()
+                .addCallSetUseCase()
+                .addReportGameUseCase()
+                .addReportSetUseCase()
+                .addOngoingSetsUseCase();
 
         loginViewModel.addPropertyChangeListener(this);
     }

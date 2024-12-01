@@ -10,19 +10,19 @@ public class Game {
 
 
     public Game() {
-        player1Character = "";
-        player2Character = "";
+        player1Character = "No Character";
+        player2Character = "No Character";
+        winnerID = 0;
     }
 
-    public void report(Integer winnerID, String p1Character, String p2Character) {
+    public void setWinnerID(Integer winnerID) {
         this.winnerID = winnerID;
-        this.player1Character = p1Character;
-        this.player2Character = p2Character;
     }
 
-    public Integer getWinnerID() {
-        return winnerID;
+    public void setPlayer1Character(String player1Character) {
+        this.player1Character = player1Character;
     }
+
     public String getPlayer1Character() {
         return player1Character;
     }
@@ -31,7 +31,11 @@ public class Game {
         return player2Character;
     }
 
-    public boolean isReported() {
-        return winnerID != null;
+    public void setPlayer2Character(String player2Character) {
+            this.player2Character = player2Character;
+    }
+
+    public Integer getWinnerID() {
+        return winnerID;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.csc207courseproject.data_access;
+package com.example.csc207courseproject.data_access.OAuth;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -21,7 +21,7 @@ import okhttp3.*;
 /**
  * A class responsible for logging the user into their start.gg account and getting the user's access token.
  */
-public class OAuthOAuthDataAccessObject implements LoginOAuthDataAccessInterface {
+public class OAuthDataAccessObject implements LoginOAuthDataAccessInterface {
 
     private static final String CLIENT_ID = BuildConfig.CLIENT_ID;
     private static final String CLIENT_SECRET = BuildConfig.CLIENT_SECRET;
@@ -40,13 +40,12 @@ public class OAuthOAuthDataAccessObject implements LoginOAuthDataAccessInterface
      * @return the log in URL for start.gg
      */
     public String getAuthUrl() {
-
         serverThread = new Thread(() -> {
             try {
                 oAuthServer = new OAuthServer();
             }
-            catch (IOException evt) {
-                throw new RuntimeException("The server failed to start.");
+            catch (IOException e) {
+                throw new OAuthException("The server failed to start.");
             }
         });
         serverThread.start();
@@ -61,9 +60,8 @@ public class OAuthOAuthDataAccessObject implements LoginOAuthDataAccessInterface
     /**
      * Gets the user's token for making API calls to start.gg.
      * @return the access token
-     * @throws InterruptedException if the thread is interrupted before or during the execution of this method
      */
-    public String getToken() throws InterruptedException {
+    public String getToken() {
         latch = new CountDownLatch(1);
         final String jsonBody = "{"
                 + "\"grant_type\": \"authorization_code\","
@@ -90,7 +88,7 @@ public class OAuthOAuthDataAccessObject implements LoginOAuthDataAccessInterface
         client.newCall(request).enqueue(new Callback() {
             public void onFailure(@NotNull Call call, @NotNull IOException evt) {
                 latch.countDown();
-                throw new RuntimeException(evt.getMessage());
+                throw new OAuthException(evt.getMessage());
             }
 
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -102,7 +100,7 @@ public class OAuthOAuthDataAccessObject implements LoginOAuthDataAccessInterface
                     }
                     catch (JSONException evt) {
                         latch.countDown();
-                        throw new RuntimeException(evt);
+                        throw new OAuthException(evt.getMessage());
                     }
                     try {
                         accessToken = jsonResponse.getString("access_token");
@@ -110,17 +108,22 @@ public class OAuthOAuthDataAccessObject implements LoginOAuthDataAccessInterface
                     }
                     catch (JSONException evt) {
                         latch.countDown();
-                        throw new RuntimeException(evt);
+                        throw new OAuthException(evt.getMessage());
                     }
                 }
                 else {
                     latch.countDown();
-                    throw new RuntimeException(response.message());
+                    throw new OAuthException(response.message());
                 }
             }
         });
 
-        latch.await();
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new OAuthException("Server thread interrupted");
+
+        }
         return accessToken;
     }
 

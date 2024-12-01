@@ -3,6 +3,8 @@ package com.example.csc207courseproject.use_case.login;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import com.example.csc207courseproject.data_access.DataAccessException;
+import com.example.csc207courseproject.data_access.OAuth.OAuthException;
 import org.json.JSONException;
 
 /**
@@ -39,7 +41,7 @@ public class LoginInteractor implements LoginInputBoundary, PropertyChangeListen
         try {
             return loginOAuthDataAccessObject.getAuthUrl();
         }
-        catch (RuntimeException evt) {
+        catch(DataAccessException e) {
             loginPresenter.prepareFailView();
             return null;
         }
@@ -62,7 +64,7 @@ public class LoginInteractor implements LoginInputBoundary, PropertyChangeListen
                     new LoginOutputData(loginDataAccessObject.getTournaments());
             loginPresenter.prepareSuccessView(loginOutputData);
         }
-        catch (JSONException | InterruptedException event) {
+        catch (DataAccessException | JSONException | InterruptedException e) {
             loginPresenter.prepareFailView();
         }
         loginOAuthDataAccessObject.stopServer();

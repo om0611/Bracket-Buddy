@@ -1,16 +1,24 @@
 package com.example.csc207courseproject.use_case.report_game;
 
+import com.example.csc207courseproject.entities.ReportSetData;
+
 public class ReportGameInputData {
 
     private int winnerId;
+    private ReportSetData currSet;
     private int gameNumber;
-    private String p1Character;
-    private String p2Character;
 
-    public ReportGameInputData(int winnerId, int gameNumber, String p1Character, String p2Character) {
+    public ReportGameInputData(ReportSetData currSet, int gameNumber, int winnerId) {
         this.winnerId = winnerId;
+        this.currSet = currSet;
         this.gameNumber = gameNumber;
-        this.p1Character = p1Character;
-        this.p2Character = p2Character;
     }
+
+    public int getWinnerID() { return winnerId; }
+
+    public ReportSetData getCurrSet() { return currSet; }
+
+    public int getGameNumber() { return gameNumber; }
+
+
 }

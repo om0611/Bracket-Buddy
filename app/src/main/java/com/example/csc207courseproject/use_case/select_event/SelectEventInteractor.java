@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
+import com.example.csc207courseproject.data_access.DataAccessException;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Participant;
@@ -44,7 +45,7 @@ public class SelectEventInteractor implements SelectEventInputBoundary {
                                         (SortedMap<String, Integer>) eventData.get(3));
             selectEventPresenter.prepareSuccessView();
         }
-        catch (RuntimeException evt) {
+        catch (DataAccessException e) {
             selectEventPresenter.prepareFailView();
         }
 
