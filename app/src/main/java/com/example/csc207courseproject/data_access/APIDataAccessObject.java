@@ -34,7 +34,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
     private final String API_URL = "https://api.start.gg/gql/alpha";
     private Map<Integer, Integer> idToSeedID = new HashMap<>();
     private int initialPhaseID;
-    private List<Integer> overallSeeding;
+    private List<Entrant> overallSeeding;
     private JSONObject jsonResponse;
     private CountDownLatch countDownLatch;
 
@@ -167,28 +167,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
     }
 
     /**
-     * Gets the event id of a given event.
-     *
-     * @param eventLink The link of the event
-     * @return The id of the event
-     */
-    public int getEventId(String eventLink) {
-
-        String q = "query getEventId($slug: String) {event(slug: $slug) {id name}}";
-
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"slug\": \"" + eventLink + "\"}}";
-
-        sendRequest(json);
-        try {
-            int eventId = jsonResponse.getJSONObject("data").getJSONObject("event").getInt("id");
-            jsonResponse = null;
-            return eventId;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Get all the event data required by the EventData entity for the given event.
      *
      * @param eventID The ID of the event.
@@ -203,8 +181,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
         String json = "{ \"query\": \"" + q + "\", \"variables\": { \"id\": \"" + eventID + "\"}}";
         sendRequest(json);
 
-        List<Object> eventData = new ArrayList<>();
-        eventData.addAll(getEntrantsAndParticipants());
+        List<Object> eventData = new ArrayList<>(getEntrantsAndParticipants());
         eventData.add(getCharacters());
         eventData.add(getPhaseIDs());
 
@@ -339,12 +316,12 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
             jsonResponse = null;
 
             // Create list of seeds and fill it in seeded order
-            List<Integer> seeding = new ArrayList<>();
+            List<Entrant> seeding = new ArrayList<>();
 
             for (int i = 0; i < jsonSeeds.length(); i++) {
                 int id = jsonSeeds.getJSONObject(i).getJSONObject("entrant").getInt("id");
                 idToSeedID.put(id, jsonSeeds.getJSONObject(i).getInt("id"));
-                seeding.add(id);
+                seeding.add(EventData.getEntrant(id));
             }
             overallSeeding = seeding;
         } catch (JSONException event) {
@@ -356,10 +333,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
      * Gets the seeding for the given phase.
      *
      * @param phaseID The ID of the phase
-     * @return A list of player IDs in seeded order
+     * @return A list of entrants in seeded order
      */
     @Override
-    public List<Integer> getSeedingInPhase(int phaseID) {
+    public List<Entrant> getSeedingInPhase(int phaseID) {
         if (overallSeeding == null) {
             createOverallSeeding();
         }
@@ -389,7 +366,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
      * @param seededEntrants A list in seeded order of player IDs for each entrant
      */
     @Override
-    public void setSeeding(List<Integer> seededEntrants) {
+    public void setSeeding(List<Entrant> seededEntrants) {
         // Fill in unmodified seeds with new values
         for (int i = 0; i < seededEntrants.size(); i++) {
             overallSeeding.set(i, seededEntrants.get(i));
@@ -400,7 +377,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
             JSONArray seedMapping = new JSONArray();
             for (int i = 0; i < overallSeeding.size(); i++) {
                 JSONObject seedMap = new JSONObject();
-                seedMap.put("seedId", idToSeedID.get(overallSeeding.get(i)));
+                seedMap.put("seedId", idToSeedID.get(overallSeeding.get(i).getId()));
                 seedMap.put("seedNum", i + 1);
                 seedMapping.put(seedMap);
             }
