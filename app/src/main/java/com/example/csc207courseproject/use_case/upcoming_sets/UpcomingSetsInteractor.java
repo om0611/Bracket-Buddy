@@ -1,6 +1,6 @@
 package com.example.csc207courseproject.use_case.upcoming_sets;
 
-import com.example.csc207courseproject.data_access.api.APIDataAccessException;
+import com.example.csc207courseproject.data_access.DataAccessException;
 import com.example.csc207courseproject.entities.CallSetData;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
@@ -54,7 +54,7 @@ public class UpcomingSetsInteractor implements UpcomingSetsInputBoundary {
             // Prepare success view
             UpcomingSetsOutputData outputData = new UpcomingSetsOutputData(upcomingSets);
             upcomingSetsPresenter.prepareSuccessView(outputData);
-        } catch (APIDataAccessException e) {
+        } catch (DataAccessException e) {
             // If the API call failed, prepare the fail view
             upcomingSetsPresenter.prepareFailView();
         }

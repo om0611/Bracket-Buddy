@@ -1,6 +1,6 @@
 package com.example.csc207courseproject.use_case.report_set;
 
-import com.example.csc207courseproject.data_access.api.APIDataAccessException;
+import com.example.csc207courseproject.data_access.DataAccessException;
 import com.example.csc207courseproject.entities.Game;
 import com.example.csc207courseproject.entities.ReportSetData;
 
@@ -37,7 +37,7 @@ public class ReportSetInteractor implements ReportSetInputBoundary {
                 reportSetPresenter.prepareSuccessView();
             }
 
-        } catch (APIDataAccessException e){
+        } catch (DataAccessException e){
             reportSetPresenter.prepareFailView("apicallerror");
         }
 

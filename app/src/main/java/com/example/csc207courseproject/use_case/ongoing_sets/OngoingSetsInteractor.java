@@ -1,6 +1,6 @@
 package com.example.csc207courseproject.use_case.ongoing_sets;
 
-import com.example.csc207courseproject.data_access.api.APIDataAccessException;
+import com.example.csc207courseproject.data_access.DataAccessException;
 import com.example.csc207courseproject.entities.EventData;
 
 public class OngoingSetsInteractor implements OngoingSetsInputBoundary {
@@ -22,7 +22,7 @@ public class OngoingSetsInteractor implements OngoingSetsInputBoundary {
             OngoingSetsOutputData s = new OngoingSetsOutputData(dataAccess.getOngoingSets(eventId));
 
             ongoingSetsPresenter.prepareSuccessView(s);
-        } catch (APIDataAccessException e) {
+        } catch (DataAccessException e) {
             ongoingSetsPresenter.prepareFailView();
         }
     }

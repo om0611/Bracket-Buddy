@@ -1,6 +1,6 @@
 package com.example.csc207courseproject.use_case.get_stations;
 
-import com.example.csc207courseproject.data_access.api.APIDataAccessException;
+import com.example.csc207courseproject.data_access.DataAccessException;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Station;
 
@@ -29,7 +29,7 @@ public class GetStationsInteractor implements GetStationsInputBoundary {
             GetStationsOutputData s = new GetStationsOutputData(stations);
 
             presenter.prepareSuccessView(s);
-        } catch (APIDataAccessException e) {
+        } catch (DataAccessException e) {
             presenter.prepareFailView();
         }
     }

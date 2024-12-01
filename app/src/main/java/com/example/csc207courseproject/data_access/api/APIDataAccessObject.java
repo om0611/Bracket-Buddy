@@ -5,6 +5,7 @@ import com.example.csc207courseproject.entities.*;
 import com.example.csc207courseproject.use_case.add_station.AddStationDataAccessInterface;
 import com.example.csc207courseproject.use_case.call_set.CallSetDataAccessInterface;
 import com.example.csc207courseproject.use_case.get_stations.GetStationsDataAccessInterface;
+import com.example.csc207courseproject.use_case.login.LoginDataAccessInterface;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsDataAccessInterface;
 import com.example.csc207courseproject.use_case.select_event.SelectEventDataAccessInterface;
 import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
@@ -22,13 +23,13 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
+public class APIDataAccessObject implements SelectPhaseDataAccessInterface, LoginDataAccessInterface,
         MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface,
         OngoingSetsDataAccessInterface, GetStationsDataAccessInterface, AddStationDataAccessInterface,
         CallSetDataAccessInterface, SelectTournamentDataAccessInterface, SelectEventDataAccessInterface {
 
-    private String TOKEN;
     private final String API_URL = "https://api.start.gg/gql/alpha";
+    private String token;
     private Map<Integer, Integer> idToSeedID = new HashMap<>();
     private int initialPhaseID;
     private List<Entrant> overallSeeding;
@@ -43,7 +44,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
         RequestBody body = RequestBody.create(query, mediaType);
         Request request = new Request.Builder()
                 .url(API_URL)
-                .addHeader("Authorization", "Bearer " + TOKEN)
+                .addHeader("Authorization", "Bearer " + token)
                 .post(body)
                 .build();
 
@@ -398,10 +399,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
         }
     }
 
-    public void setTOKEN(String token) {
-        this.TOKEN = token;
-    }
-
     @Override
     public void reportSet(int setID, int winnerId, List<Game> games, boolean hasDQ, int p1EntrantID, int p2EntrantID) {
         try {
@@ -751,6 +748,14 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface,
 
         sendRequest(json);
         jsonResponse = null;
+    }
+
+    /**
+     * Sets the value of the token attribute.
+     * @param token the value to set
+     */
+    public void setToken(String token) {
+        this.token = token;
     }
 }
 

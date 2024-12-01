@@ -1,8 +1,7 @@
 package com.example.csc207courseproject.use_case.add_station;
 
 
-import android.util.Log;
-import com.example.csc207courseproject.data_access.api.APIDataAccessException;
+import com.example.csc207courseproject.data_access.DataAccessException;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Station;
 
@@ -31,7 +30,7 @@ public class AddStationInteractor implements AddStationInputBoundary {
             AddStationOutputData s = new AddStationOutputData(station);
 
             presenter.prepareSuccessView(s);
-        } catch (APIDataAccessException e) {
+        } catch (DataAccessException e) {
             presenter.prepareFailView();
         }
     }

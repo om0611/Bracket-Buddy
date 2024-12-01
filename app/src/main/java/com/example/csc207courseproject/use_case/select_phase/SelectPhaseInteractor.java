@@ -1,6 +1,6 @@
 package com.example.csc207courseproject.use_case.select_phase;
 
-import com.example.csc207courseproject.data_access.api.APIDataAccessException;
+import com.example.csc207courseproject.data_access.DataAccessException;
 import com.example.csc207courseproject.entities.EventData;
 
 public class SelectPhaseInteractor implements SelectPhaseInputBoundary {
@@ -19,7 +19,7 @@ public class SelectPhaseInteractor implements SelectPhaseInputBoundary {
             int phaseID = EventData.getEventData().getPhaseIds().get(inputData.getPhaseName());
             SelectPhaseOutputData s = new SelectPhaseOutputData(dataAccess.getSeedingInPhase(phaseID));
             selectPhasePresenter.prepareSuccessView(s);
-        } catch (APIDataAccessException e) {
+        } catch (DataAccessException e) {
             selectPhasePresenter.prepareFailView();
         }
     }
