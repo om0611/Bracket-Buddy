@@ -60,4 +60,5 @@
     <string name="get_sets_warning">Warning! If the tournament has not started, pressing this button will force the
         tournament to be marked as in progress on Start.gg. This will prevent you from changing the seeding and can not
         be reverted.</string>
+    <string name="dq_priority">(DQs take priority over reported games.)</string>
 </resources>

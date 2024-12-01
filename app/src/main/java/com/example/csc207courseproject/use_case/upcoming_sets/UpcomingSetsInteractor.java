@@ -1,5 +1,8 @@
 package com.example.csc207courseproject.use_case.upcoming_sets;
 
+
+import android.security.identity.AlreadyPersonalizedException;
+import com.example.csc207courseproject.data_access.api.APIDataAccessException;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.SetData;
@@ -36,7 +39,7 @@ public class UpcomingSetsInteractor implements UpcomingSetsInputBoundary {
             UpcomingSetsOutputData s = new UpcomingSetsOutputData(dataAccess.getUpcomingSets(eventId));
 
             upcomingSetsPresenter.prepareSuccessView(s);
-        } catch (Exception e) {
+        } catch (APIDataAccessException e) {
             upcomingSetsPresenter.prepareFailView();
         }
     }

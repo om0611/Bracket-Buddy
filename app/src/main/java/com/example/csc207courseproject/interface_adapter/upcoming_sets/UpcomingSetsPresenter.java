@@ -35,9 +35,6 @@ public class UpcomingSetsPresenter implements UpcomingSetsOutputBoundary {
         sets.removeAll(repeats);
 
         currentState.setUpcomingSets(sets);
-
-        // 
-
         viewModel.firePropertyChanged("getsetssuccess");
     }
 
