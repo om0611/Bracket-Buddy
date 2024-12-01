@@ -1,10 +1,7 @@
 package com.example.csc207courseproject;//package com.example.csc207courseprojectandroid.app;
 
-import com.example.csc207courseproject.data_access.APIDataAccessObject;
-import com.example.csc207courseproject.entities.Entrant;
-import com.example.csc207courseproject.entities.EventData;
-import com.example.csc207courseproject.entities.Participant;
-import com.example.csc207courseproject.data_access.OAuthDataAccessObject;
+import com.example.csc207courseproject.data_access.api.APIDataAccessObject;
+import com.example.csc207courseproject.data_access.OAuth.OAuthDataAccessObject;
 import com.example.csc207courseproject.interface_adapter.ViewManagerModel;
 import com.example.csc207courseproject.interface_adapter.add_station.AddStationController;
 import com.example.csc207courseproject.interface_adapter.add_station.AddStationPresenter;

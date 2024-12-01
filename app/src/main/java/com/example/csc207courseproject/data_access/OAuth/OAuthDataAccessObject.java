@@ -1,10 +1,9 @@
-package com.example.csc207courseproject.data_access;
+package com.example.csc207courseproject.data_access.OAuth;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.csc207courseproject.BuildConfig;
 import fi.iki.elonen.NanoHTTPD;
@@ -36,24 +35,6 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
     private CountDownLatch latch;
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-
-//    @Override
-//    public String login(AppCompatActivity activity) {
-//        // Get authorization code
-//        getAuthCode(activity);
-//        if (AUTH_CODE == null) {
-//            return null;
-//        }
-//
-//        // Get access token
-//        try {
-//            getToken();
-//        } catch (InterruptedException | RuntimeException e) {
-//            return null;
-//        }
-//        return ACCESS_TOKEN;
-//    }
-
      class OAuthServer extends NanoHTTPD {
 
         /**
@@ -68,6 +49,7 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
          * Handles incoming HTTP requests.
          * @param session contains information about the current request
          */
+        @Override
         public Response serve(IHTTPSession session) {
             Map<String, List<String>> params = session.getParameters();
             if (params.containsKey("code")) {
@@ -86,7 +68,7 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
             try {
                 oAuthServer = new OAuthServer();
             } catch (IOException e) {
-                throw new RuntimeException("The server failed to start.");
+                throw new OAuthException("The server failed to start.");
             }
         });
         serverThread.start();
@@ -129,7 +111,7 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
         client.newCall(request).enqueue(new Callback() {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 latch.countDown();
-                throw new RuntimeException(e.getMessage());
+                throw new OAuthException(e.getMessage());
             }
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
@@ -139,19 +121,19 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
                         jsonResponse = new JSONObject(responseBody);
                     } catch (JSONException e) {
                         latch.countDown();
-                        throw new RuntimeException(e);
+                        throw new OAuthException(e.getMessage());
                     }
                     try {
                         ACCESS_TOKEN = jsonResponse.getString("access_token");
                         latch.countDown();
                     } catch (JSONException e) {
                         latch.countDown();
-                        throw new RuntimeException(e);
+                        throw new OAuthException(e.getMessage());
                     }
                 }
                 else {
                     latch.countDown();
-                    throw new RuntimeException(response.message());
+                    throw new OAuthException(response.message());
                 }
             }
         });
