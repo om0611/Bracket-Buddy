@@ -107,7 +107,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
 
         // Filter out the tournaments not organized by the user
         final List<String> userTournamentNames = new ArrayList<>();
-        final List<Integer> userTournamentIDs = new ArrayList<>();
+        final List<Integer> userTournamentIds = new ArrayList<>();
         for (int i = 0; i < allTournaments.length(); i++) {
             final JSONObject tournament = allTournaments.getJSONObject(i);
             final Object admins = tournament.get("admins");
@@ -120,7 +120,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
                 final JSONObject admin = adminsArray.getJSONObject(j);
                 if (admin.getInt("id") == userID) {
                     userTournamentNames.add(tournament.getString("name"));
-                    userTournamentIDs.add(tournament.getInt("id"));
+                    userTournamentIds.add(tournament.getInt("id"));
                     break;
                 }
             }
@@ -128,7 +128,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
 
         final List<List> userTournaments = new ArrayList<>();
         userTournaments.add(userTournamentNames);
-        userTournaments.add(userTournamentIDs);
+        userTournaments.add(userTournamentIds);
         return userTournaments;
     }
 
@@ -156,15 +156,15 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
         }
 
         final List<String> eventNames = new ArrayList<>();
-        final List<Integer> eventIDs = new ArrayList<>();
+        final List<Integer> eventIds = new ArrayList<>();
         for (int i = 0; i < events.length(); i++) {
             final JSONObject event = events.getJSONObject(i);
             eventNames.add(event.getString("name"));
-            eventIDs.add(event.getInt("id"));
+            eventIds.add(event.getInt("id"));
         }
         final List<List> eventsList = new ArrayList<>();
         eventsList.add(eventNames);
-        eventsList.add(eventIDs);
+        eventsList.add(eventIds);
         return eventsList;
     }
 
@@ -207,7 +207,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
         final List<Object> eventData = new ArrayList<>();
         eventData.addAll(getEntrantsAndParticipants());
         eventData.add(getCharacters());
-        eventData.add(getPhaseIDs());
+        eventData.add(getPhaseIds());
 
         jsonResponse = null;
         return eventData;
@@ -304,7 +304,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
      * Extract phase IDs from json response.
      * @return A sorted map of phase names to phase IDs.
      */
-    private SortedMap<String, Integer> getPhaseIDs() {
+    private SortedMap<String, Integer> getPhaseIds() {
         try {
             final JSONArray jsonPhases = jsonResponse.getJSONObject("data").getJSONObject("event")
                     .getJSONArray("phases");
