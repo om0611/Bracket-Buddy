@@ -1,47 +1,55 @@
 package com.example.csc207courseproject.data_access;
 
-import com.example.csc207courseproject.BuildConfig;
-import com.example.csc207courseproject.entities.Entrant;
-import com.example.csc207courseproject.use_case.select_event.SelectEventDataAccessInterface;
-import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
-import com.example.csc207courseproject.entities.Participant;
-import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
-import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingDataAccessInterface;
-import com.example.csc207courseproject.use_case.select_phase.SelectPhaseDataAccessInterface;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.example.csc207courseproject.BuildConfig;
+import com.example.csc207courseproject.entities.Entrant;
+import com.example.csc207courseproject.entities.Participant;
+import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingDataAccessInterface;
+import com.example.csc207courseproject.use_case.report_set.ReportSetDataAccessInterface;
+import com.example.csc207courseproject.use_case.select_event.SelectEventDataAccessInterface;
+import com.example.csc207courseproject.use_case.select_phase.SelectPhaseDataAccessInterface;
+import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
+import okhttp3.*;
+
+/**
+ * A class responsible for making all API calls to start.gg.
+ */
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, MutateSeedingDataAccessInterface,
         SelectTournamentDataAccessInterface, ReportSetDataAccessInterface, SelectEventDataAccessInterface {
 
-    private String TOKEN = BuildConfig.TOKEN;
-    private final String API_URL = "https://api.start.gg/gql/alpha";
+    private static final String API_URL = "https://api.start.gg/gql/alpha";
+    private String token = BuildConfig.TOKEN;
     private Map<Integer, Integer> idToSeedID = new HashMap<>();
     private int initialPhaseID;
     private List<Integer> overallSeeding;
     private JSONObject jsonResponse;
     private CountDownLatch countDownLatch;
 
+    /**
+     * Makes an API call to start.gg with the given query.
+     * @param query the query for the API call
+     */
     private void sendRequest(String query) {
         countDownLatch = new CountDownLatch(1);
-        OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json");
+        final OkHttpClient client = new OkHttpClient();
+        final MediaType mediaType = MediaType.parse("application/json");
 
-        RequestBody body = RequestBody.create(query, mediaType);
-        Request request = new Request.Builder()
+        final RequestBody body = RequestBody.create(query, mediaType);
+        final Request request = new Request.Builder()
                 .url(API_URL)
-                .addHeader("Authorization", "Bearer " + TOKEN)
+                .addHeader("Authorization", "Bearer " + token)
                 .post(body)
                 .build();
 
-        Call call = client.newCall(request);
+        final Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -51,11 +59,12 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
             @Override
             public void onResponse(Call call, Response response) {
                 try {
-                    String r = response.body().string();
+                    final String r = response.body().string();
                     jsonResponse = new JSONObject(r);
                     countDownLatch.countDown();
-                } catch(IOException | JSONException e) {
-                    throw new RuntimeException(e);
+                }
+                catch (IOException | JSONException evt) {
+                    throw new RuntimeException(evt);
                 }
 
             }
@@ -63,49 +72,52 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
         });
         try {
             countDownLatch.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        }
+        catch (InterruptedException evt) {
+            throw new RuntimeException(evt);
         }
 
     }
 
     /**
-     * Get all the upcoming tournaments that the current user is organizing.
+     * Gets all the upcoming tournaments that the current user is organizing or is an admin for.
      */
     @Override
     public List<List> getTournaments() throws JSONException {
 
-        String q = "query getCurrentUser($page: Int!, $perPage: Int!) { currentUser { id " +
-                "tournaments(query: { filter: {upcoming: true} page: $page, perPage: $perPage }) { nodes { id name admins { id }} } } }";
+        final String q = "query getCurrentUser($page: Int!, $perPage: Int!) { currentUser { id "
+                + "tournaments(query: { filter: {upcoming: true} page: $page, perPage: $perPage }) "
+                + "{ nodes { id name admins { id }} } } }";
 
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"page\": 1, \"perPage\": 10 } }";
+        final String json = "{ \"query\": \"" + q + "\", \"variables\": { \"page\": 1, \"perPage\": 10 } }";
 
         sendRequest(json);
-        JSONObject currUser;
+        final JSONObject currUser;
         try {
             currUser = jsonResponse.getJSONObject("data")
                     .getJSONObject("currentUser");
             jsonResponse = null;
-        } catch (JSONException event) {
+        }
+        catch (JSONException event) {
             throw new RuntimeException(event);
         }
 
-        int userID = currUser.getInt("id");
-        JSONArray allTournaments = currUser.getJSONObject("tournaments").getJSONArray("nodes");
+        final int userID = currUser.getInt("id");
+        final JSONArray allTournaments = currUser.getJSONObject("tournaments").getJSONArray("nodes");
 
         // Filter out the tournaments not organized by the user
-        List<String> userTournamentNames = new ArrayList<>();
-        List<Integer> userTournamentIDs = new ArrayList<>();
+        final List<String> userTournamentNames = new ArrayList<>();
+        final List<Integer> userTournamentIDs = new ArrayList<>();
         for (int i = 0; i < allTournaments.length(); i++) {
-            JSONObject tournament = allTournaments.getJSONObject(i);
-            Object admins = tournament.get("admins");
+            final JSONObject tournament = allTournaments.getJSONObject(i);
+            final Object admins = tournament.get("admins");
 
             if (admins == JSONObject.NULL) {
                 continue;
             }
-            JSONArray adminsArray = (JSONArray) admins;
+            final JSONArray adminsArray = (JSONArray) admins;
             for (int j = 0; j < adminsArray.length(); j++) {
-                JSONObject admin = adminsArray.getJSONObject(j);
+                final JSONObject admin = adminsArray.getJSONObject(j);
                 if (admin.getInt("id") == userID) {
                     userTournamentNames.add(tournament.getString("name"));
                     userTournamentIDs.add(tournament.getInt("id"));
@@ -114,42 +126,43 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
             }
         }
 
-        List<List> userTournaments = new ArrayList<>();
+        final List<List> userTournaments = new ArrayList<>();
         userTournaments.add(userTournamentNames);
         userTournaments.add(userTournamentIDs);
         return userTournaments;
     }
 
     /**
-     * Get the events in the given tournament.
+     * Gets the events in the given tournament.
      * @param tournamentID The id of the tournament.
      * @return The events by their name and id.
      */
     public List<List> getEventsInTournament(Integer tournamentID) throws JSONException {
 
-        String q = "query getEvents($id: ID) { tournament(id: $id) { events { id name } } }";
+        final String q = "query getEvents($id: ID) { tournament(id: $id) { events { id name } } }";
 
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"id\": \"" + tournamentID + "\"}}";
+        final String json = "{ \"query\": \"" + q + "\", \"variables\": { \"id\": \"" + tournamentID + "\"}}";
 
         sendRequest(json);
-        JSONArray events;
+        final JSONArray events;
         try {
             events = jsonResponse.getJSONObject("data")
                     .getJSONObject("tournament")
                     .getJSONArray("events");
             jsonResponse = null;
-        } catch (JSONException event) {
+        }
+        catch (JSONException event) {
             throw new RuntimeException(event);
         }
 
-        List<String> eventNames = new ArrayList<>();
-        List<Integer> eventIDs = new ArrayList<>();
+        final List<String> eventNames = new ArrayList<>();
+        final List<Integer> eventIDs = new ArrayList<>();
         for (int i = 0; i < events.length(); i++) {
-            JSONObject event = events.getJSONObject(i);
+            final JSONObject event = events.getJSONObject(i);
             eventNames.add(event.getString("name"));
             eventIDs.add(event.getInt("id"));
         }
-        List<List> eventsList = new ArrayList<>();
+        final List<List> eventsList = new ArrayList<>();
         eventsList.add(eventNames);
         eventsList.add(eventIDs);
         return eventsList;
@@ -162,39 +175,39 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
      */
     public int getEventId(String eventLink) {
 
-        String q = "query getEventId($slug: String) {event(slug: $slug) {id name}}";
+        final String q = "query getEventId($slug: String) {event(slug: $slug) {id name}}";
 
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"slug\": \"" + eventLink + "\"}}";
+        final String json = "{ \"query\": \"" + q + "\", \"variables\": { \"slug\": \"" + eventLink + "\"}}";
 
         sendRequest(json);
-        try{
-            int eventId = jsonResponse.getJSONObject("data").getJSONObject("event").getInt("id");
+        try {
+            final int eventId = jsonResponse.getJSONObject("data").getJSONObject("event").getInt("id");
             jsonResponse = null;
             return eventId;
-        } catch(JSONException e) {
-            throw new RuntimeException(e);
+        }
+        catch (JSONException evt) {
+            throw new RuntimeException(evt);
         }
     }
 
     /**
-     * Get all the event data required by the EventData entity for the given event.
+     * Gets all the event data required by the EventData entity for the given event.
      * @param eventID The ID of the event.
      * @return A list containing entrants (index 0), participants (index 1), characters (index 2),
-     * and phase IDs (index 3).
+     *      and phase IDs (index 3).
      */
     public List<Object> getEventData(Integer eventID) {
         // Create query
-        String q = "query getEventData($id: ID!) { event(id: $id) { entrants(query: {page: 1, perPage: 64}) " +
-                "{ nodes { id participants { id prefix gamerTag user { id } } } } phases { id name } videogame " +
-                "{ characters { id name } } } }";
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"id\": \"" + eventID + "\"}}";
+        final String q = "query getEventData($id: ID!) { event(id: $id) { entrants(query: {page: 1, perPage: 64}) "
+                + "{ nodes { id participants { id prefix gamerTag user { id } } } } phases { id name } videogame "
+                + "{ characters { id name } } } }";
+        final String json = "{ \"query\": \"" + q + "\", \"variables\": { \"id\": \"" + eventID + "\"}}";
         sendRequest(json);
 
-        List<Object> eventData = new ArrayList<>();
+        final List<Object> eventData = new ArrayList<>();
         eventData.addAll(getEntrantsAndParticipants());
         eventData.add(getCharacters());
         eventData.add(getPhaseIDs());
-
 
         jsonResponse = null;
         return eventData;
@@ -210,43 +223,44 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
                     .getJSONObject("entrants").getJSONArray("nodes");
 
             // Create entrants and participants maps and fill it in
-            Map<Integer, Entrant> entrantsMap = new HashMap<>();
-            Map<Integer, Participant> participantsMap = new HashMap<>();
+            final Map<Integer, Entrant> entrantsMap = new HashMap<>();
+            final Map<Integer, Participant> participantsMap = new HashMap<>();
 
             for (int i = 0; i < jsonEntrants.length(); i++) {
-                JSONObject entrantObject = jsonEntrants.getJSONObject(i);
-                JSONArray jsonParticipants = entrantObject.getJSONArray("participants");
-                int entrantId = entrantObject.getInt("id");
+                final JSONObject entrantObject = jsonEntrants.getJSONObject(i);
+                final JSONArray jsonParticipants = entrantObject.getJSONArray("participants");
+                final int entrantId = entrantObject.getInt("id");
 
-                Participant[] participants = new Participant[jsonParticipants.length()];
+                final Participant[] participants = new Participant[jsonParticipants.length()];
 
                 // Fill in the names and user ids for each player on a team
                 for (int j = 0; j < jsonParticipants.length(); j++) {
-                    int participantId = jsonParticipants.getJSONObject(j).getInt("id");
-                    String participantName = jsonParticipants.getJSONObject(j).getString("gamerTag");
+                    final int participantId = jsonParticipants.getJSONObject(j).getInt("id");
+                    final String participantName = jsonParticipants.getJSONObject(j).getString("gamerTag");
                     int userId;
                     // Ensure user isn't null
                     try {
                         userId = jsonParticipants.getJSONObject(j).getJSONObject("user").getInt("id");
                     }
-                    catch(JSONException e) {
+                    catch (JSONException evt) {
                         userId = -1;
                     }
                     String participantSponsor = "";
 
                     // Ensure sponsor isn't null string
-                    if (!jsonParticipants.getJSONObject(j).getString("prefix").equals("null")){
+                    if (!jsonParticipants.getJSONObject(j).getString("prefix").equals("null")) {
                         participantSponsor = jsonParticipants.getJSONObject(j).getString("prefix");
                     }
-                    Participant participant = new Participant(participantId, userId, participantName, participantSponsor);
+                    final Participant participant =
+                            new Participant(participantId, userId, participantName, participantSponsor);
                     participantsMap.put(participantId, participant);
                     participants[j] = participant;
                 }
 
-                Entrant entrant = new Entrant(participants, entrantId);
+                final Entrant entrant = new Entrant(participants, entrantId);
                 entrantsMap.put(entrantId, entrant);
             }
-            List<Object> entrantsAndParticipants = new ArrayList<>();
+            final List<Object> entrantsAndParticipants = new ArrayList<>();
             entrantsAndParticipants.add(entrantsMap);
             entrantsAndParticipants.add(participantsMap);
 
@@ -266,32 +280,32 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
             final JSONObject videogame = jsonResponse.getJSONObject("data").getJSONObject("event")
                     .getJSONObject("videogame");
 
-            SortedMap<String, Integer> characters = new TreeMap<>();
+            final SortedMap<String, Integer> characters = new TreeMap<>();
             if (videogame.get("characters") == JSONObject.NULL) {
                 return characters;
             }
             else {
                 final JSONArray charactersArray = videogame.getJSONArray("characters");
                 for (int i = 0; i < charactersArray.length(); i++) {
-                    JSONObject characterObject = charactersArray.getJSONObject(i);
-                    String characterName = characterObject.getString("name");
-                    int characterId = characterObject.getInt("id");
+                    final JSONObject characterObject = charactersArray.getJSONObject(i);
+                    final String characterName = characterObject.getString("name");
+                    final int characterId = characterObject.getInt("id");
                     characters.put(characterName, characterId);
                 }
                 return characters;
             }
         }
-        catch(JSONException e) {
-            throw new RuntimeException(e);
+        catch (JSONException evt) {
+            throw new RuntimeException(evt);
         }
     }
 
     /**
-     * Extract phase IDs from json response
+     * Extract phase IDs from json response.
      * @return A sorted map of phase names to phase IDs.
      */
     private SortedMap<String, Integer> getPhaseIDs() {
-        try{
+        try {
             final JSONArray jsonPhases = jsonResponse.getJSONObject("data").getJSONObject("event")
                     .getJSONArray("phases");
 
@@ -299,25 +313,27 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
             initialPhaseID = jsonPhases.getJSONObject(0).getInt("id");
 
             // Create name to id map and fill it in
-            SortedMap<String, Integer> nameToID = new TreeMap<>();
+            final SortedMap<String, Integer> nameToID = new TreeMap<>();
 
             for (int i = 0; i < jsonPhases.length(); i++) {
-                int phaseID = jsonPhases.getJSONObject(i).getInt("id");
-                String phaseName = jsonPhases.getJSONObject(i).getString("name");
+                final int phaseID = jsonPhases.getJSONObject(i).getInt("id");
+                final String phaseName = jsonPhases.getJSONObject(i).getString("name");
                 nameToID.put(phaseName, phaseID);
             }
             return nameToID;
-        } catch(JSONException e) {
-            throw new RuntimeException(e);
+        }
+        catch (JSONException evt) {
+            throw new RuntimeException(evt);
         }
     }
 
-    private void createOverallSeeding(){
+    private void createOverallSeeding() {
         // Create query
-        String q = "query PhaseSeeds($phaseId: ID!, $page: Int!, $perPage: Int!) {phase(id:$phaseId)" +
-                "{seeds(query: {page: $page perPage: $perPage}){pageInfo {total totalPages}" +
-                "nodes {seedNum id entrant {id}}}}}";
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"phaseId\": \"" + initialPhaseID + "\", \"page\": 1, \"perPage\": 64}}";
+        final String q = "query PhaseSeeds($phaseId: ID!, $page: Int!, $perPage: Int!) {phase(id:$phaseId)"
+                + "{seeds(query: {page: $page perPage: $perPage}){pageInfo {total totalPages}"
+                + "nodes {seedNum id entrant {id}}}}}";
+        final String json = "{ \"query\": \"" + q + "\", \"variables\": { \"phaseId\": \"" + initialPhaseID
+                + "\", \"page\": 1, \"perPage\": 64}}";
 
         sendRequest(json);
 
@@ -327,10 +343,10 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
             jsonResponse = null;
 
             // Create list of seeds and fill it in seeded order
-            List<Integer> seeding = new ArrayList<>();
+            final List<Integer> seeding = new ArrayList<>();
 
             for (int i = 0; i < jsonSeeds.length(); i++) {
-                int id = jsonSeeds.getJSONObject(i).getJSONObject("entrant").getInt("id");
+                final int id = jsonSeeds.getJSONObject(i).getJSONObject("entrant").getInt("id");
                 idToSeedID.put(id, jsonSeeds.getJSONObject(i).getInt("id"));
                 seeding.add(id);
             }
@@ -352,10 +368,11 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
             createOverallSeeding();
         }
         // Create query for the number of entrants in the phase
-        String q = "query PhaseSeeds($phaseId: ID!, $page: Int!, $perPage: Int!) {phase(id:$phaseId)" +
-                "{seeds(query: {page: $page perPage: $perPage}){pageInfo {total totalPages}" +
-                "nodes {seedNum}}}}";
-        String json = "{ \"query\": \"" + q + "\", \"variables\": { \"phaseId\": \"" + phaseID + "\", \"page\": 1, \"perPage\": 64}}";
+        final String q = "query PhaseSeeds($phaseId: ID!, $page: Int!, $perPage: Int!) {phase(id:$phaseId)"
+                + "{seeds(query: {page: $page perPage: $perPage}){pageInfo {total totalPages}"
+                + "nodes {seedNum}}}}";
+        final String json = "{ \"query\": \"" + q + "\", \"variables\": { \"phaseId\": \"" + phaseID
+                + "\", \"page\": 1, \"perPage\": 64}}";
 
         sendRequest(json);
 
@@ -379,27 +396,26 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
     @Override
     public void setSeeding(List<Integer> seededEntrants) {
         // Fill in unmodified seeds with new values
-        for(int i = 0; i < seededEntrants.size(); i++) {
+        for (int i = 0; i < seededEntrants.size(); i++) {
             overallSeeding.set(i, seededEntrants.get(i));
         }
 
         try {
             // Generate seed mapping
-            JSONArray seedMapping = new JSONArray();
-            for(int i = 0; i < overallSeeding.size(); i++) {
-                JSONObject seedMap = new JSONObject();
+            final JSONArray seedMapping = new JSONArray();
+            for (int i = 0; i < overallSeeding.size(); i++) {
+                final JSONObject seedMap = new JSONObject();
                 seedMap.put("seedId", idToSeedID.get(overallSeeding.get(i)));
                 seedMap.put("seedNum", i + 1);
                 seedMapping.put(seedMap);
             }
 
             // Create query
-            String q = "mutation UpdatePhaseSeeding ($phaseId: ID!, $seedMapping: [UpdatePhaseSeedInfo]!)" +
-                    "{updatePhaseSeeding (phaseId: $phaseId, seedMapping: $seedMapping) {id}}";
+            final String q = "mutation UpdatePhaseSeeding ($phaseId: ID!, $seedMapping: [UpdatePhaseSeedInfo]!)"
+                    + "{updatePhaseSeeding (phaseId: $phaseId, seedMapping: $seedMapping) {id}}";
 
-
-            JSONObject json = new JSONObject();
-            JSONObject variables = new JSONObject();
+            final JSONObject json = new JSONObject();
+            final JSONObject variables = new JSONObject();
             variables.put("phaseId", initialPhaseID);
             variables.put("seedMapping", seedMapping);
             json.put("query", q);
@@ -413,8 +429,12 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Muta
         }
     }
 
-    public void setTOKEN(String token) {
-        this.TOKEN = token;
+    /**
+     * Sets the value of the token attribute.
+     * @param token the value to set
+     */
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

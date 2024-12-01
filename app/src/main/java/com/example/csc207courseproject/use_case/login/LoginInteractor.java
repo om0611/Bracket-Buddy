@@ -27,7 +27,7 @@ public class LoginInteractor implements LoginInputBoundary, PropertyChangeListen
     @Override
     public String execute() {
         try {
-            return loginDataAccessObject.getAuthURL();
+            return loginDataAccessObject.getAuthUrl();
         }
         catch(RuntimeException e) {
             loginPresenter.prepareFailView();
@@ -43,7 +43,7 @@ public class LoginInteractor implements LoginInputBoundary, PropertyChangeListen
             if (token == null) {
                 loginPresenter.prepareFailView();
             }
-            selectTournamentDataAccessObject.setTOKEN(token);
+            selectTournamentDataAccessObject.setToken(token);
             final LoginOutputData loginOutputData = new LoginOutputData(selectTournamentDataAccessObject.getTournaments());
             loginPresenter.prepareSuccessView(loginOutputData);
         }

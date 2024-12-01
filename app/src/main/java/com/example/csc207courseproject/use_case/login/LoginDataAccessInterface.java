@@ -11,7 +11,7 @@ public interface LoginDataAccessInterface {
      * Start the server where the auth code will be sent once the user logs in, and prompt the user to log in.
      * @return the browser URL where the user can log in
      */
-    String getAuthURL();
+    String getAuthUrl();
 
     /**
      * Add a listener to listen in on when the auth code is received.
