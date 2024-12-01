@@ -1,12 +1,12 @@
 package com.example.csc207courseproject;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.csc207courseproject.databinding.ActivityLoginBinding;
 import com.example.csc207courseproject.interface_adapter.login.LoginController;
 import com.example.csc207courseproject.interface_adapter.login.LoginViewModel;
 
@@ -46,7 +46,12 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loginController.execute(LoginActivity.this);
+                String authURL = loginController.execute();
+                if (authURL != null) {
+                    // Create an Intent to open the URL in the browser
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authURL));
+                    startActivity(browserIntent);              // Launch the browser
+                }
             }
         });
     }

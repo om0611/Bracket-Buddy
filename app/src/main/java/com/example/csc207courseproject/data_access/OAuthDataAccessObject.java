@@ -1,10 +1,7 @@
 package com.example.csc207courseproject.data_access;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.appcompat.app.AppCompatActivity;
 import com.example.csc207courseproject.BuildConfig;
 import fi.iki.elonen.NanoHTTPD;
 import okhttp3.*;
@@ -39,7 +36,7 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
 //    @Override
 //    public String login(AppCompatActivity activity) {
 //        // Get authorization code
-//        getAuthCode(activity);
+//        getAuthURL(activity);
 //        if (AUTH_CODE == null) {
 //            return null;
 //        }
@@ -79,7 +76,7 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
         }
     }
 
-    public void getAuthCode(AppCompatActivity activity) {
+    public String getAuthURL() {
 
         serverThread = new Thread(() -> {
             try {
@@ -90,15 +87,11 @@ public class OAuthDataAccessObject implements LoginDataAccessInterface {
         });
         serverThread.start();
 
-        String authURL = "https://start.gg/oauth/authorize" +
+        return "https://start.gg/oauth/authorize" +
                 "?response_type=code" +
                 "&client_id=" + CLIENT_ID
                 + "&scope=" + SCOPES
                 + "&redirect_uri=" + REDIRECT_URI;
-
-        // Create an Intent to open the URL in the browser
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authURL));
-        activity.startActivity(browserIntent);              // Launch the browser
     }
 
     public String getToken() throws InterruptedException {
