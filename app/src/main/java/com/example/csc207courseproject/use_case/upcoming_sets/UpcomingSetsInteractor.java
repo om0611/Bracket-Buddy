@@ -1,11 +1,9 @@
 package com.example.csc207courseproject.use_case.upcoming_sets;
 
-
-import android.security.identity.AlreadyPersonalizedException;
 import com.example.csc207courseproject.data_access.api.APIDataAccessException;
+import com.example.csc207courseproject.entities.CallSetData;
 import com.example.csc207courseproject.entities.Entrant;
 import com.example.csc207courseproject.entities.EventData;
-import com.example.csc207courseproject.entities.SetData;
 
 import java.util.List;
 
@@ -25,10 +23,10 @@ public class UpcomingSetsInteractor implements UpcomingSetsInputBoundary {
         // Check if API call is successful
         int eventId = EventData.getEventId();
         try {
-            List<SetData> upcomingSets = dataAccess.getUpcomingSets(eventId);
+            List<CallSetData> upcomingSets = dataAccess.getUpcomingSets(eventId);
 
             //Reopen free stations
-            for (SetData upcomingSet : upcomingSets) {
+            for (CallSetData upcomingSet : upcomingSets) {
                 for(Entrant entrant : upcomingSet.getPlayers()) {
                     if (entrant.getCurrentStation() != null) {
                         entrant.getCurrentStation().setOccupied(false);
