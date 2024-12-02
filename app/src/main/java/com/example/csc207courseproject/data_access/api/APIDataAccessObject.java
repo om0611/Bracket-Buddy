@@ -4,6 +4,7 @@ import android.util.Log;
 import com.example.csc207courseproject.entities.*;
 import com.example.csc207courseproject.use_case.add_station.AddStationDataAccessInterface;
 import com.example.csc207courseproject.use_case.call_set.CallSetDataAccessInterface;
+import com.example.csc207courseproject.use_case.get_finance.GetFinanceDataAccessInterface;
 import com.example.csc207courseproject.use_case.get_stations.GetStationsDataAccessInterface;
 import com.example.csc207courseproject.use_case.login.LoginDataAccessInterface;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsDataAccessInterface;
@@ -26,7 +27,8 @@ import java.util.concurrent.CountDownLatch;
 public class APIDataAccessObject implements SelectPhaseDataAccessInterface, LoginDataAccessInterface,
         MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface,
         OngoingSetsDataAccessInterface, GetStationsDataAccessInterface, AddStationDataAccessInterface,
-        CallSetDataAccessInterface, SelectTournamentDataAccessInterface, SelectEventDataAccessInterface {
+        CallSetDataAccessInterface, SelectTournamentDataAccessInterface, SelectEventDataAccessInterface, 
+        GetFinanceDataAccessInterface {
 
     private final String API_URL = "https://api.start.gg/gql/alpha";
     private String token;
@@ -756,6 +758,51 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Logi
      */
     public void setToken(String token) {
         this.token = token;
+    }
+
+    @Override
+    public void fetchParticipantPaymentStatus(int tournamentId) {
+        // Create query
+
+        String q = "query GetTournament($id: ID!, $participantQuery: ParticipantPaginationQuery!) {" +
+                "tournament(id: $id) {" +
+                "id name participants(query: $participantQuery, isAdmin: true) {" +
+                "pageInfo {total perPage page} " +
+                "nodes {id}}}}";
+
+        String json = "{ \"query\": \"" + q + "\", " +
+                "\"variables\": { " +
+                "\"id\": \"" + tournamentId + "\", " +
+                "\"participantQuery\": { " +
+                "\"page\": 1, " +
+                "\"perPage\": 64, " +
+                "\"filter\": { \"unpaid\": false } " +
+                "} " +
+                "} }";
+
+        sendRequest(json); // Assuming sendRequest populates jsonResponse
+
+        try {
+            final JSONArray jsonParticipants = jsonResponse.getJSONObject("data")
+                    .getJSONObject("tournament")
+                    .getJSONObject("participants")
+                    .getJSONArray("nodes");
+
+            for (int i = 0; i < jsonParticipants.length(); i++) {
+                JSONObject participantObject = jsonParticipants.getJSONObject(i);
+
+                int participantId = participantObject.getInt("id"); // Assuming "verified" means "paid"
+
+                EventData.getEventData().getParticipant(participantId).markAsPaid();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to parse participant JSON response", e);
+        } catch (Exception e) {
+            // generic exception
+            e.printStackTrace();
+
+        }
     }
 }
 
