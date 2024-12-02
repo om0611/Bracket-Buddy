@@ -48,11 +48,7 @@ public class ReportGamePresenter implements ReportGameOutputBoundary {
     private List<Boolean> updateWinnerBools(List<Game> games, int winnerID) {
         List<Boolean> newButtonPresses = new ArrayList<>();
         for (Game game : games) {
-            if (game.getWinnerID() == winnerID) {
-                newButtonPresses.add(true);
-            } else {
-                newButtonPresses.add(false);
-            }
+            newButtonPresses.add(game.getWinnerID() == winnerID);
         }
         return newButtonPresses;
     }

@@ -1,5 +1,37 @@
 # CSC207-Course-Project
 
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Authors](#authors)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Feedback](#feedback)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Overview
+
+## Features
+
+## Authors
+- [Sahil Basra](https://github.com/SahilBas2005)
+- [Alexander Leonardos](https://github.com/AlexLeonardos)
+- [Esther Siu](https://github.com/essi-304)
+- [Om Patel](https://github.com/ompatech)
+- [Om Patel](https://github.com/om0611)
+
+## Installation
+
+## Usage
+
+## Feedback
+
+## Contributing
+
+## License
+
+
 Sahil Basra SahilBas2005
 
 Alexander Leonardos AlexLeonardos
