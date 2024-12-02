@@ -1,4 +1,4 @@
-# CSC207-Course-Project
+# Bracket Buddy
 
 ## Table of Contents
 - [Overview](#overview)
@@ -11,8 +11,25 @@
 - [License](#license)
 
 ## Overview
+Bracket Buddy is an Android application designed to help tournament organizers manage and run their tournaments locally 
+through their mobile device. It interacts with the start.gg API for fetching and modifying the user's start.gg data. 
+Bracket Buddy provides a user-friendly alternative to the "notoriously poor" start.gg website functionality on mobile 
+devices. With Bracket Buddy, tournament organizers can save time and reduce frustration, making it an invaluable tool for 
+managing tournaments on the go. 
 
 ## Features
+- **Log in**: The tournament organizer (TO) can log into their start.gg account through our app.
+- **Access tournaments and events**: The TO can access their current and upcoming tournaments and events.
+- **Access and modify bracket matches**: The TO can see the bracket matches for a given event, declare the result 
+of the match, and upload the changes to start.gg. 
+- **Modify seeding**: The TO can modify the seeding for a bracket and upload the changes to start.gg. 
+- **Call sets**: The TO can assign players to specific setups or stations.
+- **Ensure controller compatibility**: The TO can keep track of players with limiting controllers while calling sets 
+to ensure that players can only be called to setups where their controllers are compatible.
+- **Track payments**: The TO can keep track of which attendees have paid, in order to calculate total revenue of the 
+tournament and collect payment from unpaid entrants.
+- **Generate Event Description**: The TO can generate a description for an event, which can be used for advertising 
+the event.
 
 ## Authors
 - [Sahil Basra](https://github.com/SahilBas2005)
@@ -30,71 +47,4 @@
 ## Contributing
 
 ## License
-
-
-Sahil Basra SahilBas2005
-
-Alexander Leonardos AlexLeonardos
-
-Esther Siu essi-304
-
-Om Patel om0611
-
-Om Patel ompatech
-
-User Stories:
-
-User Story 1: As a tournament organizer, I want to be able to report bracket matches without the risk of losing progress due to lost connection.
-
-People Assigned: Sahil, Alex, Om 2
-
-Use Cases:
-
-- Logging in and viewing tournaments that I organize
-
-- Reporting Bracket Matches
-
-- Displaying Bracket Matches Locally
-
-- Caching reported sets locally so that they can be sent to start.gg when connection returns
-
-User Story 2: As a tournament organizer, I want to seed my tournament bracket, so that better players play each other later in the tournament.
-
-People Assigned: Team/Demo User Story
-
-Use Cases:
-
-- Viewing seeds from Start.gg by phase
-
-- Mutating seeding directly by changing seeds of specific players and updating to Start.gg
-
-User Story 3: As a tournament organizer, I want to keep track of players with limiting controllers while calling sets, to ensure that players can only be called to setups where their controllers are compatible. 
-
-People Assigned: Sahil and Alex
-
-Use Cases:
-
-- Call set feature which calls two players to play at an open setup with controller accommodations
-
-- Report when a player is called to an incompatible setup and store it
-
-User Story 4: As a tournament organizer, I want to be able to generate relevant descriptions about the tournament itself and its best-attending players for advertising purposes.
-
-People Assigned: Om 1
-
-Use Cases:
-
-- Generate Tournament Description through generative AI
-
-- Generate Player profile with AI description of performance at the current tournaments and past tournaments, and stats displayed together
-
-User Story 5: As a tournament organizer, I want to be able to keep track of which attendees have paid, in order to calculate total revenue of the tournament and collect payment from unpaid entrants.
-
-People Assigned: Esther, Om 2
-
-Use Cases:
-
-- Display table of amount of money paid, type of payment, and special notes for each player, with buttons for updating the table
-
-- Export the table into a csv file for local storage after the tournament ends and the app is closed.
-=======
+Check out the license [here](LICENSE).
