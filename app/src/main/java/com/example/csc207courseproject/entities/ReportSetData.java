@@ -1,17 +1,14 @@
 package com.example.csc207courseproject.entities;
 
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReportSetData extends SetData {
 
-    private int firstTo;
+    private final int firstTo;
     private int winnerID;
 
-    private List<Game> games;
+    private final List<Game> games;
 
 
     public ReportSetData(int setID, Entrant[] players, int bestOf) {
