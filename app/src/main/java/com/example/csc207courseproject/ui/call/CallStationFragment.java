@@ -19,6 +19,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
+/**
+ * A sub view of the call set user story. The user can configure and add stations and player accomadations.
+ */
 public class CallStationFragment extends AppFragment implements PropertyChangeListener{
 
     private static CallViewModel callViewModel;

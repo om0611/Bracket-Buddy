@@ -3,6 +3,9 @@ package com.example.csc207courseproject.entities;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents a set in an event and contains all the data for its corresponding set.
+ */
 public abstract class SetData {
 
     private int setID;
