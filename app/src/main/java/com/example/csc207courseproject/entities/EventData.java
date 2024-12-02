@@ -3,7 +3,7 @@ package com.example.csc207courseproject.entities;
 import java.util.*;
 
 /**
- * An entity representing an event in a tournament.
+ * An entity representing an event in a tournament and all its associated data (Singleton).
  */
 public class EventData {
     private final int tournamentId;

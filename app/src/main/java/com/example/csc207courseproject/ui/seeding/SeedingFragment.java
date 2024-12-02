@@ -21,6 +21,9 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The view that handles the management and updating of seeding at an event.
+ */
 public class SeedingFragment extends AppFragment implements PropertyChangeListener, AdapterView.OnItemSelectedListener {
 
     private static SeedingViewModel seedingViewModel;

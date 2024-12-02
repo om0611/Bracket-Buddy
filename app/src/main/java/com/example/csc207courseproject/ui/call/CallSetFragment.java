@@ -21,6 +21,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
+/**
+ * A sub view of the call set user story. Each selected set is handled and called within this view.
+ */
 public class CallSetFragment extends AppFragment implements PropertyChangeListener, AdapterView.OnItemSelectedListener {
 
     private static CallViewModel callViewModel;

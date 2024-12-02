@@ -3,6 +3,9 @@ package com.example.csc207courseproject.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A subtype of the set data class for specific use in reporting sets.
+ */
 public class ReportSetData extends SetData {
 
     private final int firstTo;

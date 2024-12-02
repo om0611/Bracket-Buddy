@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An entity representing an entrant in an event
+ * An entity representing an entrant in an event such as a player or a doubles team.
  */
 public class Entrant {
     private final Participant[] participants;

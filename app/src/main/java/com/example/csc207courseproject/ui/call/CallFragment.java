@@ -1,7 +1,6 @@
 package com.example.csc207courseproject.ui.call;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,10 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The main view for the call set user story. Here, the user can select a set to call or navigate
+ * to the station view.
+ */
 public class CallFragment extends AppFragment implements PropertyChangeListener {
 
     private static CallViewModel callViewModel;
@@ -62,6 +65,12 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         return root;
     }
 
+    /**
+     * Override to set up navigation controller.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -71,6 +80,9 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         navc = Navigation.findNavController(view);
     }
 
+    /**
+     * Add the get sets button to the view.
+     */
     private void createGetSetsButton() {
         CallSetState currentState = callViewModel.getState();
         Button getSets = binding.getSetsButton;
@@ -85,6 +97,9 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         });
     }
 
+    /**
+     * Add the upcoming sets list to the view.
+     */
     private void createDisplay() {
         CallSetState currentState = callViewModel.getState();
         List<String> setDisplay = new ArrayList<>();
@@ -117,11 +132,17 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         });
     }
 
+    /**
+     * Add the configure stations button to the view.
+     */
     private void createStationButton(){
         Button configureButton = binding.configureButton;
         configureButton.setOnClickListener(view -> navc.navigate(R.id.action_nav_call_to_callStationFragment));
     }
 
+    /**
+     * Overidden to reset property change listener
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -129,6 +150,10 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         binding = null;
     }
 
+    /**
+     * Catches property changes from the view model.
+     * @param evt The property change event.
+     */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
@@ -141,18 +166,34 @@ public class CallFragment extends AppFragment implements PropertyChangeListener 
         }
     }
 
+    /**
+     * Adds this controller and its corresponding use case to the view.
+     * @param controller The parameter controller
+     */
     public static void setUpcomingSetsController(UpcomingSetsController controller) {
         upcomingSetsController = controller;
     }
 
+    /**
+     * Adds this controller and its corresponding use case to the view.
+     * @param controller The parameter controller
+     */
     public static void setGetStationsController(GetStationsController controller) {
         getStationsController = controller;
     }
 
+    /**
+     * Adds this controller and its corresponding use case to the view.
+     * @param controller The parameter controller
+     */
     public static void setFindStationController(FindStationController controller) {
         findStationController = controller;
     }
 
+    /**
+     * Sets the view model for the view.
+     * @param viewModel The parameter view model
+     */
     public static void setCallViewModel(CallViewModel viewModel) {
         callViewModel = viewModel;
     }

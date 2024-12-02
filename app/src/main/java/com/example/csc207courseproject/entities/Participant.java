@@ -2,6 +2,9 @@ package com.example.csc207courseproject.entities;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents each individual attendee at an event regardless of its format (singles, doubles, etc.)
+ */
 public class Participant {
     private int participantId;
     private int userId;

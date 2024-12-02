@@ -3,10 +3,12 @@ package com.example.csc207courseproject.entities;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A subtype of the set data class for specific use in calling sets.
+ */
 public class CallSetData extends SetData {
 
     private Station station;
-
 
     public CallSetData(int setID, Entrant[] players) {
         super(setID, players);

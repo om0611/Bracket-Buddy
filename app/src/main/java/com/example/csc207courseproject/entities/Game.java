@@ -1,6 +1,8 @@
 package com.example.csc207courseproject.entities;
 
-
+/**
+ * Represents a single game/match within a set.
+ */
 public class Game {
 
     private Integer winnerID;
