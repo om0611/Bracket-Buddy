@@ -1,29 +1,21 @@
 package com.example.csc207courseproject.use_case.modify_finance;
 
-import android.annotation.SuppressLint;
-
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Participant;
-import com.example.csc207courseproject.entities.Station;
-import com.example.csc207courseproject.use_case.call_set.CallSetOutputData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ModifyFinanceInteractor implements ModifyFinanceInputBoundary {
 
-    private final ModifyFinanceDataAccessInterface dataAccess;
     private final ModifyFinanceOutputBoundary presenter;
 
     /**
      * Construct a new ModifyFinanceInteractor with the given data access and presenter.
      *
-     * @param dataAccess the data access interface.
      * @param presenter the output boundary.
      */
-    public ModifyFinanceInteractor(ModifyFinanceDataAccessInterface dataAccess, ModifyFinanceOutputBoundary presenter) {
-        this.dataAccess = dataAccess;
+    public ModifyFinanceInteractor(ModifyFinanceOutputBoundary presenter) {
         this.presenter = presenter;
     }
 
@@ -33,44 +25,25 @@ public class ModifyFinanceInteractor implements ModifyFinanceInputBoundary {
      */
     @Override
     public void execute(ModifyFinanceInputData inputData) {
-        try {
-            if (inputData.geteTransferAmount() > 0 || inputData.getCashAmount() > 0) {
-                dataAccess.modifyParticipantPaymentStatus(inputData.getParticipantID());
-                dataAccess.modifyParticipantCashPaid(inputData.getParticipantID(), String.valueOf(inputData.getCashAmount()));
-                dataAccess.modifyParticipanteTransferPaid(inputData.getParticipantID(), String.valueOf(inputData.geteTransferAmount()));
-                dataAccess.modifyParticipantSpecialNotes(inputData.getParticipantID(), inputData.getSpecialNote());
-                
-                Map<Integer, Participant> updatedPaymentStatuses = dataAccess.getParticipantPaymentStatus();
 
-                List<String> updatedPaymentStatusesList = convertMapToList(updatedPaymentStatuses);
-                ModifyFinanceOutputData outputData = new ModifyFinanceOutputData(updatedPaymentStatusesList, inputData.getParticipantID());
+        if (inputData.geteTransferAmount() > 0 || inputData.getCashAmount() > 0) {
+            Participant participant = EventData.getEventData().getParticipant(inputData.getParticipantID());
+            participant.markAsPaid();
+            participant.setCashPaid(String.valueOf(inputData.getCashAmount()));
+            participant.seteTransferPaid(String.valueOf(inputData.geteTransferAmount()));
+            participant.setSpecialNotes(String.valueOf(inputData.getSpecialNote()));
+                
+            List<Participant> participants = new ArrayList<>(EventData.getEventData().getParticipants().values());
+
+            List<String> output = new ArrayList<>();
+
+            for (Participant p : participants) {
+                output.add(p.getFinancialEntry());
+            }
+            ModifyFinanceOutputData outputData = new ModifyFinanceOutputData(output, participant.getParticipantId());
 
                 // update the view
-                presenter.prepareSuccessView(outputData);
-            }
-
-        } catch (Exception e) {
-            presenter.prepareFailView();
+            presenter.prepareSuccessView(outputData);
         }
-    }
-
-    /**
-     * Convert a map of participants to a list of strings.
-     *
-     * @param entries the map of participants.
-     * @return the list of strings.
-     */
-    private List<String> convertMapToList(Map<Integer, Participant> entries) {
-        List<String> defaultEntries = new ArrayList<>();
-        for (Participant participant : entries.values()) {
-            @SuppressLint("DefaultLocale") String entry = String.format(
-                    "%d, %s, Status: %s",
-                    participant.getParticipantId(),
-                    participant.getName(),
-                    participant.isPaid() ? "Paid" : "Unpaid"
-            );
-            defaultEntries.add(entry);
-        }
-        return defaultEntries;
     }
 }

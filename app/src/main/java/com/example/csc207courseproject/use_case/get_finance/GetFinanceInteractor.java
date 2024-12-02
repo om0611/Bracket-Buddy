@@ -2,14 +2,13 @@ package com.example.csc207courseproject.use_case.get_finance;
 
 import android.annotation.SuppressLint;
 
+import android.media.metrics.Event;
+import com.example.csc207courseproject.data_access.api.APIDataAccessException;
 import com.example.csc207courseproject.entities.EventData;
 import com.example.csc207courseproject.entities.Participant;
-import com.example.csc207courseproject.entities.Station;
-import com.example.csc207courseproject.use_case.call_set.CallSetOutputData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class GetFinanceInteractor implements GetFinanceInputBoundary {
 
@@ -34,37 +33,23 @@ public class GetFinanceInteractor implements GetFinanceInputBoundary {
     @Override
     public void execute(GetFinanceInputData inputData) {
         try {
-            int eventId = inputData.getEventID();
+            int tournamentId = EventData.getEventData().getTournamentId();
             // Fetch finance data from the data access object
-            List<String> financeEntries = convertMapToList(dataAccess.fetchParticipantPaymentStatus(eventId));
+            dataAccess.fetchParticipantPaymentStatus(tournamentId);
 
-            GetFinanceOutputData financeOutputData = new GetFinanceOutputData(financeEntries);
+            List<Participant> financeEntries = new ArrayList<>(EventData.getEventData().getParticipants().values());
+            List<String> output = new ArrayList<>();
+
+            for (Participant participant : financeEntries) {
+                output.add(participant.getFinancialEntry());
+            }
+            GetFinanceOutputData financeOutputData = new GetFinanceOutputData(output);
 
             // Pass the data to the presenter for preparing the success view
             presenter.prepareSuccessView(financeOutputData);
-        } catch (Exception e) {
+        } catch (APIDataAccessException e) {
             // Handle any potential errors by passing the error to the presenter
             presenter.prepareFailView();
         }
-    }
-
-    /**
-     * Convert a map of participants to a list of strings.
-     *
-     * @param entries the map of participants.
-     * @return the list of strings.
-     */
-    private List<String> convertMapToList(Map<Integer, Participant> entries) {
-        List<String> defaultEntries = new ArrayList<>();
-        for (Participant participant : entries.values()) {
-            @SuppressLint("DefaultLocale") String entry = String.format(
-                    "%d, %s, Status: %s",
-                    participant.getParticipantId(),
-                    participant.getName(),
-                    participant.isPaid() ? "Paid" : "Unpaid"
-            );
-            defaultEntries.add(entry);
-        }
-        return defaultEntries;
     }
 }

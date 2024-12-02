@@ -78,4 +78,11 @@ public class Participant {
     public String toString() {
         return sponsor + " " + name;
     }
+
+    public String getFinancialEntry(){
+        if(hasPaid) {
+            return participantId + ", " + toString() + ", Paid";
+        }
+        return participantId + ", " + toString() + ", Unpaid";
+    }
 }

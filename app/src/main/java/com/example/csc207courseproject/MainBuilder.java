@@ -486,7 +486,7 @@ public class MainBuilder {
                 final ModifyFinanceOutputBoundary modifyFinanceOutputBoundary = new ModifyFinancePresenter(
                                 financeViewModel);
                 final ModifyFinanceInputBoundary modifyFinanceInteractor = new ModifyFinanceInteractor(
-                                apiDataAccessObject, modifyFinanceOutputBoundary);
+                                modifyFinanceOutputBoundary);
                 final ModifyFinanceController controller = new ModifyFinanceController(modifyFinanceInteractor,
                                 financeViewModel.getState());
                 FinanceFragment.setModifyFinanceController(controller);
@@ -502,7 +502,7 @@ public class MainBuilder {
                 final ExportFinanceOutputBoundary exportFinanceOutputBoundary = new ExportFinancePresenter(
                                 financeViewModel);
                 final ExportFinanceInputBoundary exportFinanceInteractor = new ExportFinanceInteractor(
-                                apiDataAccessObject, exportFinanceOutputBoundary);
+                                exportFinanceOutputBoundary);
                 final ExportFinanceController controller = new ExportFinanceController(exportFinanceInteractor,
                                 financeViewModel.getState());
                 FinanceFragment.setExportFinanceController(controller);

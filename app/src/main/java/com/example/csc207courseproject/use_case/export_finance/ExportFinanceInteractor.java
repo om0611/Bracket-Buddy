@@ -18,17 +18,14 @@ import java.util.Map;
 
 public class ExportFinanceInteractor implements ExportFinanceInputBoundary {
 
-    private final ExportFinanceDataAccessInterface dataAccess;
     private final ExportFinanceOutputBoundary presenter;
 
     /**
      * Construct a new ExportFinanceInteractor with the given data access and presenter.
      *
-     * @param dataAccess the data access interface.
      * @param presenter the output boundary.
      */
-    public ExportFinanceInteractor(ExportFinanceDataAccessInterface dataAccess, ExportFinanceOutputBoundary presenter) {
-        this.dataAccess = dataAccess;
+    public ExportFinanceInteractor(ExportFinanceOutputBoundary presenter) {
         this.presenter = presenter;
     }
 
@@ -41,7 +38,7 @@ public class ExportFinanceInteractor implements ExportFinanceInputBoundary {
         File file = inputData.file;
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            Map<Integer, Participant> participantPaymentStatus = dataAccess.getParticipantPaymentStatus();
+            Map<Integer, Participant> participantPaymentStatus = EventData.getEventData().getParticipants();
             // Write the header of the CSV file
             writer.write("Name,Status,CashPaid,eTransferPaid,SpecialNotes");
             writer.newLine();

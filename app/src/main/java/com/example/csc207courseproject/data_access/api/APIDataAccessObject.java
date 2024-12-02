@@ -7,8 +7,6 @@ import com.example.csc207courseproject.use_case.call_set.CallSetDataAccessInterf
 import com.example.csc207courseproject.use_case.get_finance.GetFinanceDataAccessInterface;
 import com.example.csc207courseproject.use_case.get_stations.GetStationsDataAccessInterface;
 import com.example.csc207courseproject.use_case.login.LoginDataAccessInterface;
-import com.example.csc207courseproject.use_case.modify_finance.ModifyFinanceDataAccessInterface;
-import com.example.csc207courseproject.use_case.modify_finance.ModifyFinanceInputData;
 import com.example.csc207courseproject.use_case.ongoing_sets.OngoingSetsDataAccessInterface;
 import com.example.csc207courseproject.use_case.select_event.SelectEventDataAccessInterface;
 import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentDataAccessInterface;
@@ -21,7 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import com.example.csc207courseproject.use_case.mutate_seeding.MutateSeedingDataAccessInterface;
 import com.example.csc207courseproject.use_case.select_phase.SelectPhaseDataAccessInterface;
-import com.example.csc207courseproject.use_case.export_finance.ExportFinanceDataAccessInterface;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -30,7 +28,7 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Logi
         MutateSeedingDataAccessInterface, ReportSetDataAccessInterface, UpcomingSetsDataAccessInterface,
         OngoingSetsDataAccessInterface, GetStationsDataAccessInterface, AddStationDataAccessInterface,
         CallSetDataAccessInterface, SelectTournamentDataAccessInterface, SelectEventDataAccessInterface, 
-        GetFinanceDataAccessInterface, ModifyFinanceDataAccessInterface, ExportFinanceDataAccessInterface {
+        GetFinanceDataAccessInterface {
 
     private final String API_URL = "https://api.start.gg/gql/alpha";
     private String token;
@@ -39,7 +37,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Logi
     private List<Entrant> overallSeeding;
     private JSONObject jsonResponse;
     private CountDownLatch countDownLatch;
-    private static HashMap<Integer, Participant> participantPaymentStatus = new HashMap<>();
 
     private void sendRequest(String query) {
         countDownLatch = new CountDownLatch(1);
@@ -762,41 +759,23 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Logi
     public void setToken(String token) {
         this.token = token;
     }
-    @Override
-    public String getTournamentSlug(String eventID) {
-        String query = "{ \"query\": \"query GetTournamentByEventID($eventID: ID!) { event(id: $eventID) { tournament { id slug name } } }\", " +
-                "\"variables\": { \"eventID\": \"" + eventID + "\" } }";
 
-        sendRequest(query);
-
-        // Parse the JSON response
-        try {
-            final JSONObject jsonTournamentObject = jsonResponse.getJSONObject("data")
-                    .getJSONObject("event")
-                    .getJSONObject("tournament");
-            return jsonTournamentObject.getString("slug");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
     @Override
-    public HashMap<Integer, Participant> fetchParticipantPaymentStatus(int eventID) {
+    public void fetchParticipantPaymentStatus(int tournamentId) {
         // Create query
-        String gotSlug = getTournamentSlug(String.valueOf(eventID)) ;
 
-        String q = "query GetTournamentBySlug($slug: String!, $participantQuery: ParticipantPaginationQuery!) {" +
-                "tournament(slug: $slug) {" +
+        String q = "query GetTournament($id: ID!, $participantQuery: ParticipantPaginationQuery!) {" +
+                "tournament(id: $id) {" +
                 "id name participants(query: $participantQuery, isAdmin: true) {" +
                 "pageInfo {total perPage page} " +
-                "nodes {id gamerTag email checkedIn verified}}}}";
+                "nodes {id}}}}";
 
         String json = "{ \"query\": \"" + q + "\", " +
                 "\"variables\": { " +
-                "\"slug\": \"" + gotSlug + "\", " +
+                "\"id\": \"" + tournamentId + "\", " +
                 "\"participantQuery\": { " +
                 "\"page\": 1, " +
-                "\"perPage\": 500, " +
+                "\"perPage\": 64, " +
                 "\"filter\": { \"unpaid\": false } " +
                 "} " +
                 "} }";
@@ -812,21 +791,9 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Logi
             for (int i = 0; i < jsonParticipants.length(); i++) {
                 JSONObject participantObject = jsonParticipants.getJSONObject(i);
 
-                int participantId = participantObject.getInt("id");
-                String gamerTag = participantObject.getString("gamerTag");
-                String name = gamerTag;  // Assuming gamerTag is used as the name (adjust if needed)
-                String sponsor = "";  // If sponsor information is available, replace with it (or leave empty for now)
-                boolean isUnpaid = !participantObject.getBoolean("verified"); // Assuming "verified" means "paid"
+                int participantId = participantObject.getInt("id"); // Assuming "verified" means "paid"
 
-                // Create Participant object with the data
-                Participant participant = new Participant(participantId, 0, name, sponsor); // User ID is assumed to be 0 for now
-                if (isUnpaid) {
-                    // Optionally mark as unpaid, if needed (e.g., mark the participant as paid if verified)
-                    participant.markAsPaid();  // This will mark the participant as paid if verified
-                }
-
-                // Add Participant object to the HashMap with participant ID as key
-                participantPaymentStatus.put(participantId, participant);
+                EventData.getEventData().getParticipant(participantId).markAsPaid();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -836,99 +803,6 @@ public class APIDataAccessObject implements SelectPhaseDataAccessInterface, Logi
             e.printStackTrace();
 
         }
-
-        return participantPaymentStatus;
     }
-
-    /**
-     * Modify the payment status of a participant.
-     *
-     * @param participantId the ID of the participant.
-     */
-    @Override
-    public void modifyParticipantPaymentStatus(int participantId) {
-        Participant participantOfInterest = participantPaymentStatus.get(participantId);
-
-        // ensure that the participant of interest is not Null
-        assert participantOfInterest != null;
-        participantOfInterest.markAsPaid();
-    }
-
-    /**
-     * Modify the cash amount paid by a participant.
-     *
-     * @param participantId the ID of the participant.
-     * @param cashPaid the cash amount to set.
-     */
-    @Override
-    public void modifyParticipantCashPaid(int participantId, String cashPaid) {
-        Participant participantOfInterest = participantPaymentStatus.get(participantId);
-
-        // ensure that the participant of interest is not Null
-        assert participantOfInterest != null;
-        participantOfInterest.setCashPaid(cashPaid);
-    }
-
-    /**
-     * Modify the eTransfer amount paid by a participant.
-     *
-     * @param participantId the ID of the participant.
-     * @param eTransferPaid the eTransfer amount to set.
-     */
-    @Override
-    public void modifyParticipanteTransferPaid(int participantId, String eTransferPaid) {
-        Participant participantOfInterest = participantPaymentStatus.get(participantId);
-
-        // ensure that the participant of interest is not Null
-        assert participantOfInterest != null;
-        participantOfInterest.seteTransferPaid(eTransferPaid);
-    }
-
-    /**
-     * Modify the special notes of a participant.
-     *
-     * @param participantId the ID of the participant.
-     * @param specialNotes the special notes to set.
-     */
-    @Override
-    public void modifyParticipantSpecialNotes(int participantId, String specialNotes) {
-        Participant participantOfInterest = participantPaymentStatus.get(participantId);
-
-        // ensure that the participant of interest is not Null
-        assert participantOfInterest != null;
-        participantOfInterest.setSpecialNotes(specialNotes);
-    }
-
-    /**
-     * Get the participant payment status.
-     *
-     * @return the participant payment status.
-     */
-    @Override
-    public Map<Integer, Participant> getParticipantPaymentStatus() {
-        return participantPaymentStatus;
-    }
-
-
-    // private int safeParseInt(String input) {
-    //     try {
-    //         return Integer.parseInt(input.trim());
-    //     } catch (NumberFormatException e) {
-    //         return 0; // Return default value for invalid inputs
-    //     }
-    // }
-
-    // private static String extractUntilFirstComma(String input) {
-    //     if (input == null) {
-    //         return ""; // Handle null or empty string
-    //     }
-
-    //     int commaIndex = input.indexOf(',');
-    //     if (commaIndex == -1) {
-    //         return input; // No comma found, return the entire string
-    //     }
-
-    //     return input.substring(0, commaIndex); // Extract until the first comma
-    // }
 }
 
