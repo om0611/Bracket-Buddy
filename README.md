@@ -43,8 +43,17 @@ the event.
 ## Usage
 
 ## Feedback
+Bracket Buddy is open to feedback through this [google form](https://forms.gle/7vZLDufXwvgFXi8L8)!
+When submitting feedback, be sure to:
+- Include an email or other contact so that we can reach back to you for further information.
+- Be clear about potential bugs and their fixes if applicable.
+- Consider user interactions and how the application could be improved.
+
+After submitting feedback, you can expect a follow-up from us shortly.
+
 
 ## Contributing
+Unfortunately, BracketBuddy is currently closed for public contributions. If this changes, we will add information on this readme file about how to reach out and get your contributions documented.
 
 ## License
-Check out the license [here](LICENSE).
+Check out the MIT license [here](LICENSE).
