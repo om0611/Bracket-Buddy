@@ -59,10 +59,12 @@ public class LoginInteractor implements LoginInputBoundary, PropertyChangeListen
             if (token == null) {
                 loginPresenter.prepareFailView();
             }
-            loginDataAccessObject.setToken(token);
-            final LoginOutputData loginOutputData =
-                    new LoginOutputData(loginDataAccessObject.getTournaments());
-            loginPresenter.prepareSuccessView(loginOutputData);
+            else {
+                loginDataAccessObject.setToken(token);
+                final LoginOutputData loginOutputData =
+                        new LoginOutputData(loginDataAccessObject.getTournaments());
+                loginPresenter.prepareSuccessView(loginOutputData);
+            }
         }
         catch (DataAccessException | JSONException | InterruptedException e) {
             loginPresenter.prepareFailView();
