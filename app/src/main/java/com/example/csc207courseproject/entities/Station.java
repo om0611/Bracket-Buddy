@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a physical station/setup where games are played at a tournament.
+ */
 public class Station {
     private final List<String> tags = new ArrayList<>();
     private final int id;
