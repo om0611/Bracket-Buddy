@@ -3,6 +3,7 @@ package com.example.csc207courseproject.data_access;
 
 import android.util.Log;
 import com.example.csc207courseproject.BuildConfig;
+import com.example.csc207courseproject.use_case.tournament_description.TournamentDescriptionDataAccessInterface;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;

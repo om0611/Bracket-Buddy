@@ -12,7 +12,6 @@ public class TournamentDescriptionPresenter {
         this.analysisViewModel = analysisViewModel;
     }
 
-    @Override
     public void prepareSuccessView(TournamentDescriptionOutputData outputData) {
         final String aiMessage = outputData.getAiMessage();
         AnalysisState tournamentState = analysisViewModel.getState();
@@ -20,7 +19,6 @@ public class TournamentDescriptionPresenter {
         analysisViewModel.firePropertyChanged("updatesuccess");
     }
 
-    @Override
     public void prepareFailView(String errorMessage) {
         final AnalysisState tournamentState = analysisViewModel.getState();
         tournamentState.setError(errorMessage);
