@@ -41,7 +41,9 @@ the event.
 ## Installation
 
 ## Usage
+On app startup, the user will be prompted with a login button where they can login to their start.gg account. Once they have done this, they should navigate back to BracketBuddy.
 
+Once they log in, the user should select their desired tournament and event. Once they do, they will be prompted with 5 menus in a navigation bar at the bottom of the screen. Within each of these menus are options related to its specific functionality, images of each menu are recorded [here](https://drive.google.com/drive/folders/1ykSAsVVC5Af_IVYZX9h985wE7KAtisu3?usp=sharing). 
 ## Feedback
 Bracket Buddy is open to feedback through this [google form](https://forms.gle/7vZLDufXwvgFXi8L8)!
 When submitting feedback, be sure to:
