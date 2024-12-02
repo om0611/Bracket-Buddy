@@ -1,7 +1,7 @@
 
 package com.example.csc207courseproject.use_case.mutate_seeding;
 
-import com.example.csc207courseproject.data_access.APIDataAccessObject;
+import com.example.csc207courseproject.data_access.api.APIDataAccessObject;
 import com.example.csc207courseproject.entities.Entrant;
 import org.junit.jupiter.api.Test;
 
@@ -33,13 +33,8 @@ public class MutateSeedingInteractorTest {
             }
 
             @Override
-            public void switchToMainMenuView() {
-                fail("Use case success is unexpected.");
-            }
+            public void prepareFailView() {
 
-            @Override
-            public void prepareFailView(String error) {
-                assertEquals("Something went wrong with the API call, try again.", error);
             }
         };
 

@@ -1,6 +1,6 @@
 package com.example.csc207courseproject.use_case.select_phase;
 
-import com.example.csc207courseproject.data_access.APIDataAccessObject;
+import com.example.csc207courseproject.data_access.api.APIDataAccessObject;
 import com.example.csc207courseproject.entities.Entrant;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ class SelectPhaseInteractorTest {
 
     @Test
     void selectPhaseFailureTest() {
-        SelectPhaseInputData inputData = new SelectPhaseInputData(0);
+        SelectPhaseInputData inputData = new SelectPhaseInputData("");
 
         // Create new setSeeding method which throws an exception for this test
         APIDataAccessObject failDataAccessInterface = new APIDataAccessObject() {
@@ -31,7 +31,7 @@ class SelectPhaseInteractorTest {
 
             @Override
             public void prepareFailView() {
-                assertEquals();
+
             }
         };
 

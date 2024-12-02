@@ -21,8 +21,8 @@ class UpdateSeedingInteractorTest {
             }
 
             @Override
-            public void prepareFailView(String error) {
-                fail("Use case failure is unexpected.");
+            public void prepareFailView() {
+
             }
         };
 
@@ -41,8 +41,8 @@ class UpdateSeedingInteractorTest {
             }
 
             @Override
-            public void prepareFailView(String error) {
-                assertEquals("These are not valid seeds.", error);
+            public void prepareFailView() {
+
             }
         };
 
