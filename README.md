@@ -132,7 +132,9 @@ After submitting feedback, you can expect a follow-up from us shortly.
 
 
 ## Contributing
-Unfortunately, BracketBuddy is currently closed for public contributions. If this changes, we will add information on this readme file about how to reach out and get your contributions documented.
+Unfortunately, BracketBuddy is currently closed for public contributions. If this changes, we will add information on this readme file about how to reach out and get your contributions documented. Non-contributor
+pull requests on this repository will be ignored.
 
 ## License
+This program is closed for open source editing and is using the MIT license.
 Check out the MIT license [here](LICENSE).
