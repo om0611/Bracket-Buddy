@@ -13,6 +13,9 @@ public class TournamentDescriptionInteractor implements TournamentDescriptionInp
 
     }
 
+    /**
+     * Executes the tournament description use case
+     */
     @Override
     public void execute() {
         try {
