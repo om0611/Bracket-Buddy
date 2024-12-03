@@ -8,6 +8,7 @@ plugins {
 val myToken = gradleLocalProperties(rootDir, providers).getProperty("token")
 val clientID = gradleLocalProperties(rootDir, providers).getProperty("client_id")
 val clientSecret = gradleLocalProperties(rootDir, providers).getProperty("client_secret")
+val cohereToken = gradleLocalProperties(rootDir, providers).getProperty("cohere-token")
 
 android {
     namespace = "com.example.csc207courseproject"
@@ -25,6 +26,7 @@ android {
         buildConfigField("String", "TOKEN", "\"" + myToken + "\"")
         buildConfigField("String", "CLIENT_ID", "\"" + clientID +"\"")
         buildConfigField("String", "CLIENT_SECRET", "\"" + clientSecret + "\"")
+        buildConfigField("String", "COHERE", "\"${cohereToken}\"")
     }
 
     buildTypes {
@@ -48,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation("com.sun.net.httpserver:http:20070405")
     implementation("org.nanohttpd:nanohttpd:2.3.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation(libs.appcompat)
@@ -63,6 +66,10 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("com.cohere:cohere-java:1.4.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.12.3")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3")
 }
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
