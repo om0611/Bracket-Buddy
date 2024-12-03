@@ -22,6 +22,10 @@ public class AnalysisState {
 
         return error;
     }
+    /**
+     * Get AI Description of tournament.
+     * @return AI Message
+     */
     public String getaiMessage() {
 
         return aiMessage;
