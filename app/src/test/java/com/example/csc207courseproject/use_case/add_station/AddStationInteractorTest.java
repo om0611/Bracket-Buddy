@@ -3,6 +3,7 @@ package com.example.csc207courseproject.use_case.add_station;
 import com.example.csc207courseproject.data_access.api.APIDataAccessException;
 import com.example.csc207courseproject.data_access.api.APIDataAccessObject;
 import com.example.csc207courseproject.entities.EventData;
+import com.example.csc207courseproject.use_case.call_set.CallSetDataAccessInterface;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ class AddStationInteractorTest {
         AddStationInputData inputData = new AddStationInputData(1);
 
         // Create new getOngoingSets method which throws an exception for this test
-        AddStationDataAccessInterface failDataAccessInterface = new APIDataAccessObject() {
+        AddStationDataAccessInterface failDataAccessInterface = new AddStationDataAccessInterface() {
             @Override
             public int addStation(int tournamentId, int stationNum) {
                 throw new APIDataAccessException("Failure");
@@ -52,7 +53,7 @@ class AddStationInteractorTest {
         AddStationInputData inputData = new AddStationInputData(1);
 
         // Create new getOngoingSets method which throws an exception for this test
-        AddStationDataAccessInterface successDataAccessInterface = new APIDataAccessObject() {
+        AddStationDataAccessInterface successDataAccessInterface = new AddStationDataAccessInterface() {
             @Override
             public int addStation(int tournamentId, int stationNum) {
                 return 1;

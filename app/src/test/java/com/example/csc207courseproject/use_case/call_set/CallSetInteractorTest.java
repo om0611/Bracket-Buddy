@@ -17,7 +17,7 @@ class CallSetInteractorTest {
         CallSetInputData inputData = new CallSetInputData(1, testStation);
 
         // Create new callSet method which throws an exception for this test
-        CallSetDataAccessInterface failDataAccessInterface = new APIDataAccessObject() {
+        CallSetDataAccessInterface failDataAccessInterface = new CallSetDataAccessInterface() {
             @Override
             public void callSet(int setId) {
                 throw new APIDataAccessException("Failure");
@@ -47,7 +47,7 @@ class CallSetInteractorTest {
         CallSetInputData inputData = new CallSetInputData(1, testStation);
 
         // Create new callSet method which returns
-        CallSetDataAccessInterface successDataAccessInterface = new APIDataAccessObject() {
+        CallSetDataAccessInterface successDataAccessInterface = new CallSetDataAccessInterface() {
             @Override
             public void callSet(int setId) {
                 return;
