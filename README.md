@@ -91,10 +91,9 @@ Installing from IntelliJ (Not Recommended):
   client_secret= PUT YOUR START GG CLIENT SECRET TOKEN HERE
   cohere= "PUT YOUR COHERE TOKEN HERE
 7. Build the project using Gradle
-   Make sure you add a valid Android device to the wireless debugging as shown here [here](https://www.geeksforgeeks.org/guide-to-install-and-setup-intellij-idea-for-android-app-development/).
-7. Install the app
-The app should appear in your app drawer once the gradle build is complete.
-8. Log in on the app
+   Make sure you add a valid Android device to the wireless debugging as shown [here](https://www.geeksforgeeks.org/guide-to-install-and-setup-intellij-idea-for-android-app-development/).
+8. Install the app. The app should appear in your app drawer once the gradle build is complete.
+9. Log in on the app
    Once you open the app, you will be prompted to login to Start.gg. Log in using the information you created in step 1.
    Now, the app should redirect you to the select tournament menu where you can see any tournaments that you manage.
 
