@@ -44,7 +44,7 @@ public class OAuthDataAccessObject implements LoginOAuthDataAccessInterface {
             try {
                 oAuthServer = new OAuthServer();
             }
-            catch (IOException e) {
+            catch (IOException evt) {
                 throw new OAuthException("The server failed to start.");
             }
         });
@@ -120,7 +120,8 @@ public class OAuthDataAccessObject implements LoginOAuthDataAccessInterface {
 
         try {
             latch.await();
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException evt) {
             throw new OAuthException("Server thread interrupted");
 
         }
