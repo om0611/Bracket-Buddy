@@ -12,6 +12,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * The DAO for making API calls to Cohere AI.
+ */
 public class CohereDataAccessObject implements TournamentDescriptionDataAccessInterface {
 
     private final String COHERE_API_URL = "https://api.cohere.com/v2/chat"; // Updated URL
@@ -79,6 +82,14 @@ public class CohereDataAccessObject implements TournamentDescriptionDataAccessIn
         }
     }
 
+    /**
+     * Generates a detailed description for a tournament using an external API.
+     *
+     * @param eventName   the name of the tournament
+     * @param noOfPlayers the number of players participating
+     * @return a string with the generated description or an error message if generation fails
+     * @throws RuntimeException if there is an error parsing the API response
+     */
     public String generateTournamentDescription(String eventName, int noOfPlayers) {
         String prompt = "Generate a detailed description of about 100 words for the " + eventName + " tournament, which involves " + noOfPlayers + " players. Include the purpose of the tournament, its format, and any notable features";
 
