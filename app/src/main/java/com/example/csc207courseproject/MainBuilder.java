@@ -1,5 +1,6 @@
 package com.example.csc207courseproject;//package com.example.csc207courseprojectandroid.app;
 
+import com.example.csc207courseproject.data_access.CohereDataAccessObject;
 import com.example.csc207courseproject.data_access.api.APIDataAccessObject;
 import com.example.csc207courseproject.data_access.OAuth.OAuthDataAccessObject;
 import com.example.csc207courseproject.interface_adapter.add_station.AddStationController;
@@ -39,8 +40,12 @@ import com.example.csc207courseproject.interface_adapter.select_phase.SelectPhas
 import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentController;
 import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentPresenter;
 import com.example.csc207courseproject.interface_adapter.select_tournament.SelectTournamentViewModel;
+import com.example.csc207courseproject.interface_adapter.tournament_description.TournamentDescriptionController;
+import com.example.csc207courseproject.interface_adapter.tournament_description.TournamentDescriptionPresenter;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsController;
 import com.example.csc207courseproject.interface_adapter.upcoming_sets.UpcomingSetsPresenter;
+import com.example.csc207courseproject.ui.analysis.AnalysisFragment;
+import com.example.csc207courseproject.ui.analysis.AnalysisViewModel;
 import com.example.csc207courseproject.ui.call.CallSetFragment;
 import com.example.csc207courseproject.ui.call.CallStationFragment;
 import com.example.csc207courseproject.ui.call.CallViewModel;
@@ -105,6 +110,9 @@ import com.example.csc207courseproject.use_case.select_phase.SelectPhaseOutputBo
 import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentInputBoundary;
 import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentInteractor;
 import com.example.csc207courseproject.use_case.select_tournament.SelectTournamentOutputBoundary;
+import com.example.csc207courseproject.use_case.tournament_description.TournamentDescriptionInputBoundary;
+import com.example.csc207courseproject.use_case.tournament_description.TournamentDescriptionInteractor;
+import com.example.csc207courseproject.use_case.tournament_description.TournamentDescriptionOutputBoundary;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsInputBoundary;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsInteractor;
 import com.example.csc207courseproject.use_case.upcoming_sets.UpcomingSetsOutputBoundary;
@@ -115,6 +123,7 @@ import com.example.csc207courseproject.use_case.update_seeding.UpdateSeedingOutp
 public class MainBuilder {
         private final APIDataAccessObject apiDataAccessObject = new APIDataAccessObject();
         private final OAuthDataAccessObject oAuthDataAccessObject = new OAuthDataAccessObject();
+        private final CohereDataAccessObject cohereDataAccessObject = new CohereDataAccessObject();
 
         private LoginViewModel loginViewModel;
         private SelectTournamentViewModel selectTournamentViewModel;
@@ -122,7 +131,7 @@ public class MainBuilder {
         private SeedingViewModel seedingViewModel;
         private CallViewModel callViewModel;
         private ReportViewModel reportViewModel;
-
+        private AnalysisViewModel analysisViewModel;
         private FinanceViewModel financeViewModel;
 
         /**
@@ -195,6 +204,12 @@ public class MainBuilder {
         public MainBuilder addFinanceView() {
                 financeViewModel = new FinanceViewModel();
                 FinanceFragment.setFinanceViewModel(financeViewModel);
+                return this;
+        }
+
+        public MainBuilder addAnalysisView() {
+                analysisViewModel = new AnalysisViewModel();
+                AnalysisFragment.setAnalysisViewModel(analysisViewModel);
                 return this;
         }
 
@@ -506,6 +521,16 @@ public class MainBuilder {
                 final ExportFinanceController controller = new ExportFinanceController(exportFinanceInteractor,
                                 financeViewModel.getState());
                 FinanceFragment.setExportFinanceController(controller);
+                return this;
+        }
+
+        public MainBuilder addTournamentDescriptionUseCase() {
+                final TournamentDescriptionOutputBoundary tournamentDescriptionOutputBoundary = new TournamentDescriptionPresenter(
+                        analysisViewModel);
+                final TournamentDescriptionInputBoundary tournamentDescriptionInteractor = new TournamentDescriptionInteractor(
+                        cohereDataAccessObject, tournamentDescriptionOutputBoundary);
+                final TournamentDescriptionController controller = new TournamentDescriptionController(tournamentDescriptionInteractor);
+                AnalysisFragment.setTournamentDescriptionController(controller);
                 return this;
         }
 }

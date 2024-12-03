@@ -37,6 +37,7 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
                 .addCallView()
                 .addReportView()
                 .addFinanceView()
+                .addAnalysisView()
                 .addLoginUseCase()
                 .addSelectTournamentUseCase()
                 .addGetPhasesUseCase()
@@ -55,7 +56,8 @@ public class LoginActivity extends AppCompatActivity implements PropertyChangeLi
                 .addOngoingSetsUseCase()
                 .addGetFinanceUseCase()
                 .addModifyFinanceUseCase()
-                .addExportFinanceUseCase();
+                .addExportFinanceUseCase()
+                .addTournamentDescriptionUseCase();
 
         loginViewModel.addPropertyChangeListener(this);
     }
