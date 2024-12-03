@@ -524,6 +524,11 @@ public class MainBuilder {
                 return this;
         }
 
+        /**
+         * Adds the Tournament Description Use Case to the application.
+         *
+         * @return this builder
+         */
         public MainBuilder addTournamentDescriptionUseCase() {
                 final TournamentDescriptionOutputBoundary tournamentDescriptionOutputBoundary = new TournamentDescriptionPresenter(
                         analysisViewModel);
