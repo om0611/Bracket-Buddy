@@ -4,6 +4,7 @@
 - [Overview](#overview)
 - [Features](#features)
 - [Authors](#authors)
+- [Demo](#demo)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Feedback](#feedback)
@@ -37,6 +38,9 @@ the event.
 - [Esther Siu](https://github.com/essi-304)
 - [Om Patel](https://github.com/ompatech)
 - [Om Patel](https://github.com/om0611)
+
+## Demo
+Watch it [here](https://drive.google.com/file/d/1RH3ngPJjfaIdZsPVHysqqfqoPbqU9fX4/view?usp=sharing).
 
 ## Installation
 There are two methods to install this program.
